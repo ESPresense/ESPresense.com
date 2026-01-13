@@ -44,10 +44,6 @@ These settings control how ESPresense interprets signal strength. See the full [
 * RSSI adjustment for receiver - Per-node offset to align RSSI across different antennas or hardware.
 * Forget beacon if not seen for (in milliseconds) - How long to keep idle devices before removing them.
 
-## Misc
-
-* Status LED - Blink the LED to the BLE advertisements. A constant slow blink means no mqtt connection.
-* PIR motion pin (0 for disable) - GPIO pin to detect pir motion on
-* Radar motion pin (0 for disable): - GPIO pin to detect radar motion on
+For LED and GPIO sensor configuration (PIR motion, radar motion, switches, buttons), see the [Sensors](sensors) page.
 
 </div>
