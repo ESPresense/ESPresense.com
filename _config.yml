@@ -24,6 +24,10 @@ url: https://ESPresense.com
 permalink: pretty
 exclude: ["node_modules/", "*.gemspec", "*.gem", "Gemfile", "Gemfile.lock", "package.json", "package-lock.json",  "script/", "LICENSE.txt", "lib/", "bin/", "README.md", "Rakefile", "ui"]
 
+# Include files that Jekyll normally ignores (files starting with underscore)
+include:
+  - _redirects
+
 avatar: /images/cover.png
 
 # Regression tests
@@ -140,4 +144,4 @@ compress_html:
   # ignore:
   #   envs: all
 
-remote_theme: just-the-docs/just-the-docs
+theme: just-the-docs
