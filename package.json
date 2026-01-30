@@ -1,0 +1,17 @@
+{
+  "name": "espresense-website",
+  "private": true,
+  "version": "1.0.0",
+  "description": "ESPresense website with Cloudflare Pages Functions",
+  "scripts": {
+    "dev": "wrangler pages dev _site --live-reload"
+  },
+  "dependencies": {
+    "fflate": "^0.7.3",
+    "hono": "^4.11.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251210.0",
+    "wrangler": "^4.54.0"
+  }
+}
