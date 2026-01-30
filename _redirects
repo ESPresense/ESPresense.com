@@ -2,15 +2,15 @@
 # These redirects are automatically updated by GitHub Actions when new releases are published.
 # Cloudflare Pages processes this file to create HTTP 302 redirects.
 
-/releases/latest-any/download/esp32.bin https://github.com/ESPresense/ESPresense/releases/download/v4.0.0b14/esp32.bin 302
-/releases/latest-any/download/esp32-verbose.bin https://github.com/ESPresense/ESPresense/releases/download/v4.0.0b14/esp32-verbose.bin 302
-/releases/latest-any/download/esp32c3.bin https://github.com/ESPresense/ESPresense/releases/download/v4.0.0b14/esp32c3.bin 302
-/releases/latest-any/download/esp32c3-cdc.bin https://github.com/ESPresense/ESPresense/releases/download/v4.0.0b14/esp32c3-cdc.bin 302
-/releases/latest-any/download/esp32c3-verbose.bin https://github.com/ESPresense/ESPresense/releases/download/v4.0.0b14/esp32c3-verbose.bin 302
-/releases/latest-any/download/esp32s3.bin https://github.com/ESPresense/ESPresense/releases/download/v4.0.0b14/esp32s3.bin 302
-/releases/latest-any/download/esp32s3-cdc.bin https://github.com/ESPresense/ESPresense/releases/download/v4.0.0b14/esp32s3-cdc.bin 302
-/releases/latest-any/download/esp32s3-verbose.bin https://github.com/ESPresense/ESPresense/releases/download/v4.0.0b14/esp32s3-verbose.bin 302
-/releases/latest-any/download/m5atom.bin https://github.com/ESPresense/ESPresense/releases/download/v4.0.0b14/m5atom.bin 302
-/releases/latest-any/download/m5stickc.bin https://github.com/ESPresense/ESPresense/releases/download/v4.0.0b14/m5stickc.bin 302
-/releases/latest-any/download/m5stickc-plus.bin https://github.com/ESPresense/ESPresense/releases/download/v4.0.0b14/m5stickc-plus.bin 302
-/releases/latest-any/download/macchina-a0.bin https://github.com/ESPresense/ESPresense/releases/download/v4.0.0b14/macchina-a0.bin 302
+/releases/latest-any/download/esp32-verbose.bin https://github.com/ESPresense/ESPresense/releases/download/v3.3.5/esp32-verbose.bin 302
+/releases/latest-any/download/esp32.bin https://github.com/ESPresense/ESPresense/releases/download/v3.3.5/esp32.bin 302
+/releases/latest-any/download/esp32c3-cdc.bin https://github.com/ESPresense/ESPresense/releases/download/v3.3.5/esp32c3-cdc.bin 302
+/releases/latest-any/download/esp32c3-verbose.bin https://github.com/ESPresense/ESPresense/releases/download/v3.3.5/esp32c3-verbose.bin 302
+/releases/latest-any/download/esp32c3.bin https://github.com/ESPresense/ESPresense/releases/download/v3.3.5/esp32c3.bin 302
+/releases/latest-any/download/esp32s3-cdc.bin https://github.com/ESPresense/ESPresense/releases/download/v3.3.5/esp32s3-cdc.bin 302
+/releases/latest-any/download/esp32s3-verbose.bin https://github.com/ESPresense/ESPresense/releases/download/v3.3.5/esp32s3-verbose.bin 302
+/releases/latest-any/download/esp32s3.bin https://github.com/ESPresense/ESPresense/releases/download/v3.3.5/esp32s3.bin 302
+/releases/latest-any/download/m5atom.bin https://github.com/ESPresense/ESPresense/releases/download/v3.3.5/m5atom.bin 302
+/releases/latest-any/download/m5stickc-plus.bin https://github.com/ESPresense/ESPresense/releases/download/v3.3.5/m5stickc-plus.bin 302
+/releases/latest-any/download/m5stickc.bin https://github.com/ESPresense/ESPresense/releases/download/v3.3.5/m5stickc.bin 302
+/releases/latest-any/download/macchina-a0.bin https://github.com/ESPresense/ESPresense/releases/download/v3.3.5/macchina-a0.bin 302
