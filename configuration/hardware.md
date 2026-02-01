@@ -8,9 +8,10 @@ nav_order: 4
 
 # Hardware
 
-ESPresense supports various LED and GPIO sensor configurations for enhanced functionality and visual feedback. These settings are accessible from the full Settings view on the device web UI.
+ESPresense supports various LED and GPIO sensor configurations for enhanced functionality and visual feedback. These settings are accessible from the **Hardware** page in the device web UI.
 
-![Sensors section of the ESPresense settings UI](/images/sensors_screen.png){: width="360" }
+<div class="clearfix" markdown=1>
+<img src="/images/hardware_screen.png" alt="Sensors section of the ESPresense settings UI" style="float:right;margin-left:20px;width:340px">
 
 ## LEDs
 
@@ -45,6 +46,17 @@ Motion detection using radar sensors:
 * **Radar motion pin (-1 for disable)** - GPIO pin number for radar sensor, or -1 to disable
 * **Radar motion timeout (in seconds)** - How long to keep motion state active after detection
 
+#### LD2410(b/c)
+These are 24GHz radar motion sensors (B & C variants have integrated Bluetooth). These devices have a UART serial port which is unused by ESPresense; we use a single pin to indicate motion/static presence.
+
+To use these with ESPresense, connect Power and Ground, and wire the 'Occupied' pin to a GPIO. Configure it with `Radar motion pin type` as needed (usually `Pullup` or `Input` depending on wiring).
+
+### Pin Types
+For GPIO sensors (PIR, Radar, Switches, Buttons), the following pin types are available to match your hardware wiring:
+* Pullup / Pullup Inverted
+* Pulldown / Pulldown Inverted
+* Floating / Floating Inverted
+
 ### Switches
 
 Configure up to 2 switch inputs:
@@ -65,9 +77,58 @@ Configure up to 2 button inputs:
 * **Button pin (-1 for disable)** - GPIO pin number for the button, or -1 to disable
 * **Button timeout (in seconds)** - Debounce timeout for button presses
 
+## Temperature Sensors
+
+Configure various temperature and humidity sensors.
+
+### DHT11 / DHT22
+
+* **DHT11/DHT22 sensor pin** - GPIO pin number for the sensor
+* **DHT temperature offset** - Calibration offset for temperature readings
+
+### DS18B20
+
+* **DS18B20 sensor pin** - GPIO pin number for the One-Wire bus
+* **DS18B20 temperature offset** - Calibration offset for temperature readings
+
+## I2C Settings
+
+Configure up to 2 I2C buses.
+
+### Bus 1 / Bus 2
+
+* **SDA pin** - GPIO pin for Serial Data
+* **SCL pin** - GPIO pin for Serial Clock
+* **Debug I2C addresses** - Scans the bus and logs found addresses to serial console
+
+## I2C Sensors
+
+Configure various I2C environmental and light sensors.
+
+### General Sensors
+Supported sensors: AHTX0, BH1750, BME280, BMP085, BMP280, TSL2561, SGP30, SCD4x.
+
+* **I2C Bus** - Select which I2C bus (1 or 2) the sensor is connected to.
+* **I2C address** - Specific hex address (e.g., 0x76).
+* **Gain (TSL2561 only)** - Luminous gain setting (auto, 1x, 16x).
+
+### SHT Series
+Supported sensors: SHT3x, SHT4x, SHT85.
+
+* **I2C Bus (-1 to disable)** - Select bus or -1 to disable.
+
+## Weight Sensor (HX711)
+
+Configure a load cell amplifier.
+
+* **HX711 SCK (Clock) pin** - GPIO pin for the clock line.
+* **HX711 DOUT (Data) pin** - GPIO pin for the data line.
+
 ## Tips
 
 * Set pin values to -1 to disable any unused sensors or LEDs
 * Ensure GPIO pins don't conflict with other hardware functions
 * Addressable LEDs require proper power supply for multiple LEDs
 * Use appropriate timeout values to avoid false triggers on motion sensors
+
+</div>

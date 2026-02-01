@@ -1,8 +1,9 @@
 ---
 layout: page
 title: Technical
-permalink: /troubleshooting/technical
-parent: "Troubleshooting"
+permalink: /guides/technical
+parent: Guides
+nav_order: 2
 ---
 
 # Technical
