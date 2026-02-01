@@ -2,7 +2,7 @@
 layout: page
 title: Credits
 permalink: /credits
-nav_order: 999
+nav_order: 11
 ---
 
 # Credits

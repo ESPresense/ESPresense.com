@@ -3,7 +3,7 @@ layout: page
 title: Devices
 permalink: /devices
 redirect_from: /beacons
-nav_order: 3
+nav_order: 4
 ---
 
 # Devices

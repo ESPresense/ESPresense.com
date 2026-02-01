@@ -2,7 +2,7 @@
 layout: page
 title: Companion
 permalink: /companion
-nav_order: 90
+nav_order: 6
 ---
 # Companion
 

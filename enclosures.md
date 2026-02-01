@@ -3,7 +3,7 @@ layout: page
 title: Enclosures
 permalink: /enclosures
 parent: "Nodes"
-nav_order: 7
+nav_order: 9
 ---
 
 # Enclosures
