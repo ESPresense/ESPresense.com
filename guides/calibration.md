@@ -1,16 +1,17 @@
 ---
 layout: page
 title: Calibration
-permalink: /configuration/calibration
-parent: "Configuration"
-nav_order: 3
+permalink: /guides/calibration
+parent: Guides
+nav_order: 1
 ---
 
 # Calibration
 
-Calibrating your ESPresense nodes helps each device estimate distance consistently, even when they use different antennas or are installed in different rooms. The settings below are available from the full Settings view on the device web UI.
+Calibrating your ESPresense nodes helps each device estimate distance consistently, even when they use different antennas or are installed in different rooms. These settings are accessible from the Settings view in the device web UI.
 
-![Calibration section of the ESPresense settings UI](/images/calibration_screen.png){: width="360" }
+<div class="clearfix" markdown=1>
+<img src="/images/calibration_screen.png" alt="Calibration section of the ESPresense settings UI" style="float:right;margin-left:20px;width:360px">
 
 ## Quick calibration procedure
 
@@ -63,3 +64,13 @@ Controls how long a MAC address stays in the internal tracking list. Shorter dur
 * Re-run the reference measurement if you change antennas or enclosure materials.
 * Perform RSSI adjustment for receiver comparisons with beacons at least a few meters away to avoid near-field effects.
 * When installing multiple nodes in one room, calibrate them together to avoid uneven presence detection at room boundaries.
+
+## Troubleshooting
+
+### RSSI seems incorrect
+
+Note that `rssi@1m` is broadcast in the beacons from `ibeacon` and `eddy` devices. If those are not correct, you need to fix the beacon to send the correct value.
+
+For all other devices, `rssi@1m` is the **RSS expected from a 0dBm transmitter at 1 meter** setting plus an offset to correct for broadcast power. See [rssi.h](https://github.com/ESPresense/ESPresense/blob/master/lib/BleFingerprint/rssi.h) for the exact values used or to confirm how offsets are applied.
+
+</div>

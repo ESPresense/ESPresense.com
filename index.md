@@ -25,20 +25,33 @@ While this setup allows for more precise presence detection and triangulation, i
 
 If you prefer to stick with the [Home Assistant](https://www.home-assistant.io/) [`mqtt_room` component](https://www.home-assistant.io/components/sensor.mqtt_room/), it remains supported—though it is less capable and manually configured.
 
-
 ## Required
 
 * [Nodes](./nodes)
 * [Beacons/Phones/Watches](./devices)
 * [MQTT Server](https://mosquitto.org/)
 
-## Optional
+## Configuration & Setup
 
-* [Sensors](./sensors)
+* [Network Configuration](./configuration/network) - WiFi and MQTT setup
+* [Hardware Support](./configuration/hardware) - LEDs, Motion, and Environmental sensors
+* [Advanced Settings](./configuration/settings) - Filtering, Counting, and Scanning logic
+
+## Integrations
+
+Connect ESPresense to your favorite automation platform:
+* [Home Assistant](./integrations/home_assistant)
+* [Homebridge](./integrations/homebridge)
+* [Domoticz](./integrations/domoticz)
+
+## Guides
+
+* [Calibration](./guides/calibration) - Scale your distance measurements for accuracy
+* [Technical](./guides/technical) - Under-the-hood details
 
 ## Troubleshooting
 
-If you’re having trouble getting things set up or working properly, visit the [troubleshooting page](./troubleshooting) before opening an issue. It will guide you on what information to provide to identify and resolve your problem.
+If you’re having trouble getting things set up or working properly, visit the [troubleshooting page](./troubleshooting) before opening an issue.
 
 ## Credits
 

@@ -1,8 +1,9 @@
 ---
 layout: page
 title: Domoticz
-permalink: /domoticz
-parent: Configuration
+permalink: /integrations/domoticz
+parent: Integrations
+nav_order: 3
 ---
 
 # Domoticz

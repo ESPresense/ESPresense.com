@@ -1,8 +1,9 @@
 ---
 layout: page
 title: Homebridge
-permalink: /homebridge
-parent: Configuration
+permalink: /integrations/homebridge
+parent: Integrations
+nav_order: 2
 ---
 
 # Homebridge

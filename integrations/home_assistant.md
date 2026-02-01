@@ -1,9 +1,9 @@
 ---
 layout: page
 title: Home Assistant
-permalink: /home_assistant
-parent: Configuration
-nav_order: 3
+permalink: /integrations/home_assistant
+parent: Integrations
+nav_order: 1
 ---
 
 # Home Assistant
