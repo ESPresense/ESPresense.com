@@ -25,6 +25,7 @@ nav_order: 4
 | musegear finder mini | [musegear](https://shop.musegear-finder.net/collections/finder-mini){:target="_blank"} | Must be connected once with the associated app. Id format: iTrack:...
 | Whoop strap 3.0      |                                             | Id format: name:whoop-xxxxxxx
 | Whoop strap 4.0      |                                             | Id format: name:whoop-xxxxxxx
+| Amazfit Balance      |                                             | Seen as `mifit:xxx`. Enable "Visibility" in Zepp app (Profile -> Watch)
 | Amazfit Band         | [amz/us](https://amzn.to/3lArIr0){:target="_blank"}           | Make sure discoverable is turned on
 | Amazfit Bip S        | [amz/us](https://amzn.to/3C4DyMK){:target="_blank"}           |
 | Amazfit Bip 3 Pro    | [amz/us](https://amzn.asia/d/98vWhnk){:target="_blank"}       | Use the Zepp app on your paired phone to set the watch to be discoverable
@@ -55,6 +56,7 @@ nav_order: 4
 | Name                | Notes                                                                |
 |:--------------------|:---------------------------------------------------------------------|
 | Apple AirTags       | We can only count how many are currently not connected to a phone
+| Garmin Fenix 5X Plus | Seen as `garmin:xxxx` at boot only for a few seconds; does not reliably beacon
 | Samsung SmartTags   | Randomized mac addresses
 
 ### Add to the list
