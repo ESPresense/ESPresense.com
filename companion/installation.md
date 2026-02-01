@@ -95,7 +95,7 @@ This ensures you get all distance readings without filtering.
 
 Once installation is complete:
 1. Move on to [Configuration](/companion/configuration) to set up your floor plan
-2. Place your nodes according to the [Node Placement Guide](/companion/configuration#node-placement--configuration)
+2. Place your nodes according to the [Node Placement Guide](/companion/configuration#node-placement)
 3. Start tracking your devices!
 
 ## Troubleshooting Installation
