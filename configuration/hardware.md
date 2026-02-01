@@ -1,12 +1,12 @@
 ---
 layout: page
-title: Sensors
-permalink: /configuration/sensors
+title: Hardware
+permalink: /configuration/hardware
 parent: "Configuration"
 nav_order: 4
 ---
 
-# Sensors
+# Hardware
 
 ESPresense supports various LED and GPIO sensor configurations for enhanced functionality and visual feedback. These settings are accessible from the full Settings view on the device web UI.
 

@@ -44,6 +44,6 @@ These settings control how ESPresense interprets signal strength. See the full [
 * RSSI adjustment for receiver - Per-node offset to align RSSI across different antennas or hardware.
 * Forget beacon if not seen for (in milliseconds) - How long to keep idle devices before removing them.
 
-For LED and GPIO sensor configuration (PIR motion, radar motion, switches, buttons), see the [Sensors](sensors) page.
+For LED and GPIO sensor configuration (PIR motion, radar motion, switches, buttons), see the [Hardware](hardware) page.
 
 </div>
