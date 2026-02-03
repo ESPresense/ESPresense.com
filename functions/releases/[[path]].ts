@@ -117,6 +117,7 @@ app.get('/:tag{[^/]+\\.json}',
 
     const manifest = {
       "name": "ESPresense " + rel.name + (flavor && flavor !== "" ? ` (${flavor})` : ""),
+      "version": rel.name,
       "new_install_prompt_erase": true,
       "builds": [] as any[]
     }
