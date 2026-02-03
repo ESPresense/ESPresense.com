@@ -7,7 +7,6 @@ import { cors } from 'hono/cors'
 function esp32(path: string) {
   return {
     "chipFamily": "ESP32",
-    "improv": false,
     "parts": [{
       "path": "/static/esp32/bootloader.bin",
       "offset": 4096
@@ -30,7 +29,6 @@ function esp32(path: string) {
 function esp32c3(path: string) {
   return {
     "chipFamily": "ESP32-C3",
-    "improv": false,
     "parts": [{
       "path": "/static/esp32c3/bootloader.bin",
       "offset": 0x0000
@@ -53,7 +51,6 @@ function esp32c3(path: string) {
 function esp32s3(path: string) {
   return {
     "chipFamily": "ESP32-S3",
-    "improv": false,
     "parts": [{
       "path": "/static/esp32s3/bootloader.bin",
       "offset": 0x0000
