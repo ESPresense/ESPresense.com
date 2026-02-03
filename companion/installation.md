@@ -57,9 +57,11 @@ services:
     image: espresense/espresense-companion
     ports:
       - 8267:8267
+      - 8268:8268
     volumes:
       - ./data/espresense:/config/espresense
 ```
+Port `8268` is required for firmware updates.
 
 ## MQTT Setup
 
