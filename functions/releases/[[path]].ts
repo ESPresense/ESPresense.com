@@ -50,6 +50,29 @@ function esp32c3(path: string) {
   }
 }
 
+function esp32s3(path: string) {
+  return {
+    "chipFamily": "ESP32-S3",
+    "improv": false,
+    "parts": [{
+      "path": "/static/esp32s3/bootloader.bin",
+      "offset": 0x0000
+    },
+    {
+      "path": "/static/esp32s3/partitions.bin",
+      "offset": 0x8000
+    },
+    {
+      "path": "/static/boot_app0.bin",
+      "offset": 0xe000
+    },
+    {
+      "path": path,
+      "offset": 0x10000
+    }]
+  }
+}
+
 interface Asset {
   name: string
   browser_download_url: string
@@ -106,6 +129,9 @@ app.get('/:tag{[^/]+\\.json}',
 
     const c3 = findAsset(rel, `esp32c3-${flavor}.bin`) || findAsset(rel, `esp32c3.bin`)
     if (c3) manifest.builds.push(esp32c3(`download/${tag}/${c3.name}`))
+
+    const s3 = findAsset(rel, `esp32s3-${flavor}.bin`) || findAsset(rel, `esp32s3.bin`)
+    if (s3) manifest.builds.push(esp32s3(`download/${tag}/${s3.name}`))
 
     c.header('Cache-Control', `public, max-age=${maxAge}`)
     return c.json(manifest)
