@@ -1,22 +1,13 @@
-import { z as c, v as w, _ as u, w as h, x as l, y as p } from "./styles-XARd1rOR.js";
-import "./index-psEkNoq_.js";
-/**
- * @license
- * Copyright 2017 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
- */
-const v = (t) => (e, o) => {
-  o !== void 0 ? o.addInitializer(() => {
-    customElements.define(t, e);
-  }) : customElements.define(t, e);
-}, g = () => {
+import { q as c, _ as w, t as h } from "./styles-CbnMY1ou.js";
+import { w as u, a as p, i as v, b as i } from "./index-dYIFDqUf.js";
+const g = () => {
   var t, e;
-  const o = window.navigator.userAgent, i = (
+  const a = window.navigator.userAgent, o = (
     // @ts-expect-error
     ((e = (t = window.navigator) === null || t === void 0 ? void 0 : t.userAgentData) === null || e === void 0 ? void 0 : e.platform) || window.navigator.platform
-  ), a = ["macOS", "Macintosh", "MacIntel", "MacPPC", "Mac68K"], r = ["Win32", "Win64", "Windows", "WinCE"], d = ["iPhone", "iPad", "iPod"];
-  return a.indexOf(i) !== -1 ? "Mac OS" : d.indexOf(i) !== -1 ? "iOS" : r.indexOf(i) !== -1 ? "Windows" : /Android/.test(o) ? "Android" : /Linux/.test(i) ? "Linux" : null;
-}, s = p`
+  ), s = ["macOS", "Macintosh", "MacIntel", "MacPPC", "Mac68K"], r = ["Win32", "Win64", "Windows", "WinCE"], d = ["iPhone", "iPad", "iPod"];
+  return s.indexOf(o) !== -1 ? "Mac OS" : d.indexOf(o) !== -1 ? "iOS" : r.indexOf(o) !== -1 ? "Windows" : /Android/.test(a) ? "Android" : /Linux/.test(o) ? "Linux" : null;
+}, n = u`
   <svg
     version="1.1"
     id="Capa_1"
@@ -36,10 +27,10 @@ const v = (t) => (e, o) => {
     </g>
   </svg>
 `;
-let n = class extends h {
+let l = class extends v {
   render() {
     const e = g();
-    return l`
+    return i`
       <ew-dialog open @closed=${this._handleClose}>
         <div slot="headline">No port selected</div>
         <div slot="content">
@@ -60,7 +51,7 @@ let n = class extends h {
               Make sure that the USB cable you use can be used for data and is
               not a power-only cable.
             </li>
-            ${e === "Linux" ? l`
+            ${e === "Linux" ? i`
                   <li>
                     If you are using a Linux flavor, make sure that your user is
                     part of the <code>dialout</code> group so it has permission
@@ -100,7 +91,7 @@ let n = class extends h {
                     >Mac</a
                   >
                   <br />
-                  (download via blue button with ${s} icon)
+                  (download via blue button with ${n} icon)
                 </li>
                 <li>
                   CH340, CH341 drivers:
@@ -117,19 +108,19 @@ let n = class extends h {
                     >Mac</a
                   >
                   <br />
-                  (download via blue button with ${s} icon)
+                  (download via blue button with ${n} icon)
                 </li>
               </ul>
             </li>
           </ol>
         </div>
         <div slot="actions">
-          ${this.doTryAgain ? l`
+          ${this.doTryAgain ? i`
                 <ew-text-button @click=${this.close}>Cancel</ew-text-button>
                 <ew-text-button @click=${this.tryAgain}>
                   Try Again
                 </ew-text-button>
-              ` : l`
+              ` : i`
                 <ew-text-button @click=${this.close}>Close</ew-text-button>
               `}
         </div>
@@ -147,9 +138,9 @@ let n = class extends h {
     this.parentNode.removeChild(this);
   }
 };
-n.styles = [
+l.styles = [
   c,
-  w`
+  p`
       li + li,
       li > ul {
         margin-top: 8px;
@@ -165,9 +156,9 @@ n.styles = [
       }
     `
 ];
-n = u([
-  v("ewt-no-port-picked-dialog")
-], n);
+l = w([
+  h("ewt-no-port-picked-dialog")
+], l);
 const y = async (t) => {
   const e = document.createElement("ewt-no-port-picked-dialog");
   return e.doTryAgain = t, document.body.append(e), !0;

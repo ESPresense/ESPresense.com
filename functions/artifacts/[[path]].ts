@@ -207,8 +207,10 @@ app.get('/:run_id_2{[0-9]+.json}',
     const workflow_run = runArtifacts[0].workflow_run
     if (!workflow_run) return c.json({ error: "No workflow run found" }, 404)
 
+    const shortSha = workflow_run.head_sha ? workflow_run.head_sha.substring(0, 7) : "unknown"
     const manifest: any = {
       "name": "ESPresense " + workflow_run.head_branch + " branch" + (flavor && flavor !== "" ? ` (${flavor})` : ""),
+      "version": `${workflow_run.head_branch}-${shortSha}`,
       "new_install_prompt_erase": true,
       "builds": []
     }
