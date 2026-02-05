@@ -53,6 +53,10 @@ Connect ESPresense to your favorite automation platform:
 
 If you’re having trouble getting things set up or working properly, visit the [troubleshooting page](./troubleshooting) before opening an issue.
 
+## Feature Requests
+
+Have an idea or a request? Share it on [ESPresense Featurebase](https://espresense.featurebase.app/).
+
 ## Credits
 
 This project builds on the hard work of a [number of people](./credits).
