@@ -106,6 +106,102 @@ map:
 ```
 Note: Will just use defaults if left out of config yaml
 
+### Filtering Configuration
+ESPresense Companion uses a combination of Kalman filtering and probability smoothing to provide stable, accurate location tracking. These parameters can be configured in your `config.yaml` under the `filtering:` section.
+
+#### Default Values
+All parameters have sensible defaults built into the code. **You do not need to add these to your config unless you want to customize them**:
+
+```yaml
+filtering:
+  process_noise: 0.01
+  measurement_noise: 0.1
+  max_velocity: 0.5
+  smoothing_weight: 0.7
+  motion_sigma: 2.0
+```
+
+#### Kalman Filter Parameters
+These parameters control the Kalman filter that tracks device position and velocity.
+
+##### `process_noise`
+**Default:** `0.01`
+
+Controls how quickly the filter adapts to changes in movement. This scales the process noise matrix (Q) in the Kalman filter.
+
+| Value | Effect |
+|-------|--------|
+| Lower (e.g., 0.005) | Smoother tracking, slower to respond to direction changes |
+| Higher (e.g., 0.05) | More responsive, but potentially more jittery |
+
+##### `measurement_noise`
+**Default:** `0.1`
+
+Base value for how much to trust new location measurements. This is the measurement noise (R) in the Kalman filter.
+
+> [!NOTE]
+> This value is **dynamically increased** when a location jump exceeds `max_velocity`. The excess factor is squared, so physically impossible movements are heavily dampened.
+
+| Value | Effect |
+|-------|--------|
+| Lower (e.g., 0.05) | Trust measurements more, respond faster to changes |
+| Higher (e.g., 0.2) | Trust the motion model more, smoother but slower |
+
+##### `max_velocity`
+**Default:** `0.5` (meters per second, ~1.1 mph)
+
+Maximum expected movement speed. Used to detect and dampen physically impossible location jumps.
+
+| Value | Use Case |
+|-------|----------|
+| 0.5 | Normal walking (default) |
+| 1.0-2.0 | Fast walking or running |
+| 0.3 | Slow-moving targets or stationary bias |
+
+#### Smoothing Parameters
+These parameters control how room/scenario probabilities are smoothed over time.
+
+##### `smoothing_weight`
+**Default:** `0.7`
+
+Weight given to the previous probability state (0.0-1.0). This creates an exponential moving average over scenario probabilities.
+
+The formula is: `new_probability = smoothing_weight * old_probability + (1 - smoothing_weight) * measurement`
+
+| Value | Effect |
+|-------|--------|
+| Higher (e.g., 0.8-0.9) | More stable room assignments, slower to transition between rooms |
+| Lower (e.g., 0.5) | Faster room transitions, but potentially more flickering |
+
+##### `motion_sigma`
+**Default:** `2.0` (meters)
+
+Standard deviation for the Gaussian penalty applied to scenarios that don't match the Kalman-predicted location. This penalizes scenarios that would require "teleporting" the device.
+
+The penalty is: `weight = exp(-distance^2 / (2 * motion_sigma^2))`
+
+| Value | Effect |
+|-------|--------|
+| Lower (e.g., 1.0) | Strongly penalize scenarios far from predicted location |
+| Higher (e.g., 3.0-4.0) | More tolerant of location uncertainty |
+
+#### Tuning Guide
+
+| Goal | Recommended Changes |
+|------|---------------------|
+| **Less jitter / more stable** | Decrease `process_noise` to 0.005, increase `smoothing_weight` to 0.8-0.9 |
+| **Faster response to movement** | Increase `process_noise` to 0.05, decrease `smoothing_weight` to 0.5 |
+| **Support running/fast movement** | Increase `max_velocity` to 1.0-2.0 |
+| **Less signal noise tolerance** | Decrease `measurement_noise` to 0.05 |
+| **Penalize room teleporting more** | Decrease `motion_sigma` to 1.0 |
+| **More tolerant of BLE uncertainty** | Increase `motion_sigma` to 3.0-4.0 |
+
+#### How It Works
+1. **Kalman Filter** - Tracks device position and velocity in 3D space. Each new location measurement is filtered to produce a smooth trajectory.
+2. **Motion Consistency Weighting** - Each possible scenario (room/floor combination) is weighted based on how consistent it is with the Kalman-predicted location using `motion_sigma`.
+3. **Probability Smoothing** - Scenario probabilities are smoothed over time using `smoothing_weight` to prevent rapid flickering between rooms.
+4. **Best Scenario Selection** - The scenario with the highest smoothed probability is selected as the device's current location.
+
 ### Optimisation Settings
 ```yaml
 optimization:
