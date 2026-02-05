@@ -186,6 +186,7 @@ The penalty is: `weight = exp(-distance^2 / (2 * motion_sigma^2))`
 | Higher (e.g., 3.0-4.0) | More tolerant of location uncertainty |
 
 #### Tuning Guide
+
 | Goal | Recommended Changes |
 |------|---------------------|
 | **Less jitter / more stable** | Decrease `process_noise` to 0.005, increase `smoothing_weight` to 0.8-0.9 |
