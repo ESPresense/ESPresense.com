@@ -12,18 +12,85 @@ An ESP32-based presence detection node designed for localized device tracking.
 Reasons to use this over other solutions:
 
 * ESP32 nodes are cheaper and easier to use than Raspberry Pis
-* Extensive fingerprint-based IDs instead of MAC addresses for tracking or counting devices others can’t
+* Extensive fingerprint-based IDs instead of MAC addresses for tracking or counting devices others can't
 * IRK-based enrollment of Apple devices to passively locate them uniquely, even with private random addresses
 * Home Assistant MQTT Discovery for easy HA configuration
 * Auto-updates by downloading GitHub-released binaries (optional, with a preference to disable if desired)
 * Filters measured distance with both a median pre-filter and a 1Euro filter (reduces jitter for greater accuracy)
-* Companion allows for full [multilateration](https://en.wikipedia.org/wiki/Trilateration)
 
-For the best experience, we recommend pairing ESPresense nodes with the [ESPresense Companion](./companion) Docker container/HA Add-on. ESPresense nodes provide distance measurements to nearby devices, and ESPresense Companion aggregates those distances from multiple nodes, using an accurate floor plan to determine each device's location within your space ([multilateration](https://en.wikipedia.org/wiki/Trilateration)).
+## Two Ways to Use ESPresense
 
-While this setup allows for more precise presence detection and triangulation, it requires an accurate floor plan and at least 3 nodes covering each room to work effectively.
+ESPresense supports two fundamentally different approaches. Choosing the right one upfront will save you confusion and hardware costs.
 
-If you prefer to stick with the [Home Assistant](https://www.home-assistant.io/) [`mqtt_room` component](https://www.home-assistant.io/components/sensor.mqtt_room/), it remains supported—though it is less capable and manually configured.
+### Approach 1: mqtt_room (Simple Room Presence)
+
+**Best for:** Room-based automations like "turn on kitchen lights when I enter"
+
+| | mqtt_room |
+|:---|:---|
+| **Question Answered** | "Which room is my device in?" |
+| **Output** | Room name (e.g., "kitchen") |
+| **Nodes Needed** | 1 per room |
+| **Setup** | Simple |
+
+Your device connects to the **single nearest ESPresense node**. The node's configured room name is reported to Home Assistant.
+
+```
+Phone → "I'm 2m from Living Room node" → HA sees "Phone is in Living Room"
+```
+
+**Requirements:**
+- Place **one node per room** where you want detection
+- Each node = one room in your automation
+- No floor plan required
+
+**When to use:** Turning lights on/off per room, playing announcements, basic presence detection. **Start here if you're new.**
+
+[Setup mqtt_room →](./integrations/home_assistant)
+
+### Approach 2: Companion (Precise Positioning)
+
+**Best for:** Precise location tracking like "find my phone on the floor plan"
+
+| | Companion |
+|:---|:---|
+| **Question Answered** | "Where exactly is my device on the floor?" |
+| **Output** | X,Y coordinates on floor plan |
+| **Nodes Needed** | 5-8 per floor |
+| **Setup** | More complex |
+
+Multiple nodes measure distance to your device simultaneously. Using **multilateration**, Companion calculates precise coordinates.
+
+```
+Phone → 3m from Node A, 5m from Node B, 4m from Node C → Companion: Phone is at (X,Y)
+```
+
+**Requirements:**
+- **5-8 nodes per floor** (depending on square footage)
+- **Perimeter nodes help most** - provide strongest positioning
+- **Avoid collinearity** - don't place nodes in straight lines
+- Requires accurate floor plan
+- Obstacles (walls, furniture) drastically affect accuracy
+
+**When to use:** Finding exact location on a floor plan, tracking movement paths, room-level presence isn't enough.
+
+[Setup Companion →](./companion)
+
+### Which Should I Choose?
+
+**Choose mqtt_room if:**
+- You want simple room-based automations
+- You have 1 node per room
+- You don't need a floor plan
+
+**Choose Companion if:**
+- You need precise X,Y coordinates
+- You can deploy 5-8+ nodes per floor
+- You have/want a floor plan
+
+**Note:** These are fundamentally different approaches. mqtt_room uses 1 node per room. Companion needs dense coverage (5-8 per floor) with strategic placement. More nodes doesn't make mqtt_room better - pick one approach and commit.
+
+---
 
 ## Required
 
@@ -36,6 +103,7 @@ If you prefer to stick with the [Home Assistant](https://www.home-assistant.io/)
 * [Network Configuration](./configuration/network) - WiFi and MQTT setup
 * [Hardware Support](./configuration/hardware) - LEDs, Motion, and Environmental sensors
 * [Advanced Settings](./configuration/settings) - Filtering, Counting, and Scanning logic
+* [MQTT Settings](./configuration/mqtt) - Configure via MQTT
 
 ## Integrations
 
@@ -51,7 +119,7 @@ Connect ESPresense to your favorite automation platform:
 
 ## Troubleshooting
 
-If you’re having trouble getting things set up or working properly, visit the [troubleshooting page](./troubleshooting) before opening an issue.
+If you're having trouble getting things set up or working properly, visit the [troubleshooting page](./troubleshooting) before opening an issue.
 
 ## Feature Requests
 
