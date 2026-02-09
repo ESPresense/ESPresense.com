@@ -4,6 +4,8 @@
     { "name": "esp32-verbose.bin", "cpu": "esp32", "flavor": "verbose" },
     { "name": "esp32c3.bin", "cpu": "esp32c3", "flavor": "" },
     { "name": "esp32c3-verbose.bin", "cpu": "esp32c3", "flavor": "verbose" },
+    { "name": "esp32c6.bin", "cpu": "esp32c6", "flavor": "" },
+    { "name": "esp32c6-verbose.bin", "cpu": "esp32c6", "flavor": "verbose" },
     { "name": "esp32s3.bin", "cpu": "esp32s3", "flavor": "" },
     { "name": "esp32s3-verbose.bin", "cpu": "esp32s3", "flavor": "verbose" },
     { "name": "m5atom.bin", "cpu": "esp32", "flavor": "m5atom" },
@@ -12,9 +14,9 @@
     { "name": "macchina-a0.bin", "cpu": "esp32", "flavor": "macchina-a0" }
   ],
   "flavors": [
-    { "name": "Standard", "value": "", "cpus": ["esp32","esp32s3","esp32c3"] },
-    { "name": "Cdc", "value": "cdc", "cpus": ["esp32s3","esp32c3"] },
-    { "name": "Verbose", "value": "verbose", "cpus": ["esp32","esp32s3","esp32c3"] },
+    { "name": "Standard", "value": "", "cpus": ["esp32","esp32s3","esp32c3","esp32c6"] },
+    { "name": "Cdc", "value": "cdc", "cpus": ["esp32s3","esp32c3","esp32c6"] },
+    { "name": "Verbose", "value": "verbose", "cpus": ["esp32","esp32s3","esp32c3","esp32c6"] },
     { "name": "M5Atom", "value": "m5atom", "cpus": ["esp32"] },
     { "name": "M5StickC", "value": "m5stickc", "cpus": ["esp32"] },
     { "name": "M5StickC-plus", "value": "m5stickc-plus", "cpus": ["esp32"] },
@@ -23,6 +25,7 @@
   "cpus": [
     { "name": "ESP32", "value": "esp32" },
     { "name": "ESP32-S3", "value": "esp32s3" },
-    { "name": "ESP32-C3", "value": "esp32c3" }
+    { "name": "ESP32-C3", "value": "esp32c3" },
+    { "name": "ESP32-C6", "value": "esp32c6" }
   ]
 }
