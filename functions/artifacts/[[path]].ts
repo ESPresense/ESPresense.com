@@ -72,6 +72,28 @@ function esp32s3(path: string) {
   }
 }
 
+function esp32c6(path: string) {
+  return {
+    "chipFamily": "ESP32-C6",
+    "parts": [{
+      "path": "/static/esp32c6/bootloader.bin",
+      "offset": 0x0000
+    },
+    {
+      "path": "/static/esp32c6/partitions.bin",
+      "offset": 0x8000
+    },
+    {
+      "path": "/static/boot_app0.bin",
+      "offset": 0xe000
+    },
+    {
+      "path": path,
+      "offset": 0x10000
+    }]
+  }
+}
+
 interface Artifact {
   id: number
   name: string
@@ -222,6 +244,9 @@ app.get('/:run_id_2{[0-9]+.json}',
 
     const s3 = findAsset(runArtifacts, `esp32s3-${flavor}.bin`) || findAsset(runArtifacts, `esp32s3.bin`)
     if (s3) manifest.builds.push(esp32s3(`download/${s3.id}/${s3.name}`))
+
+    const c6 = findAsset(runArtifacts, `esp32c6-${flavor}.bin`) || findAsset(runArtifacts, `esp32c6.bin`)
+    if (c6) manifest.builds.push(esp32c6(`download/${c6.id}/${c6.name}`))
     return c.json(manifest)
   }
 )
