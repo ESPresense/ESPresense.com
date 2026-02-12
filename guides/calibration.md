@@ -71,6 +71,6 @@ Controls how long a MAC address stays in the internal tracking list. Shorter dur
 
 Note that `rssi@1m` is broadcast in the beacons from `ibeacon` and `eddy` devices. If those are not correct, you need to fix the beacon to send the correct value.
 
-For all other devices, `rssi@1m` is the **RSS expected from a 0dBm transmitter at 1 meter** setting plus an offset to correct for broadcast power. See [rssi.h](https://github.com/ESPresense/ESPresense/blob/master/lib/BleFingerprint/rssi.h) for the exact values used or to confirm how offsets are applied.
+For all other devices, `rssi@1m` is the **RSS expected from a 0dBm transmitter at 1 meter** setting plus an offset to correct for broadcast power. See [rssi.h](https://github.com/ESPresense/ESPresense/blob/main/lib/BleFingerprint/rssi.h) for the exact values used or to confirm how offsets are applied.
 
 </div>

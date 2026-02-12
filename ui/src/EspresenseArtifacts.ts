@@ -6,6 +6,10 @@ export class EspresenseArtifacts extends LitElement {
   href: string;
   flavor: string;
   run_id: number;
+  loading: boolean;
+  buildVersion: string;
+  querySha: string;
+  shaMatched: boolean;
 
   static get properties() {
     return {
@@ -13,11 +17,16 @@ export class EspresenseArtifacts extends LitElement {
       manifest: { type: String },
       response: { type: Map<string, any> },
       run_id: { type: Number },
-      flavor: { type: String }
+      flavor: { type: String },
+      loading: { type: Boolean },
+      buildVersion: { type: String, attribute: 'build-version' },
+      querySha: { type: String },
+      shaMatched: { type: Boolean }
     };
   }
 
   get manifest() {
+    if (this.run_id < 0) return "";
     const params = new URLSearchParams({
       flavor: this.flavor,
     });
@@ -38,6 +47,7 @@ export class EspresenseArtifacts extends LitElement {
       justify-content: center;
       padding-top: 12px;
       font-size: 12px;
+      gap: 8px;
     }
 
     :host {
@@ -69,18 +79,30 @@ export class EspresenseArtifacts extends LitElement {
     this.href = "";
     this.run_id = -1;
     this.flavor = "";
+    this.loading = true;
+    this.buildVersion = "";
+    this.querySha = "";
+    this.shaMatched = true;
   }
 
 
-  firstUpdated() {
-    fetch("https://api.github.com/repos/ESPresense/ESPresense/actions/workflows/build.yml/runs?status=success&per_page=100", { credentials: "same-origin" })
-      .then((r) => r.json())
-      .then((r) => {
-        var wf = r.workflow_runs.filter(i => i.pull_requests.length > 0 || i.head_branch == "master" && i.head_repository.full_name == "ESPresense/ESPresense");
-        this.response = wf.reduce((p, c) => (p[c.head_branch] ? p[c.head_branch].push(c) : p[c.head_branch] = [c], p), new Map());
-        console.log(this.response);
-        this.run_id = wf[0].id;
-      });
+  isSupportedRun(run) {
+    return run.pull_requests.length > 0 || run.head_branch == "main" && run.head_repository.full_name == "ESPresense/ESPresense";
+  }
+
+  async firstUpdated() {
+    try {
+      const runsResponse = await fetch("https://api.github.com/repos/ESPresense/ESPresense/actions/workflows/build.yml/runs?status=success&per_page=100", { credentials: "same-origin" });
+      const runsData = await runsResponse.json();
+      this.querySha = new URLSearchParams(window.location.search).get("sha")?.trim().toLowerCase() || "";
+      const wf = runsData.workflow_runs.filter(i => this.isSupportedRun(i));
+      const matchedRun = this.querySha ? wf.find(i => i.head_sha?.toLowerCase().startsWith(this.querySha)) : null;
+      this.shaMatched = !this.querySha || !!matchedRun;
+      this.run_id = this.querySha ? (matchedRun?.id ?? -1) : (wf[0]?.id ?? -1);
+      this.response = wf.reduce((p, c) => (p[c.head_branch] ? p[c.head_branch].push(c) : p[c.head_branch] = [c], p), new Map());
+    } finally {
+      this.loading = false;
+    }
   }
 
   flavorChanged(e) {
@@ -89,7 +111,9 @@ export class EspresenseArtifacts extends LitElement {
   }
 
   versionChanged(e) {
-    this.run_id = e.target.value;
+    const selected = Number(e.target.value);
+    this.run_id = Number.isFinite(selected) ? selected : -1;
+    this.shaMatched = this.run_id > 0;
     console.log(this.run_id);
   }
 
@@ -97,9 +121,11 @@ export class EspresenseArtifacts extends LitElement {
     const { response } = this;
     return html`
       <div><label for="flavor">Flavor:</label><select id="flavor" @change=${this.flavorChanged}><option value="">Standard</option><option value="cdc">Cdc</option><option value="verbose">Verbose</option><option value="m5atom">M5Atom</option><option value="m5stickc">M5StickC</option><option value="m5stickc-plus">M5StickC-plus</option><option value="macchina-a0">Macchina A0</option></select></div>
-      <div><label for="version">Artifact:</label><select id="version" @change=${this.versionChanged}>>${Object.keys(response).reverse().map((key) => html` <optgroup label="${key}">${response[key].map((i) => html` <option value=${i.id}>${i.head_sha.substring(0,7)}: ${i.head_commit.message.split("\n")[0]}</option> `)}</optgroup>`)}</select></div>
-      <div class="but"><esp-web-install-button manifest=${this.manifest}></esp-web-install-button></div>
-      <div class="powered"><label>Powered by</label><a href="https://esphome.github.io/esp-web-tools/" target="_blank">ESP Web Tools</a></div>
+      ${this.loading
+        ? html`<div><label for="version">Artifact:</label><span>Loading artifacts...</span></div>`
+        : html`<div><label for="version">Artifact:</label><select id="version" .value=${this.shaMatched ? String(this.run_id) : ""} @change=${this.versionChanged}>${!this.shaMatched ? html`<option value="" selected disabled>No match for sha ${this.querySha}</option>` : null}${Object.keys(response).reverse().map((key) => html` <optgroup label="${key}">${response[key].map((i) => html` <option value=${i.id} ?selected=${Number(i.id) === this.run_id}>${i.head_sha.substring(0,7)}: ${i.head_commit.message.split("\n")[0]}</option> `)}</optgroup>`)}</select></div>`}
+      ${this.loading ? html`<div class="but">Loading artifacts...</div>` : this.run_id < 0 ? html`<div class="but">Select an artifact to continue.</div>` : html`<div class="but"><esp-web-install-button manifest=${this.manifest}></esp-web-install-button></div>`}
+      <div class="powered"><label>UI ${this.buildVersion || "dev"}</label><label>Powered by</label><a href="https://esphome.github.io/esp-web-tools/" target="_blank">ESP Web Tools</a></div>
     `;
   }
 }

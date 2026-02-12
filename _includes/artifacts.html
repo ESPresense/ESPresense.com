@@ -1,4 +1,4 @@
 <div markdown=0>
-  <script type="module" src="/scripts/components/ui.js"></script>
-  <espresense-artifacts href="/artifacts/"></espresense-artifacts>
+  <script type="module" src="/scripts/components/ui.js?v={{ site.time | date: '%s' }}"></script>
+  <espresense-artifacts href="/artifacts/" build-version="{{ site.time | date: '%Y%m%d%H%M%S' }}"></espresense-artifacts>
 </div>
