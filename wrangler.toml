@@ -1,0 +1,3 @@
+[pages]
+build_command = "npm run build"
+build_output_dir = "dist"

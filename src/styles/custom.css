@@ -1,0 +1,8 @@
+/* Match the original ESPresense site title styling */
+.site-title {
+	font-weight: 300;
+	font-size: 1.5rem;
+	letter-spacing: -0.01em;
+	color: var(--sl-color-white) !important;
+	gap: 0.25rem !important;
+}
