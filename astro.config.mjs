@@ -31,6 +31,7 @@ export default defineConfig({
       social: [
         { icon: 'github', label: 'GitHub', href: 'https://github.com/ESPresense/ESPresense' },
         { icon: 'discord', label: 'Discord', href: 'https://discord.gg/jbqmn7V6n6' },
+        { icon: 'rocket', label: 'Suggest Features', href: 'https://espresense.featurebase.app/' },
       ],
       editLink: {
         baseUrl: 'https://github.com/ESPresense/ESPresense.com/edit/main/',
