@@ -1,0 +1,97 @@
+---
+---
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.js"
+    integrity="sha512-2PRgAav8Os8vLcOAh1gSaDoNLe1fAyq8/G3QSdyjFFD+OqNjLeHE/8q4+S4MEZgPsuo+itHopj+hJvqS8XUQ8A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/xterm/3.14.5/xterm.min.css"
+    integrity="sha512-iLYuqv+v/P4u9erpk+KM83Ioe/l7SEmr7wB6g+Kg1qmEit8EShDKnKtLHlv2QXUp7GGJhmqDI+1PhJYLTsfb8w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+<div style="display:inline-block; vertical-align:top;">
+    <button id="SerialConnectButton" type="button" disabled>Connect</button>
+
+    <div id="term">
+    </div>
+
+</div>
+
+<script>
+    var term;
+
+    (function () {
+        window.onload = function () {
+            term = new Terminal({
+                cols: 120,
+                rows: 50,
+                useStyle: true,
+                cursorBlink: true,
+                cursorStyle: "underline",
+                convertEol: true,
+                scrollback: 1000
+            });
+            term.open(document.getElementById("term"));
+        };
+    }).call(this);
+
+    const connectButton = document.getElementById('SerialConnectButton');
+    let port;
+
+    if ('serial' in navigator) {
+        connectButton.addEventListener('click', function () {
+            if (port) {
+                term.write('\n\x1b[31mDisconnected from Serial Port\x1b[m\r\n');
+                port.close();
+                port = undefined;
+                connectButton.innerText = 'Connect';
+            }
+            else {
+                connectButton.innerText = 'Disconnect';
+                getReader();
+            }
+        });
+
+        connectButton.disabled = false;
+    }
+    else {
+        const error = document.createElement('p');
+        error.innerHTML = '<p>Support for Serial Web API not enabled. Please enable it using chrome://flags/ and enable Experimental Web Platform fetures</p>';
+    }
+
+    let lineBuffer = '';
+    let latestValue = 0;
+
+    async function serialWrite(data) {
+        encoder = new TextEncoder();
+        const dataArrayBuffer = encoder.encode(data);
+
+        if (port && port.writable) {
+            const writer = port.writable.getWriter();
+            writer.write(dataArrayBuffer);
+            writer.releaseLock();
+        }
+    }
+
+    async function getReader() {
+        port = await navigator.serial.requestPort({});
+        await port.open({ baudRate: 115200 });
+
+        connectButton.innerText = 'Disconnect';
+        term.write('\x1b[31mConnected 115200 8N1...\x1b[m\r\n');
+        term.focus();
+
+        const appendStream = new WritableStream({
+            write(chunk) {
+                term.write(chunk);
+            }
+        });
+
+        port.readable
+            .pipeThrough(new TextDecoderStream())
+            .pipeTo(appendStream);
+
+        term.on('data', function (data) {
+            serialWrite(data);
+        });
+    }
+</script>
