@@ -16,6 +16,7 @@ export default defineConfig({
     '/data-flow': '/troubleshooting/data-flow',
     '/ids': '/troubleshooting/ids',
     '/terminal': '/troubleshooting/terminal',
+    '/troubleshooting': '/troubleshooting/data-flow',
     '/troubleshooting/rebooting': '/troubleshooting/reboot-loops',
     '/integrations/home_assistant': '/integrations/home-assistant',
   },

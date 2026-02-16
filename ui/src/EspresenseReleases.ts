@@ -62,28 +62,28 @@ export class EspresenseReleases extends LitElement {
       display: flex;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :host {
-        background-color: rgb(30, 30, 35);
-        box-shadow: 0 0 0 1pt rgb(60, 60, 65);
-        color: rgb(220, 220, 220);
-      }
+    :host([theme="dark"]) {
+      background-color: rgb(30, 30, 35);
+      box-shadow: 0 0 0 1pt rgb(60, 60, 65);
+      color: rgb(220, 220, 220);
+    }
 
-      :host select {
-        background-color: rgb(45, 45, 50);
-        color: rgb(220, 220, 220);
-        border: 1px solid rgb(80, 80, 85);
-      }
+    :host([theme="dark"]) select {
+      background-color: rgb(45, 45, 50);
+      color: rgb(220, 220, 220);
+      border: 1px solid rgb(80, 80, 85);
+    }
 
-      :host label {
-        color: rgb(200, 200, 200);
-      }
+    :host([theme="dark"]) label {
+      color: rgb(200, 200, 200);
+    }
 
-      :host a {
-        color: rgb(100, 160, 255);
-      }
+    :host([theme="dark"]) a {
+      color: rgb(100, 160, 255);
     }
   `;
+
+  private _themeObserver: MutationObserver | null = null;
 
   constructor() {
     super();
@@ -91,6 +91,27 @@ export class EspresenseReleases extends LitElement {
     this.href = "";
     this.version = "";
     this.flavor = "";
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    this._syncTheme();
+    this._themeObserver = new MutationObserver(() => this._syncTheme());
+    this._themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._themeObserver?.disconnect();
+    this._themeObserver = null;
+  }
+
+  private _syncTheme() {
+    const theme = document.documentElement.dataset.theme || 'light';
+    this.setAttribute('theme', theme);
   }
 
   firstUpdated() {
