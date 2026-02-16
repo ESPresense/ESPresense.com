@@ -135,6 +135,7 @@ export class EspresenseArtifacts extends LitElement {
   async firstUpdated() {
     try {
       const runsResponse = await fetch("https://api.github.com/repos/ESPresense/ESPresense/actions/workflows/build.yml/runs?status=success&per_page=100", { credentials: "same-origin" });
+      if (!runsResponse.ok) throw new Error(`GitHub API error: ${runsResponse.status}`);
       const runsData = await runsResponse.json();
       this.querySha = new URLSearchParams(window.location.search).get("sha")?.trim().toLowerCase() || "";
       const wf = runsData.workflow_runs.filter(i => this.isSupportedRun(i));

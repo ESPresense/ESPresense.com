@@ -114,14 +114,13 @@ export class EspresenseReleases extends LitElement {
     this.setAttribute('theme', theme);
   }
 
-  firstUpdated() {
-    fetch("https://api.github.com/repos/ESPresense/ESPresense/releases", { credentials: "same-origin" })
-      .then((r) => r.json())
-      .then((r) => {
-        this.response = r.filter((item) => item.assets.length > 5).reduce((p, c) => (p[c.prerelease ? "Beta" : "Release"] ? p[c.prerelease ? "Beta" : "Release"].push(c) : p[c.prerelease ? "Beta" : "Release"] = [c], p), new Map());
-        console.log(this.response);
-        this.version = this.response["Release"][0].tag_name;
-      });
+  async firstUpdated() {
+    const response = await fetch("https://api.github.com/repos/ESPresense/ESPresense/releases", { credentials: "same-origin" });
+    if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+    const data = await response.json();
+    this.response = data.filter((item) => item.assets.length > 5).reduce((p, c) => (p[c.prerelease ? "Beta" : "Release"] ? p[c.prerelease ? "Beta" : "Release"].push(c) : p[c.prerelease ? "Beta" : "Release"] = [c], p), new Map());
+    console.log(this.response);
+    this.version = this.response["Release"][0].tag_name;
   }
 
   flavorChanged(e) {
