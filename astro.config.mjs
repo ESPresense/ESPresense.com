@@ -47,13 +47,26 @@ export default defineConfig({
         { slug: 'quick-start' },
         { slug: 'nodes' },
         { slug: 'firmware' },
-        { slug: 'devices' },
+        {
+          label: 'Devices',
+          items: [
+            { slug: 'devices', label: 'Overview' },
+            { slug: 'android' },
+            { slug: 'apple' },
+            { slug: 'other' },
+          ],
+        },
         {
           label: 'Configuration',
           items: [
             { slug: 'configuration/network' },
             { slug: 'configuration/settings' },
             { slug: 'configuration/hardware' },
+          ],
+        },
+        {
+          label: 'MQTT',
+          items: [
             { slug: 'configuration/mqtt' },
           ],
         },
@@ -93,9 +106,6 @@ export default defineConfig({
             { slug: 'troubleshooting/terminal' },
           ],
         },
-        { slug: 'android' },
-        { slug: 'apple' },
-        { slug: 'other' },
         { slug: 'enclosures' },
         { slug: 'credits' },
       ],
