@@ -64,9 +64,9 @@ It is not compatible with the ESP32-S2 (doesn't have bluetooth), ESP32-C6 (too n
 * [Straight Adapter 4 Pack](https://amzn.to/4hNrh3O)
 * [Right Angle Adapter 4 Pack](https://amzn.to/4bWWH6o)
 
-## USB A to micro B cables
+## USB-A to Micro-B cables
 
-* [O.5ft Micro USB Cable](https://amzn.to/4hzksTa)
+* [0.5 ft Micro USB Cable](https://amzn.to/4hzksTa)
 
 ## Footnotes
 
