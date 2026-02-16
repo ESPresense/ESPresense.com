@@ -26,6 +26,26 @@ For each LED (LED 1, LED 2, LED 3), you can configure:
 * **Count (only applies to Addressable LEDs)** - Number of LEDs in the strip
 * **LED Control** - Control mode for the LED behavior
 
+### MQTT LED control (v4.0)
+
+When an LED is set to **LED Control = MQTT**, you can control it by publishing JSON to:
+
+* `espresense/rooms/<room>/led_1/set`
+* `espresense/rooms/<room>/led_2/set`
+* `espresense/rooms/<room>/led_3/set`
+
+`<room>` is your node's room name (same topic prefix used for other room settings).
+
+Brightness is set using the `brightness` field (0-255):
+
+```bash
+mosquitto_pub -h <broker> -u <username> -P <password> \
+  -t "espresense/rooms/kitchen/led_1/set" \
+  -m '{"state":"ON","brightness":64}'
+```
+
+You can also include `color` (`r`,`g`,`b`), `white_value`, and `color_temp` in the same JSON payload.
+
 ## GPIO Sensors
 
 Configure motion sensors, switches, and buttons connected to GPIO pins.
