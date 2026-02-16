@@ -1,0 +1,12 @@
+/beacons /devices 301
+/beacons/android /android 301
+/beacons/apple /apple 301
+/beacons/other /other 301
+/base-stations /nodes 301
+/hardware /nodes 301
+/install /firmware 301
+/data-flow /troubleshooting/data-flow 301
+/ids /troubleshooting/ids 301
+/terminal /troubleshooting/terminal 301
+/troubleshooting/rebooting /troubleshooting/reboot-loops 301
+/integrations/home_assistant /integrations/home-assistant 301

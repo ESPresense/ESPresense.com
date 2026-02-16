@@ -71,7 +71,29 @@ export class EspresenseArtifacts extends LitElement {
       margin: 0 auto;
       display: flex;
     }
+
+    :host([theme="dark"]) {
+      background-color: rgb(30, 30, 35);
+      box-shadow: 0 0 0 1pt rgb(60, 60, 65);
+      color: rgb(220, 220, 220);
+    }
+
+    :host([theme="dark"]) select {
+      background-color: rgb(45, 45, 50);
+      color: rgb(220, 220, 220);
+      border: 1px solid rgb(80, 80, 85);
+    }
+
+    :host([theme="dark"]) label {
+      color: rgb(200, 200, 200);
+    }
+
+    :host([theme="dark"]) a {
+      color: rgb(100, 160, 255);
+    }
   `;
+
+  private _themeObserver: MutationObserver | null = null;
 
   constructor() {
     super();
@@ -85,6 +107,26 @@ export class EspresenseArtifacts extends LitElement {
     this.shaMatched = true;
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    this._syncTheme();
+    this._themeObserver = new MutationObserver(() => this._syncTheme());
+    this._themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._themeObserver?.disconnect();
+    this._themeObserver = null;
+  }
+
+  private _syncTheme() {
+    const theme = document.documentElement.dataset.theme || 'light';
+    this.setAttribute('theme', theme);
+  }
 
   isSupportedRun(run) {
     return run.pull_requests.length > 0 || run.head_branch == "main" && run.head_repository.full_name == "ESPresense/ESPresense";
@@ -93,6 +135,7 @@ export class EspresenseArtifacts extends LitElement {
   async firstUpdated() {
     try {
       const runsResponse = await fetch("https://api.github.com/repos/ESPresense/ESPresense/actions/workflows/build.yml/runs?status=success&per_page=100", { credentials: "same-origin" });
+      if (!runsResponse.ok) throw new Error(`GitHub API error: ${runsResponse.status}`);
       const runsData = await runsResponse.json();
       this.querySha = new URLSearchParams(window.location.search).get("sha")?.trim().toLowerCase() || "";
       const wf = runsData.workflow_runs.filter(i => this.isSupportedRun(i));

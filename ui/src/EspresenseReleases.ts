@@ -61,7 +61,29 @@ export class EspresenseReleases extends LitElement {
       margin: 0 auto;
       display: flex;
     }
+
+    :host([theme="dark"]) {
+      background-color: rgb(30, 30, 35);
+      box-shadow: 0 0 0 1pt rgb(60, 60, 65);
+      color: rgb(220, 220, 220);
+    }
+
+    :host([theme="dark"]) select {
+      background-color: rgb(45, 45, 50);
+      color: rgb(220, 220, 220);
+      border: 1px solid rgb(80, 80, 85);
+    }
+
+    :host([theme="dark"]) label {
+      color: rgb(200, 200, 200);
+    }
+
+    :host([theme="dark"]) a {
+      color: rgb(100, 160, 255);
+    }
   `;
+
+  private _themeObserver: MutationObserver | null = null;
 
   constructor() {
     super();
@@ -71,14 +93,34 @@ export class EspresenseReleases extends LitElement {
     this.flavor = "";
   }
 
-  firstUpdated() {
-    fetch("https://api.github.com/repos/ESPresense/ESPresense/releases", { credentials: "same-origin" })
-      .then((r) => r.json())
-      .then((r) => {
-        this.response = r.filter((item) => item.assets.length > 5).reduce((p, c) => (p[c.prerelease ? "Beta" : "Release"] ? p[c.prerelease ? "Beta" : "Release"].push(c) : p[c.prerelease ? "Beta" : "Release"] = [c], p), new Map());
-        console.log(this.response);
-        this.version = this.response["Release"][0].tag_name;
-      });
+  connectedCallback() {
+    super.connectedCallback();
+    this._syncTheme();
+    this._themeObserver = new MutationObserver(() => this._syncTheme());
+    this._themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._themeObserver?.disconnect();
+    this._themeObserver = null;
+  }
+
+  private _syncTheme() {
+    const theme = document.documentElement.dataset.theme || 'light';
+    this.setAttribute('theme', theme);
+  }
+
+  async firstUpdated() {
+    const response = await fetch("https://api.github.com/repos/ESPresense/ESPresense/releases", { credentials: "same-origin" });
+    if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+    const data = await response.json();
+    this.response = data.filter((item) => item.assets.length > 5).reduce((p, c) => (p[c.prerelease ? "Beta" : "Release"] ? p[c.prerelease ? "Beta" : "Release"].push(c) : p[c.prerelease ? "Beta" : "Release"] = [c], p), new Map());
+    console.log(this.response);
+    this.version = this.response["Release"][0].tag_name;
   }
 
   flavorChanged(e) {
