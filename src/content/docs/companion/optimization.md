@@ -17,7 +17,7 @@ You can adjust this setting if needed:
 - Decrease limit to only use closer, potentially more reliable fixes
 
 To modify the maximum distance, send an MQTT message:
-```
+```text
 key: espresense/rooms/*/max_distance/set
 value: 0  # 0 for no limit, or your desired maximum in meters
 ```

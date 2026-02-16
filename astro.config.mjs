@@ -42,7 +42,7 @@ export default defineConfig({
         { tag: 'script', content: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5RPPLMZ514',{anonymize_ip:true});" },
       ],
       sidebar: [
-        { slug: 'index', label: 'Home' },
+        { label: 'Home', link: '/' },
         { slug: 'quick-start' },
         { slug: 'nodes' },
         { slug: 'firmware' },

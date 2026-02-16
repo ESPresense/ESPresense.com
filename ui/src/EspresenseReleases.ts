@@ -61,6 +61,28 @@ export class EspresenseReleases extends LitElement {
       margin: 0 auto;
       display: flex;
     }
+
+    @media (prefers-color-scheme: dark) {
+      :host {
+        background-color: rgb(30, 30, 35);
+        box-shadow: 0 0 0 1pt rgb(60, 60, 65);
+        color: rgb(220, 220, 220);
+      }
+
+      :host select {
+        background-color: rgb(45, 45, 50);
+        color: rgb(220, 220, 220);
+        border: 1px solid rgb(80, 80, 85);
+      }
+
+      :host label {
+        color: rgb(200, 200, 200);
+      }
+
+      :host a {
+        color: rgb(100, 160, 255);
+      }
+    }
   `;
 
   constructor() {

@@ -13,8 +13,8 @@ It is not compatible with the ESP32-S2 (doesn't have bluetooth), ESP32-C6 (too n
 
 | Name                | Stores       | Notes |
 |:--------------------|:------------:|-------|
-| M5 Stamp C3 Mate    | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers) [ali](https://s.click.aliexpress.com/e/_omweFp9) | Stamp form factor w/ 4MB flash memory, built-in 3D antenna, RGB LED and button
-| M5 Stamp C3U Mate   | [ali](https://s.click.aliexpress.com/e/_onkgbFp) | Stamp form factor w/ 4MB flash memory, built-in 3D antenna, RGB LED and button [^cdc]
+| M5 Stamp C3 Mate    | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers) [ali](https://s.click.aliexpress.com/e/_omweFp9) | Stamp form factor w/ 4MB flash memory, built-in 3D antenna, RGB LED and button |
+| M5 Stamp C3U Mate   | [ali](https://s.click.aliexpress.com/e/_onkgbFp) | Stamp form factor w/ 4MB flash memory, built-in 3D antenna, RGB LED and button [^cdc] |
 | ESP32-C3-DevKitM-1U | [amz/us](https://amzn.to/41WQXFa) | Espressif's official development board with ESP32-C3-MINI-1U module, 4MB flash, 160MHz CPU |
 
 ## ESP32-S3
@@ -30,8 +30,8 @@ It is not compatible with the ESP32-S2 (doesn't have bluetooth), ESP32-C6 (too n
 
 | Name                | Stores         | Notes |
 |:--------------------|:--------------:|-------|
-| M5 Atom (all kinds) | [ali](https://s.click.aliexpress.com/e/_oDWoyd1) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/atom-lite-esp32-development-kit) [digi](https://www.digikey.com/en/products/detail/m5stack-technology-co-ltd/C008/12088545) | The 3D antenna is much better
-| M5 Stamp Pico       | [ali](https://s.click.aliexpress.com/e/_olAPbYT) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/m5stamp-pico-diy-kit) | Small and still has nice 3D antenna
+| M5 Atom (all kinds) | [ali](https://s.click.aliexpress.com/e/_oDWoyd1) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/atom-lite-esp32-development-kit) [digi](https://www.digikey.com/en/products/detail/m5stack-technology-co-ltd/C008/12088545) | The 3D antenna is much better |
+| M5 Stamp Pico       | [ali](https://s.click.aliexpress.com/e/_olAPbYT) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/m5stamp-pico-diy-kit) | Small and still has nice 3D antenna |
 | Huzzah32            | [amz/us](https://amzn.to/4kWlmw4) | Much better quality than generic ESP32 dev boards |
 
 ## Works with caveats
@@ -41,7 +41,7 @@ It is not compatible with the ESP32-S2 (doesn't have bluetooth), ESP32-C6 (too n
 | ESP32 dev board clones   | [ali](https://s.click.aliexpress.com/e/_okTMXEr) [amz/us](https://amzn.to/4iWKv86) [amz/uk](https://amzn.to/4iyqHYK) | [^unbranded] No brand |
 | D1 Mini ESP32 (Micro B)  | [amz/us](https://amzn.to/3tlkK8D) | [^unbranded] No brand *Make sure you get the ESP32 NOT the ESP8266* |
 | D1 Mini ESP32 (Type C)   | [ali](https://s.click.aliexpress.com/e/_oC7KI4X) [amz/us](https://amzn.to/41VjFGq) | [^unbranded] No brand |
-| LOLIN D32 ESP32    | [ali](https://s.click.aliexpress.com/e/_onxVPQX) | [^unbranded] No brand
+| LOLIN D32 ESP32    | [ali](https://s.click.aliexpress.com/e/_onxVPQX) | [^unbranded] No brand |
 | M5Stick-C Plus     | [ali](https://s.click.aliexpress.com/e/_oo2TM0P) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/m5stickc-plus-esp32-pico-mini-iot-development-kit) [amz/us](https://amzn.to/4iOzTZj) | These are great little devices, but their built-in battery makes them less ideal |
 
 ## USB C chargers
