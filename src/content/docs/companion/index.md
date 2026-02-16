@@ -25,6 +25,21 @@ A Home Assistant Add-on / Docker container that solves indoor positions using MQ
 3. [Set up your nodes](/companion/configuration#node-placement)
 4. [Optimize for accuracy](/companion/optimization)
 
+## Companion MQTT behavior (what companion reads/writes)
+
+Companion is also bidirectional on MQTT:
+
+### Companion reads (subscribes)
+- `espresense/devices/+` (BLE observations from nodes)
+- `espresense/rooms/+/telemetry` (node telemetry)
+- `espresense/rooms/+/status` (node availability)
+
+### Companion writes (publishes)
+- Presence/location outputs for Home Assistant entities
+- Node optimization/config writes via room `.../set` topics (for example max distance tuning)
+
+Use [MQTT](/configuration/mqtt) for the node topic reference and write examples.
+
 ## Need Help?
 - Join our [Discord Community](https://discord.gg/jbqmn7V6n6)
 - Check the [Troubleshooting Guide](/companion/troubleshooting)
