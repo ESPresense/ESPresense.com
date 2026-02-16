@@ -5,9 +5,9 @@ sidebar:
 ---
 
 
-These settings are accessible from the **Settings** page in the device web UI.
-
 <img src="/images/settings_screen.png" alt="Screenshot of ESP32 full settings interface" style="float:right;margin-left:20px;width:340px" />
+
+These settings are accessible from the **Settings** page in the device web UI.
 
 ## Scanning
 * Known BLE mac addresses (no colons, space separated) - If you have a device that uses a random ble mac BUT it doesn't actually change the mac periodically you can just put it here and we'll use the id `known:{mac}`

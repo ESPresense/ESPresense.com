@@ -5,9 +5,9 @@ sidebar:
 ---
 
 
-The ESP32 will launch a captive browser (under its own SSID) on first normal boot after flashing that will allow you to configure network settings. These settings are accessible from the **Network** page in the device web UI.
-
 <img src="/images/network_screen.png" alt="Screenshot of ESP32 initial settings interface" style="float:right;margin-left:20px;width:340px" />
+
+The ESP32 will launch a captive browser (under its own SSID) on first normal boot after flashing that will allow you to configure network settings. These settings are accessible from the **Network** page in the device web UI.
 
 ## Room Configuration
 * Room name - This is the name that will identify this sensor in Home Assistant, as well as the state of mqtt_room sensor. Use a upper/lower word and we'll slugify it for the places that need that

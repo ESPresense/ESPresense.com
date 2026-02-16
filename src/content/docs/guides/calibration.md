@@ -5,9 +5,9 @@ sidebar:
 ---
 
 
-Calibrating your ESPresense nodes helps each device estimate distance consistently, even when they use different antennas or are installed in different rooms. These settings are accessible from the Settings view in the device web UI.
-
 <img src="/images/calibration_screen.png" alt="Calibration section of the ESPresense settings UI" style="float:right;margin-left:20px;width:360px" />
+
+Calibrating your ESPresense nodes helps each device estimate distance consistently, even when they use different antennas or are installed in different rooms. These settings are accessible from the Settings view in the device web UI.
 
 ## Quick calibration procedure
 
