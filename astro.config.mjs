@@ -1,10 +1,7 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
-import cloudflare from '@astrojs/cloudflare';
-
 export default defineConfig({
   site: 'https://espresense.com',
-  adapter: cloudflare(),
   redirects: {
     '/beacons': '/devices',
     '/beacons/android': '/android',
