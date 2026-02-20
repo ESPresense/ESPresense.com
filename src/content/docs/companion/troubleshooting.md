@@ -128,5 +128,5 @@ If you're still having issues:
    - Expected vs actual behavior
 
 :::tip
-Help improve this documentation! Click 'Edit page ' below.
+Help improve this documentation! Click 'Edit page' below.
 :::
