@@ -15,7 +15,7 @@ mosquitto_sub -h homeassistant.local -u <username> -P <password> -i presense-inf
 ```
 
 :::note
-For configuration of the Companion App also check the [Companion MQTT](#/companion/installation/#mqtt-setup) section
+For configuration of the Companion App also check the [Companion MQTT](/companion/installation/#mqtt-setup) section
 :::
 
 ## Reading Current Settings

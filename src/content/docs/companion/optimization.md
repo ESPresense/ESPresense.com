@@ -116,5 +116,5 @@ If the default values aren't providing accurate distances:
 - Note successful RSSI@1m values for your specific devices for future reference
 
 :::tip
-Help improve this documentation! Click 'Edit page ' below.
+Help improve this documentation! Click 'Edit page' below.
 :::
