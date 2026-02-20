@@ -4,6 +4,7 @@ sidebar:
   order: 9
 ---
 
+Example enclosures for various ESPs.
 
 ## D1 Mini 32
 * [ESP32 D1 Mini Case - USB Plug w/ MMWave Sensor](https://www.printables.com/model/335469-usb-outlet-esp32-d1-mini-case-for-espresense-and-m)
