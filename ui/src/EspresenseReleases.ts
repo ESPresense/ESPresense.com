@@ -191,7 +191,6 @@ export class EspresenseReleases extends LitElement {
             <label for="flavor">Flavor:</label>
             <select id="flavor" @change=${this.flavorChanged}>
               <option value="">Standard</option>
-              <option value="cdc">Cdc</option>
               <option value="verbose">Verbose</option>
               <option value="m5atom">M5Atom</option>
               <option value="m5stickc">M5StickC</option>

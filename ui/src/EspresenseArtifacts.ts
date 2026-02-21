@@ -339,7 +339,7 @@ export class EspresenseArtifacts extends LitElement {
 
       const nightlyRuns = allRuns.filter(
         (r) => r.pull_requests.length === 0 &&
-               r.head_repository?.full_name === "ESPresense/ESPresense"
+          r.head_repository?.full_name === "ESPresense/ESPresense"
       );
       const prRuns = allRuns.filter((r) => r.pull_requests.length > 0);
 
@@ -402,7 +402,7 @@ export class EspresenseArtifacts extends LitElement {
             this.showInstall = true;
           }
         }
-      // Handle ?pr=
+        // Handle ?pr=
       } else if (this.queryPr) {
         const key = `pr-${this.queryPr}`;
         if (this.sources.find((s) => s.key === key)) {
@@ -444,7 +444,6 @@ export class EspresenseArtifacts extends LitElement {
     return html`
       <select id="flavor" @change=${this.flavorChanged}>
         <option value="">Standard</option>
-        <option value="cdc">Cdc</option>
         <option value="verbose">Verbose</option>
         <option value="m5atom">M5Atom</option>
         <option value="m5stickc">M5StickC</option>
@@ -490,7 +489,7 @@ export class EspresenseArtifacts extends LitElement {
           `)}
         </div>
         ${this.selectedBuild
-          ? html`
+        ? html`
             <p class="connect-hint">Connect your ESP device via USB, then click Connect:</p>
             <div class="install-row">
               <div class="flavor-row">
@@ -499,8 +498,8 @@ export class EspresenseArtifacts extends LitElement {
               </div>
               <esp-web-install-button manifest=${this.manifest}></esp-web-install-button>
             </div>`
-          : html`<div class="empty-state">Select a build above to continue</div>`
-        }
+        : html`<div class="empty-state">Select a build above to continue</div>`
+      }
       </div>
     `;
   }

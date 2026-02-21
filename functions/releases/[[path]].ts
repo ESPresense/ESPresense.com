@@ -26,9 +26,10 @@ function esp32(path: string) {
   }
 }
 
-function esp32c3(path: string) {
+function esp32c3(path: string, serialType?: "cdc" | "uart") {
   return {
     "chipFamily": "ESP32-C3",
+    ...(serialType && { serialType }),
     "parts": [{
       "path": "/static/esp32c3/bootloader.bin",
       "offset": 0x0000
@@ -48,9 +49,10 @@ function esp32c3(path: string) {
   }
 }
 
-function esp32s3(path: string) {
+function esp32s3(path: string, serialType?: "cdc" | "uart") {
   return {
     "chipFamily": "ESP32-S3",
+    ...(serialType && { serialType }),
     "parts": [{
       "path": "/static/esp32s3/bootloader.bin",
       "offset": 0x0000
@@ -70,9 +72,10 @@ function esp32s3(path: string) {
   }
 }
 
-function esp32c6(path: string) {
+function esp32c6(path: string, serialType?: "cdc" | "uart") {
   return {
     "chipFamily": "ESP32-C6",
+    ...(serialType && { serialType }),
     "parts": [{
       "path": "/static/esp32c6/bootloader.bin",
       "offset": 0x0000
@@ -148,13 +151,22 @@ app.get('/:tag{[^/]+\\.json}',
     if (a32) manifest.builds.push(esp32(`download/${tag}/${a32.name}`))
 
     const c3 = findAsset(rel, `esp32c3-${flavor}.bin`) || findAsset(rel, `esp32c3.bin`)
-    if (c3) manifest.builds.push(esp32c3(`download/${tag}/${c3.name}`))
+    if (c3) manifest.builds.push(esp32c3(`download/${tag}/${c3.name}`, "uart"))
+
+    const c3_cdc = findAsset(rel, `esp32c3-${flavor}-cdc.bin`) || findAsset(rel, `esp32c3-cdc.bin`)
+    if (c3_cdc) manifest.builds.push(esp32c3(`download/${tag}/${c3_cdc.name}`, "cdc"))
 
     const s3 = findAsset(rel, `esp32s3-${flavor}.bin`) || findAsset(rel, `esp32s3.bin`)
-    if (s3) manifest.builds.push(esp32s3(`download/${tag}/${s3.name}`))
+    if (s3) manifest.builds.push(esp32s3(`download/${tag}/${s3.name}`, "uart"))
+
+    const s3_cdc = findAsset(rel, `esp32s3-${flavor}-cdc.bin`) || findAsset(rel, `esp32s3-cdc.bin`)
+    if (s3_cdc) manifest.builds.push(esp32s3(`download/${tag}/${s3_cdc.name}`, "cdc"))
 
     const c6 = findAsset(rel, `esp32c6-${flavor}.bin`) || findAsset(rel, `esp32c6.bin`)
-    if (c6) manifest.builds.push(esp32c6(`download/${tag}/${c6.name}`))
+    if (c6) manifest.builds.push(esp32c6(`download/${tag}/${c6.name}`, "uart"))
+
+    const c6_cdc = findAsset(rel, `esp32c6-${flavor}-cdc.bin`) || findAsset(rel, `esp32c6-cdc.bin`)
+    if (c6_cdc) manifest.builds.push(esp32c6(`download/${tag}/${c6_cdc.name}`, "cdc"))
 
     c.header('Cache-Control', `public, max-age=${maxAge}`)
     return c.json(manifest)

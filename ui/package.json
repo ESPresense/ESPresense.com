@@ -17,7 +17,7 @@
     "build": "tsc && vite build && rm ../public/scripts/components/* && cp -r dist/* ../public/scripts/components/"
   },
   "dependencies": {
-    "esp-web-tools": "^10.2.1",
+    "esp-web-tools": "github:ESPresense/esp-web-tools#serial-type",
     "lit": "3.2.1"
   },
   "devDependencies": {

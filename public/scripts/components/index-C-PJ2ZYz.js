@@ -1,5 +1,4 @@
-import { q as c, _ as w, t as h } from "./styles-CffpCsNo.js";
-import { w as u, a as p, i as v, b as i } from "./index-CxZOVPUy.js";
+import { w as c, y as w, a as h, _ as u, t as p, i as v, x as i } from "./styles-Dl0g2HNz.js";
 const g = () => {
   var t, e;
   const a = window.navigator.userAgent, o = (
@@ -7,7 +6,7 @@ const g = () => {
     ((e = (t = window.navigator) === null || t === void 0 ? void 0 : t.userAgentData) === null || e === void 0 ? void 0 : e.platform) || window.navigator.platform
   ), s = ["macOS", "Macintosh", "MacIntel", "MacPPC", "Mac68K"], r = ["Win32", "Win64", "Windows", "WinCE"], d = ["iPhone", "iPad", "iPod"];
   return s.indexOf(o) !== -1 ? "Mac OS" : d.indexOf(o) !== -1 ? "iOS" : r.indexOf(o) !== -1 ? "Windows" : /Android/.test(a) ? "Android" : /Linux/.test(o) ? "Linux" : null;
-}, n = u`
+}, n = c`
   <svg
     version="1.1"
     id="Capa_1"
@@ -139,8 +138,8 @@ let l = class extends v {
   }
 };
 l.styles = [
-  c,
-  p`
+  w,
+  h`
       li + li,
       li > ul {
         margin-top: 8px;
@@ -156,13 +155,13 @@ l.styles = [
       }
     `
 ];
-l = w([
-  h("ewt-no-port-picked-dialog")
+l = u([
+  p("ewt-no-port-picked-dialog")
 ], l);
-const y = async (t) => {
+const f = async (t) => {
   const e = document.createElement("ewt-no-port-picked-dialog");
   return e.doTryAgain = t, document.body.append(e), !0;
 };
 export {
-  y as openNoPortPickedDialog
+  f as openNoPortPickedDialog
 };
