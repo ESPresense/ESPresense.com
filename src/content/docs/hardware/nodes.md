@@ -1,7 +1,7 @@
 ---
 title: Nodes
 sidebar:
-  order: 3
+  order: 4
 ---
 
 

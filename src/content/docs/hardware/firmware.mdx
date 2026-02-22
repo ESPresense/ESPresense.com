@@ -1,10 +1,10 @@
 ---
 title: Install Firmware
 sidebar:
-  order: 2
+  order: 5
 ---
 
-import FirmwareInstaller from '../../components/FirmwareInstaller.astro';
+import FirmwareInstaller from '../../../components/FirmwareInstaller.astro';
 
 ## Browser-Based Installer
 
@@ -12,10 +12,14 @@ Begin by connecting an ESP device to your computer using USB, then click the "Co
 
 <FirmwareInstaller />
 
+:::tip
+You must use Edge or Chrome(-based) browser, the above web-based installer does not work on Firefox or Safari.
+:::
+
 ## Post-Flashing Steps
 
 Upon successful firmware flashing, search for an Access Point (AP) with an SSID beginning with "ESPresense-". Connect to this network to access the configuration portal. For setup instructions, visit [Configuration Settings](/configuration/settings).
 
 ## Alpha / Nightly Builds
 
-For those interested in experimental features, you can opt for a nightly/alpha build available [here](/alpha). Please note this is for adventurous users and may not be stable.
+For those interested in experimental features, you can opt for a nightly/alpha build available [here](/alpha). Please note this is for experienced and adventurous users and may not be stable.

@@ -115,4 +115,6 @@ If the default values aren't providing accurate distances:
 - Metal objects, walls, and furniture can affect readings
 - Note successful RSSI@1m values for your specific devices for future reference
 
-## Help write this documentation! Click the edit this page below.
+:::tip
+Help improve this documentation! Click 'Edit page' below.
+:::
