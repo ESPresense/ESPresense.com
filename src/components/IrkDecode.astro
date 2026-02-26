@@ -35,7 +35,7 @@
         return hex;
       }
 
-      function decode(e) {
+      function decode() {
         var input = document.getElementById('base64_input');
         var output = document.getElementById('base64_output');
         var data = input.value;
@@ -50,9 +50,16 @@
         output.innerText = decoded.reverse().join('');
       }
 
+      document.addEventListener('DOMContentLoaded', function () {
+        var convertButton = document.getElementById('base64_convert');
+        if (convertButton) {
+          convertButton.addEventListener('click', decode);
+        }
+      });
+
     </script>
     <textarea type="text" id="base64_input" cols="32" rows="12"></textarea><br /><br />
-    <button type="button" onclick="decode()">Convert</button>
+    <button type="button" id="base64_convert">Convert</button>
     <br /><br />
     <b>Output</b>
     <div id="base64_output" style="font-family: monospace;"><span style="color: gray">Enter base64 above...</span></div>
