@@ -8,8 +8,9 @@ export default defineConfig({
     '/beacons/apple': '/apple',
     '/beacons/other': '/other',
     '/base-stations': '/nodes',
-    '/hardware': '/nodes',
-    '/install': '/firmware',
+    '/nodes': '/hardware/nodes',
+    '/install': '/hardware/firmware',
+    '/firmware': '/hardware/firmware',
     '/data-flow': '/troubleshooting/data-flow',
     '/ids': '/troubleshooting/ids',
     '/terminal': '/troubleshooting/terminal',
@@ -41,30 +42,37 @@ export default defineConfig({
       ],
       sidebar: [
         { label: 'Home', link: '/' },
-        { slug: 'quick-start' },
-        { slug: 'nodes' },
-        { slug: 'firmware' },
         {
-          label: 'Devices',
+          label: 'Getting started',
+          items: [
+            { slug: 'approach' },
+            { slug: 'quick-start' },
+          ],
+        },
+        {
+          label: 'Hardware',
+          items: [
+            { slug: 'hardware/nodes' },
+            { slug: 'hardware/firmware' },
+            { slug: 'hardware/enclosures' },
+          ],
+        },
+	{
+          label: 'Node Configuration',
+          items: [
+            { slug: 'configuration/network' },
+            { slug: 'configuration/settings' },
+            { slug: 'configuration/hardware' },
+            { slug: 'configuration/mqtt' },
+          ],
+        },
+        {
+          label: 'Trackable Devices',
           items: [
             { slug: 'devices', label: 'Overview' },
             { slug: 'android' },
             { slug: 'apple' },
             { slug: 'other' },
-          ],
-        },
-        {
-          label: 'Configuration',
-          items: [
-            { slug: 'configuration/network' },
-            { slug: 'configuration/settings' },
-            { slug: 'configuration/hardware' },
-          ],
-        },
-        {
-          label: 'MQTT',
-          items: [
-            { slug: 'configuration/mqtt' },
           ],
         },
         {
@@ -103,7 +111,6 @@ export default defineConfig({
             { slug: 'troubleshooting/terminal' },
           ],
         },
-        { slug: 'enclosures' },
         { slug: 'credits' },
       ],
     }),

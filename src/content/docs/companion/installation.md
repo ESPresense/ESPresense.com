@@ -4,32 +4,47 @@ sidebar:
   order: 1
 ---
 
+Installing the ESPresense Companion is a combination of the Companion App itself and a MQTT server.
 
-## Home Assistant OS (HAOS)
+Companion deployment:
 
-### Step 1: Add Repository
-<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-    <a href="https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FESPresense%2Fhassio-addons">
-        <img src="https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg" alt="Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled." />
-    </a>
-    <span>Click <code>Add</code></span>
-</div>
+- Recommended: As an [App](#home-assistant-app) within Home Assistant
+- Optional: As a (composed) [container](#containerized-deployment) elsewhere (experienced users)
 
-### Step 2: Install
-<div style="display: flex; align-items: center; gap: 10px;">
-    <a href="https://my.home-assistant.io/redirect/supervisor_store/">
-        <img src="https://my.home-assistant.io/badges/supervisor_store.svg" alt="Open your Home Assistant instance and show the Supervisor add-on store." />
-    </a>
-    <span>Click <code>Install</code>, <code>Start</code>, then <code>Show in Sidebar</code></span>
-</div>
+MQTT setup:
 
-### Manual Add-on Installation (Alternative)
+- Recommended: Home Assistant [MQTT](#home-assistant-mqtt-app) App
+- Alternative: [External](#external-mqtt-broker) MQTT broker
 
-If the buttons above don't work for you, follow these steps to add the repository and install the add-on manually within Home Assistant:
+## Home Assistant App
 
-1.  **Navigate to Add-ons:** Go to `Settings` > `Add-ons` in your Home Assistant UI.
+### Two-step Install (Recommended!)
+
+#### Step 1: Add Repository
+
+<a href="https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FESPresense%2Fhassio-addons">
+  <img src="https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg"
+       alt="Add ESPresense App repository to Home Assistant" />
+</a>
+
+Click **Add** in the dialog.
+
+#### Step 2: Install
+
+<a href="https://my.home-assistant.io/redirect/supervisor_store/">
+  <img src="https://my.home-assistant.io/badges/supervisor_store.svg"
+       alt="Open Home Assistant Supervisor App store" />
+</a>
+
+Click **Install**, **Start**, then **Show in Sidebar**.
+
+### Manual App Installation
+
+If the buttons above don't work for you, follow these steps to add the repository and install the app manually within Home Assistant:
+
+1.  **Navigate to Apps:** Go to `Settings` > `Add-ons` in your Home Assistant UI.
 2.  **Add Repository:**
-    *   Click the `Add-on Store` button (usually bottom right).
+    *   Click the `Apps Store` button (usually bottom right).
     *   Click the three dots menu in the top right corner and select `Repositories`.
     *   Paste the following URL into the "Add repository" field:
         ```
@@ -38,18 +53,18 @@ If the buttons above don't work for you, follow these steps to add the repositor
     *   Click `Add`.
     *   Close the repository management dialog.
 3.  **Install ESPresense Companion:**
-    *   Refresh the Add-on Store page (you might need to wait a moment or refresh your browser).
+    *   Refresh the Apps Store page (you might need to wait a moment or refresh your browser).
     *   Search for `ESPresense Companion`.
-    *   Click on the `ESPresense Companion` add-on.
+    *   Click on the `ESPresense Companion` app.
     *   Click `Install`.
     *   Once installed, click `Start`.
     *   Optionally, enable `Show in sidebar` for easy access.
 
-## DIY Docker Container
+### Containerized Deployment
 
 Example docker-compose configuration:
-```yaml
-version: '3.7'
+
+```yaml title="compose.yaml"
 services:
   espresense:
     image: espresense/espresense-companion
@@ -59,18 +74,19 @@ services:
     volumes:
       - ./data/espresense:/config/espresense
 ```
+
 Port `8268` is required for firmware updates.
 
 ## MQTT Setup
 
-ESPresense and ESPresense Companion require MQTT to function. Here's how to set it up:
+ESPresense and ESPresense Companion require MQTT to function. Here's two ways to set it up:
 
-### Using Home Assistant's MQTT Addon
-1. Install the Mosquitto broker addon from the official add-on store
-2. Start the addon
+#### Home Assistant MQTT App
+1. Install the Mosquitto broker app from the official app store
+2. Start the app
 3. ESPresense Companion will automatically use these settings
 
-### Using External MQTT Broker
+### External MQTT Broker
 1. Install [Mosquitto](https://mosquitto.org/) or your preferred MQTT broker
 2. Note your configuration:
    - Host
@@ -101,10 +117,10 @@ Once installation is complete:
 ## Troubleshooting Installation
 
 ### Common Issues:
-1. **Can't see the add-on in Home Assistant:**
+1. **Can't see the app in Home Assistant:**
    - Refresh your browser
    - Verify the repository was added successfully
-   - Check the add-on store logs
+   - Check the app store logs
 
 2. **MQTT Connection Failed:**
    - Verify MQTT broker is running
