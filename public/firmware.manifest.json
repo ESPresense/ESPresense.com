@@ -5,6 +5,7 @@
     { "name": "esp32c3.bin", "cpu": "esp32c3", "flavor": "" },
     { "name": "esp32c3-verbose.bin", "cpu": "esp32c3", "flavor": "verbose" },
     { "name": "esp32c6.bin", "cpu": "esp32c6", "flavor": "" },
+    { "name": "esp32c6-cdc.bin", "cpu": "esp32c6", "flavor": "cdc" },
     { "name": "esp32c6-verbose.bin", "cpu": "esp32c6", "flavor": "verbose" },
     { "name": "esp32s3.bin", "cpu": "esp32s3", "flavor": "" },
     { "name": "esp32s3-verbose.bin", "cpu": "esp32s3", "flavor": "verbose" },
