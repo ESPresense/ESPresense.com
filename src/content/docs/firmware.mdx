@@ -16,6 +16,23 @@ Begin by connecting an ESP device to your computer using USB, then click the "Co
 
 Upon successful firmware flashing, search for an Access Point (AP) with an SSID beginning with "ESPresense-". Connect to this network to access the configuration portal. For setup instructions, visit [Configuration Settings](/configuration/settings).
 
+## Firmware MQTT behavior (what firmware reads/writes)
+
+After Wi-Fi setup, each ESPresense node uses MQTT in two directions:
+
+### Firmware writes (publishes)
+- `espresense/rooms/<room>/status` (online/offline availability)
+- `espresense/rooms/<room>/telemetry` (node health/config telemetry)
+- `espresense/devices/<device_id>` (detected BLE device updates)
+
+### Firmware reads (subscribes)
+- `espresense/rooms/<room>/+/set` (per-node setting updates)
+- `espresense/rooms/*/+/set` (fleet-wide setting updates)
+
+This is how nodes receive runtime config like `max_distance`, `include/exclude`, `auto_update`, and LED commands.
+
+For the full command/config topic reference and examples, see [MQTT](/configuration/mqtt).
+
 ## Alpha / Nightly Builds
 
 For those interested in experimental features, you can opt for a nightly/alpha build available [here](/alpha). Please note this is for adventurous users and may not be stable.
