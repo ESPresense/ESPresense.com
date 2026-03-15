@@ -15,16 +15,16 @@ It is not compatible with the ESP32-S2 (doesn't have bluetooth), ESP32-C6 (too n
 |:--------------------|:------------:|-------|
 | M5 Stamp C3 Mate    | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers) [ali](https://s.click.aliexpress.com/e/_omweFp9) | Stamp form factor w/ 4MB flash memory, built-in 3D antenna, RGB LED and button |
 | M5 Stamp C3U Mate   | [ali](https://s.click.aliexpress.com/e/_onkgbFp) | Stamp form factor w/ 4MB flash memory, built-in 3D antenna, RGB LED and button [^cdc] |
-| ESP32-C3-DevKitM-1U | [amz/us](https://amzn.to/41WQXFa) | Espressif's official development board with ESP32-C3-MINI-1U module, 4MB flash, 160MHz CPU |
+| ESP32-C3-DevKitM-1U | [ali](https://s.click.aliexpress.com/e/_c3bVwFQb) [amz/us](https://amzn.to/41WQXFa) | Espressif's official development board with ESP32-C3-MINI-1U module, 4MB flash, 160MHz CPU |
 
 ## ESP32-S3
 
 | Name               | Stores         | Notes |
 |:-------------------|:--------------:|-------|
 | M5 Atom S3 Lite    | [ali](https://s.click.aliexpress.com/e/_oFSxCND) | 8MB flash memory, built-in 3D antenna, IR emitter,  RGB LED, Button and GROVE interface [^cdc] |
-| M5 Atom S3U        | [ali](https://s.click.aliexpress.com/e/_opyVX2n) | USB-A w/ 8MB flash memory, built-in 3D antenna, IR emitter, PDM mic, RGB LED, Button and GROVE interface [^cdc] |
+| M5 Atom S3U        | [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) | USB-A w/ 8MB flash memory, built-in 3D antenna, IR emitter, PDM mic, RGB LED, Button and GROVE interface [^cdc] |
 | M5 Stamp S3        | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) | Stamp form factor w/ 8MB flash memory, built-in 3D antenna, and RGB LED [^cdc] |
-| Teyleten Robot | [amz/us](https://amzn.to/4jXMRUl) | 8MB flash and 2MB PSRAM dev board, sold as a 3-pack |
+| Teyleten Robot | [ali](https://s.click.aliexpress.com/e/_c3JEwtzv) [amz/us](https://amzn.to/4jXMRUl) | 8MB flash and 2MB PSRAM dev board, sold as a 3-pack |
 
 ## ESP32
 
@@ -48,10 +48,12 @@ It is not compatible with the ESP32-S2 (doesn't have bluetooth), ESP32-C6 (too n
 
 * [20W USB C Wall Charger](https://amzn.to/4kXGphK) - Small Fast Charger with Foldable Plug
 * [20W USB C Wall Charger (3 pack)](https://amzn.to/4hFLcBz)
+* [20W USB C Charger](https://s.click.aliexpress.com/e/_c4Myg1Bl) (AliExpress) - PD/QC 3.0 fast charger
 
 ## USB C to C cables
 
 * [0.5ft USB C to C](https://amzn.to/4j02B9f)
+* [15cm USB C to C](https://s.click.aliexpress.com/e/_c2vxVV1D) (AliExpress) - right angle, fast charging
 
 ## USB A chargers
 
