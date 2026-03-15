@@ -72,7 +72,7 @@ New client connected from 192.168.1.104 as esp32_d (c1, k60, u'my_mqtt_username'
 To view what devices are being reported on the MQTT topic, you can use a tool such as [mosquitto_sub](https://mosquitto.org/man/mosquitto_sub-1.html) to connect to and view what is being reported. This will provide you with the data format you'll need to follow when writing the configuration:
 
 ```text
-mosquitto_sub -h <mqtt server IP address> -u <my mqtt user> -P <my mqtt password> -i presence-information -v -t "room_presence/#" | ts
+mosquitto_sub -h <mqtt server IP address> -u <my mqtt user> -P <my mqtt password> -v -t "room_presence/#" | ts
 ```
 
 For example, if using Docker: mosquitto-eclipse comes with mosquitto_sub, so enter a shell:
