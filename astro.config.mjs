@@ -7,7 +7,7 @@ export default defineConfig({
     '/beacons/android': '/android',
     '/beacons/apple': '/apple',
     '/beacons/other': '/other',
-    '/base-stations': '/nodes',
+    '/base-stations': '/hardware/nodes',
     '/hardware': '/hardware/nodes',
     '/nodes': '/hardware/nodes',
     '/install': '/hardware/firmware',
