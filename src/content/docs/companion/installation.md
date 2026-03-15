@@ -8,7 +8,7 @@ Installing the ESPresense Companion is a combination of the Companion App itself
 
 Companion deployment:
 
-- Recommended: As an [App](#home-assistant-app) within Home Assistant
+- Recommended: As an [App](#home-assistant-app) within Home Assistant OS
 - Optional: As a (composed) [container](#containerized-deployment) elsewhere (experienced users)
 
 MQTT setup:
@@ -42,7 +42,7 @@ Click **Install**, **Start**, then **Show in Sidebar**.
 
 If the buttons above don't work for you, follow these steps to add the repository and install the app manually within Home Assistant:
 
-1.  **Navigate to Apps:** Go to `Settings` > `Add-ons` in your Home Assistant UI.
+1.  **Navigate to Apps:** Go to `Settings` > `Apps` in your Home Assistant UI.
 2.  **Add Repository:**
     *   Click the `Apps Store` button (usually bottom right).
     *   Click the three dots menu in the top right corner and select `Repositories`.
@@ -60,7 +60,7 @@ If the buttons above don't work for you, follow these steps to add the repositor
     *   Once installed, click `Start`.
     *   Optionally, enable `Show in sidebar` for easy access.
 
-### Containerized Deployment
+## Containerized Deployment
 
 Example docker-compose configuration:
 
