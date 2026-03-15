@@ -81,7 +81,7 @@ Port `8268` is required for firmware updates.
 
 ESPresense and ESPresense Companion require MQTT to function. Here's two ways to set it up:
 
-#### Home Assistant MQTT App
+### Home Assistant MQTT App
 1. Install the Mosquitto broker app from the official app store
 2. Start the app
 3. ESPresense Companion will automatically use these settings

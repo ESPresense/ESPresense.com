@@ -11,10 +11,10 @@ sidebar:
 Also check the [Installation Troubleshooting](/companion/installation/#troubleshooting-installation) section.
 :::
 
-### Add-on Not Appearing
+### App Not Appearing
 - Refresh your browser cache
 - Re-add the repository using the button on the [Installation page](/companion/installation)
-- Check add-on store logs for repository errors
+- Check app store logs for repository errors
 
 ### Container Issues
 - Check if port 8267 is already in use

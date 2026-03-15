@@ -8,6 +8,7 @@ export default defineConfig({
     '/beacons/apple': '/apple',
     '/beacons/other': '/other',
     '/base-stations': '/nodes',
+    '/hardware': '/hardware/nodes',
     '/nodes': '/hardware/nodes',
     '/install': '/hardware/firmware',
     '/firmware': '/hardware/firmware',
@@ -57,7 +58,7 @@ export default defineConfig({
             { slug: 'hardware/enclosures' },
           ],
         },
-	{
+        {
           label: 'Node Configuration',
           items: [
             { slug: 'configuration/network' },

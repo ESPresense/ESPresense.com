@@ -11,7 +11,7 @@ You can use tools like [MQTT explorer](https://mqtt-explorer.com) or if you are 
 
 
 ```bash
-mosquitto_sub -h homeassistant.local -u <username> -P <password> -i presense-information -v -t "espresense/rooms/kitchen/#"
+mosquitto_sub -h homeassistant.local -u <username> -P <password> -i presence-information -v -t "espresense/rooms/kitchen/#"
 ```
 
 :::note
@@ -37,7 +37,7 @@ espresense/rooms/study/arduino_ota OFF
 You can update the configuration for any of the above topics by publishing to the `/set` endpoint for each topic like so:
 
 ```bash
-mosquitto_pub -h homeassistant.local -u <username> -P <password> -i presense-information -t "espresense/rooms/kitchen/auto_update/set" -m "ON" -d
+mosquitto_pub -h homeassistant.local -u <username> -P <password> -i presence-information -t "espresense/rooms/kitchen/auto_update/set" -m "ON" -d
 ```
 
 You can use a room of `*` to update all ESPresense nodes at the same time. If you retain that setting even NEW nodes will upon startup get that configuration set.
