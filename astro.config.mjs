@@ -51,7 +51,7 @@ export default defineConfig({
         {
           label: 'Nodes',
           items: [
-            { slug: 'nodes' },
+            { slug: 'nodes', label: 'Overview' },
             { slug: 'firmware' },
             { slug: 'enclosures' },
           ],
