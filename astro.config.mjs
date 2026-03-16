@@ -41,30 +41,37 @@ export default defineConfig({
       ],
       sidebar: [
         { label: 'Home', link: '/' },
-        { slug: 'quick-start' },
-        { slug: 'nodes' },
-        { slug: 'firmware' },
         {
-          label: 'Devices',
+          label: 'Getting started',
+          items: [
+            { slug: 'approach' },
+            { slug: 'quick-start' },
+          ],
+        },
+        {
+          label: 'Nodes',
+          items: [
+            { slug: 'nodes', label: 'Overview' },
+            { slug: 'firmware' },
+            { slug: 'enclosures' },
+          ],
+        },
+        {
+          label: 'Node Configuration',
+          items: [
+            { slug: 'configuration/network' },
+            { slug: 'configuration/settings' },
+            { slug: 'configuration/hardware' },
+            { slug: 'configuration/mqtt' },
+          ],
+        },
+        {
+          label: 'Trackable Devices',
           items: [
             { slug: 'devices', label: 'Overview' },
             { slug: 'android' },
             { slug: 'apple' },
             { slug: 'other' },
-          ],
-        },
-        {
-          label: 'Configuration',
-          items: [
-            { slug: 'configuration/network' },
-            { slug: 'configuration/settings' },
-            { slug: 'configuration/hardware' },
-          ],
-        },
-        {
-          label: 'MQTT',
-          items: [
-            { slug: 'configuration/mqtt' },
           ],
         },
         {
@@ -103,7 +110,6 @@ export default defineConfig({
             { slug: 'troubleshooting/terminal' },
           ],
         },
-        { slug: 'enclosures' },
         { slug: 'credits' },
       ],
     }),

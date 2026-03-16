@@ -314,4 +314,6 @@ The configuration file supports hot reloading, which means:
 - No need to restart the companion after changes
 - If there is unexpected behavior give the companion add-on a moment to implement the configuration, if unresolved or unresponsive a reboot (not restart of home assistant, a full reboot) of the host device can resolve the issue.
 
-### Help write this documentation! Click 'Edit this page on GitHub' below.
+:::tip
+Help improve this documentation! Click 'Edit page' below.
+:::

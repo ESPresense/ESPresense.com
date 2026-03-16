@@ -1,7 +1,7 @@
 ---
-title: Devices
+title: Trackable Devices
 sidebar:
-  order: 4
+  order: 3
 ---
 
 
@@ -63,3 +63,4 @@ If you have a different BLE-enabled piece of hardware that you have gotten to wo
 ## Footnotes
 
 [^beaconconfig]: These can do eddystone and iBeacon at the same time, just pick iBeacon
+
