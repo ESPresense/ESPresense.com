@@ -60,7 +60,7 @@ If the buttons above don't work for you, follow these steps to add the repositor
     *   Once installed, click `Start`.
     *   Optionally, enable `Show in sidebar` for easy access.
 
-## Containerized Deployment
+### Containerized Deployment
 
 Example docker-compose configuration:
 
