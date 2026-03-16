@@ -75,7 +75,7 @@ Also check the [Installation Troubleshooting](/companion/installation/#troublesh
 Check these logs for troubleshooting:
 
 ### Companion Logs
-- Home Assistant add-on: Check add-on logs
+- Home Assistant App: Check app logs
 - Docker: Use `docker logs espresense-companion`
 - Look for error messages and connection issues
 
