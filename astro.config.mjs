@@ -63,8 +63,15 @@ export default defineConfig({
             { slug: 'configuration/network' },
             { slug: 'configuration/settings' },
             { slug: 'configuration/hardware' },
-            { slug: 'configuration/mqtt' },
             { slug: 'configuration/rest-api' },
+          ],
+        },
+        {
+          label: 'MQTT',
+          items: [
+            { slug: 'configuration/mqtt', label: 'Overview' },
+            { slug: 'configuration/mqtt/firmware' },
+            { slug: 'configuration/mqtt/companion' },
           ],
         },
         {

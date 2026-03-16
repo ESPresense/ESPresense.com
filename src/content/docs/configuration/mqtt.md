@@ -35,6 +35,13 @@ espresense/settings/<id>/config         # global device-config (Companion writes
 
 A `<room>` of `*` matches every node and is the recommended way to roll a setting out to a fleet. Publish with the **retain** flag set on `*` topics and newly-joining nodes will also pick up that setting at startup.
 
+## Direction of data
+
+For a focused breakdown of which topics each component publishes and subscribes to, see:
+
+- [Firmware MQTT behavior](/configuration/mqtt/firmware)
+- [Companion MQTT behavior](/configuration/mqtt/companion)
+
 ## Reading current settings
 
 When a node connects, it publishes a retained snapshot of its current settings under `espresense/rooms/<room>/...`. Subscribe to the room to see them:
