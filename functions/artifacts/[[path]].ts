@@ -140,51 +140,18 @@ app.all('/latest/download/:branch/:bin',
     const firstRun = data.workflow_runs[0]
     if (!firstRun) return c.notFound()
     const run_id = firstRun.id
-    const sha = firstRun.head_sha
-    return c.redirect(`/artifacts/download/runs/${run_id}/${sha.substring(0, 7)}/${bin}`)
+    return c.redirect(`/artifacts/download/runs/${run_id}/${bin}`)
   }
 )
 
-// Specific run artifacts are immutable, cache GitHub API responses for 24 hours
-app.all('/download/runs/:run_id/:sha/:bin',
+// Specific run artifacts are immutable, cache for 24 hours
+app.all('/download/runs/:run_id/:bin',
   cache({ cacheName: 'artifacts', cacheControl: 'public, max-age=86400' }),
   async (c: Context) => {
     const run_id = parseInt(c.req.param('run_id'))
     const bin = c.req.param('bin')
-    console.log({ run_id })
-
-    const response = await fetch(
-      `https://api.github.com/repos/ESPresense/ESPresense/actions/runs/${run_id}/artifacts`,
-      {
-        headers: { "User-Agent": "espresense-artifact-proxy" },
-        cf: {
-          cacheTtlByStatus: { '200-299': 86400, '400-499': 60, '500-599': 0 }
-        }
-      } as any
-    )
-
-    if (!response.ok) {
-      if (response.status === 403) {
-        throw new Error(`GitHub API returned 403 when fetching artifacts for run ${run_id}`)
-      }
-      return c.json({ error: "Failed to fetch artifacts" }, response.status as any)
-    }
-
-    const data: any = await response.json()
-    let artifacts = data.artifacts
-    const artifact = findAsset(artifacts, bin)
-    if (!artifact) return c.notFound()
-    return c.redirect(`/artifacts/download/${artifact.id}/${bin}`)
-  }
-)
-
-// Artifact downloads by ID are immutable, cache for 7 days
-app.get('/download/:artifact_id/*',
-  cache({ cacheName: 'artifacts', cacheControl: 'public, max-age=604800' }),
-  async (c: Context) => {
-    const artifact_id = parseInt(c.req.param('artifact_id'))
-    console.log({ artifact_id })
-    const artifact = await fetch(`https://nightly.link/ESPresense/ESPresense/actions/artifacts/${artifact_id}.zip`)
+    console.log({ run_id, bin })
+    const artifact = await fetch(`https://nightly.link/ESPresense/ESPresense/actions/runs/${run_id}/${bin}.zip`)
     if (artifact.status !== 200) {
       return c.json({ error: `Artifact not found: ${artifact.status}` }, artifact.status as any)
     }
@@ -240,25 +207,25 @@ app.get('/:run_id_2{[0-9]+.json}',
       "builds": []
     }
     const a32 = findAsset(runArtifacts, `esp32-${flavor}.bin`) || findAsset(runArtifacts, `${flavor}.bin`) || findAsset(runArtifacts, `esp32.bin`)
-    if (a32) manifest.builds.push(esp32(`download/${a32.id}/${a32.name}`))
+    if (a32) manifest.builds.push(esp32(`download/runs/${run_id}/${a32.name}`))
 
     const c3 = findAsset(runArtifacts, `esp32c3-${flavor}.bin`) || findAsset(runArtifacts, `esp32c3.bin`)
-    if (c3) manifest.builds.push(esp32c3(`download/${c3.id}/${c3.name}`, "uart"))
+    if (c3) manifest.builds.push(esp32c3(`download/runs/${run_id}/${c3.name}`, "uart"))
 
     const c3_cdc = findAsset(runArtifacts, `esp32c3-${flavor}-cdc.bin`) || findAsset(runArtifacts, `esp32c3-cdc.bin`)
-    if (c3_cdc) manifest.builds.push(esp32c3(`download/${c3_cdc.id}/${c3_cdc.name}`, "cdc"))
+    if (c3_cdc) manifest.builds.push(esp32c3(`download/runs/${run_id}/${c3_cdc.name}`, "cdc"))
 
     const s3 = findAsset(runArtifacts, `esp32s3-${flavor}.bin`) || findAsset(runArtifacts, `esp32s3.bin`)
-    if (s3) manifest.builds.push(esp32s3(`download/${s3.id}/${s3.name}`, "uart"))
+    if (s3) manifest.builds.push(esp32s3(`download/runs/${run_id}/${s3.name}`, "uart"))
 
     const s3_cdc = findAsset(runArtifacts, `esp32s3-${flavor}-cdc.bin`) || findAsset(runArtifacts, `esp32s3-cdc.bin`)
-    if (s3_cdc) manifest.builds.push(esp32s3(`download/${s3_cdc.id}/${s3_cdc.name}`, "cdc"))
+    if (s3_cdc) manifest.builds.push(esp32s3(`download/runs/${run_id}/${s3_cdc.name}`, "cdc"))
 
     const c6 = findAsset(runArtifacts, `esp32c6-${flavor}.bin`) || findAsset(runArtifacts, `esp32c6.bin`)
-    if (c6) manifest.builds.push(esp32c6(`download/${c6.id}/${c6.name}`, "uart"))
+    if (c6) manifest.builds.push(esp32c6(`download/runs/${run_id}/${c6.name}`, "uart"))
 
     const c6_cdc = findAsset(runArtifacts, `esp32c6-${flavor}-cdc.bin`) || findAsset(runArtifacts, `esp32c6-cdc.bin`)
-    if (c6_cdc) manifest.builds.push(esp32c6(`download/${c6_cdc.id}/${c6_cdc.name}`, "cdc"))
+    if (c6_cdc) manifest.builds.push(esp32c6(`download/runs/${run_id}/${c6_cdc.name}`, "cdc"))
     return c.json(manifest)
   }
 )
