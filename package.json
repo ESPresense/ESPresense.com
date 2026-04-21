@@ -10,9 +10,9 @@
     "screenshots": "node scripts/capture-screenshots.js"
   },
   "dependencies": {
-    "astro": "^5.18.1",
-    "@astrojs/starlight": "^0.34.0",
-    "@astrojs/cloudflare": "^12.6.13",
+    "astro": "^6.1.8",
+    "@astrojs/starlight": "^0.38.3",
+    "@astrojs/cloudflare": "^13.1.10",
     "sharp": "^0.33.0",
     "fflate": "^0.7.3",
     "hono": "^4.12.12"
