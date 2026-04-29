@@ -34,6 +34,7 @@ This is a beta feature for the use case where a device fingerprint doesn't come 
 * **Maximum distance to report (in meters)** - If the distance is over this value (default 16m), it's likely inaccurate and not worth including in trilateration.
 * **Report early if beacon has moved more than this distance (in meters)** - If the device moves more than this distance, report immediately.
 * **Skip reporting if message age is less than this (in milliseconds)** - The logic is: if reported recently, check time elapsed and distance moved. If moved > "Report early" distance, report immediately. If time elapsed > "Skip reporting" time, report regardless of movement.
+*  **NOTE:**  Be certain to not filter out node IDs as inter-node communication is required for proper operation and can break items such as optimizers and Calibration in Companion.
 
 ## Calibration
 These settings control how ESPresense interprets signal strength. See the full [Calibration](/guides/calibration) guide for detailed steps and examples, including how to use the RSSI adjustment for receiver to balance different antennas or dev boards.
