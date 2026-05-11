@@ -63,6 +63,7 @@ export default defineConfig({
             { slug: 'configuration/settings' },
             { slug: 'configuration/hardware' },
             { slug: 'configuration/mqtt' },
+            { slug: 'configuration/rest-api' },
           ],
         },
         {

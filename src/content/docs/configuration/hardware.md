@@ -146,3 +146,7 @@ Configure a load cell amplifier.
 * Ensure GPIO pins don't conflict with other hardware functions
 * Addressable LEDs require proper power supply for multiple LEDs
 * Use appropriate timeout values to avoid false triggers on motion sensors
+
+---
+
+*Last verified against firmware v4.0.6 (`main` @ d9a1765, 2026-05-10).*
