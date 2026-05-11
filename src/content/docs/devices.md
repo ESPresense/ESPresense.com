@@ -11,7 +11,7 @@ sidebar:
 |:---------------------|:--------------------------------------------|:---------------------------------------------------------------------|
 | Android Phones       |                                             | [Must install an app](/android) |
 | iPhones              |                                             | [Pair to retrieve IRK](/apple) |
-| Apple Watches        |                                             | [Use iCloud keychain to get IRK](/apple) |
+| Apple Watches        |                                             | [Pair to retrieve IRK](/apple) |
 | Wear OS Smartwatches |                                             | [Must use HA companion app](/android) |
 | Tiles                | [amz/us](https://amzn.to/3h77T5f)           | These work great, but update somewhat slow |
 | Blue Charm Beacons   | [amz/us](https://amzn.to/2YGdA3w)           | These work great [^beaconconfig] |

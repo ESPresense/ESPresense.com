@@ -6,40 +6,36 @@ sidebar:
 
 import IrkDecode from '../../components/IrkDecode.astro';
 
-Apple devices emit various [BTLE continuity](https://github.com/furiousMAC/continuity) messages, often identified by the fingerprint `apple:100?:*-*`. In households with multiple iPhones, the nearby info may collide, leading to duplicate fingerprints. To resolve this, you can obtain the remote IRK (Identity Resolving Key) from your iOS (iPhone, iPad) or Watch OS (Apple Watch) device. While adding the IRK to the `Known BLE identity resolving keys` section of the ESPresense configuration is an option, using the `Enroll` feature is recommended as it's easier and syncs automatically to all ESPresense nodes. Note: ESPresense version 3.0 or higher is required!**
+Apple devices emit various [BTLE continuity](https://github.com/furiousMAC/continuity) messages, often identified by the fingerprint `apple:100?:*-*`. In households with multiple iPhones, the nearby info may collide, leading to duplicate fingerprints. To resolve this, you obtain the remote IRK (Identity Resolving Key) from your iOS (iPhone, iPad) or watchOS (Apple Watch) device. You can paste an IRK directly into the `Known BLE identity resolving keys` section of the ESPresense configuration, but the **Enroll** flow below is the recommended path — it's easier and syncs automatically to all ESPresense nodes. Requires ESPresense firmware **v3.0 or higher**.
 
-For per-device enrollment recipes covering Android, Polar, Withings, Amazfit, and the Find-My device family, see the [Enrolling devices](/guides/enrolling-devices) how-to. AirPods and Apple Watch caveats — including which paths are not yet community-settled — are also captured there.
+While enrollment is active the node emulates a Heart Rate Monitor (BLE service `0x180D`), so iOS and watchOS pair to it natively from their own Bluetooth settings. No companion app is required on the phone or the watch.
 
-Note: Some iOS devices do not emit a beacon while the phone screen is off if there is not a reason for the device to broadcast a signal, consequently the device may not appear while the screen is off. Something like an iWatch, Universal Clipboard with Handoff enabled, or other services that require the phone to communicate regularly may resolve this issue as they require the subject iOS device to communicate while 'sleeping'. In the case you do not have a bluetooth device like an iWatch, some people report that using background apps like iCloud Family Sharing, iCloud Photo Backup, or Room Assistant have convinced the device to communicate while 'sleeping'. This issue is not universal, but it's not clear why this occurs at this time and you may not experience this issue even if the device seemingly has no reason to communicate.
+For per-device enrollment recipes covering Android, Polar, Withings, Amazfit, and the Find-My device family, see the [Enrolling devices](/guides/enrolling-devices) how-to. AirPods caveats are also captured there.
+
+Note: Some iOS devices do not emit a beacon while the phone screen is off if there is not a reason for the device to broadcast a signal, so the device may not appear while the screen is off. A paired Apple Watch, Universal Clipboard with Handoff enabled, or another service that requires the phone to communicate regularly may resolve this, since they keep the phone communicating while "sleeping." If you do not have a bluetooth device like an Apple Watch, some users report that background apps such as iCloud Family Sharing, iCloud Photo Backup, or Room Assistant have convinced the device to communicate while "sleeping." This issue is not universal, and it's not clear why it occurs — you may not experience it even if the device seemingly has no reason to communicate.
 
 ## Enrollment (easiest)
 
-## iPhone / iPads (native)
+### iPhone / iPad
 
 - Navigate to the ESPresense devices page in your browser: `http://<ip>/ui/#/devices`.
-- Enter a name for your device in the name field and click the `Enroll` button.
-- On your iPhone or iPad, go to `Settings` -> `Bluetooth`. You'll see a new `ESPresense` device.
-- Tap on the bluetooth device named `ESPresense` and accept the request to pair securely.
+- Enter a name for your device in the name field and click the `Enroll` button. You have **2 minutes** before the enrollment window closes.
+- On your iPhone or iPad, go to `Settings` → `Bluetooth`. You'll see a new `ESPresense` device.
+- Tap the bluetooth device named `ESPresense` and accept the request to pair securely.
 - The Enroll prompt should stop automatically, indicating the key has been obtained and added to the MQTT topic `espresense/settings`.
 
-## Apple Watch (using Bluetooth Terminal App)
+### Apple Watch
 
-- Download and install the [Bluetooth Terminal app](https://apps.apple.com/app/id1058693037) from the Apple App Store on an iOS device, ensure it installed on your watch as well.
+The watch pairs directly from its own Bluetooth settings — no companion app on the watch and no helper on the phone. The previous `BluetoothLE` / Bluetooth Terminal walkthrough is no longer needed on current firmware.
+
 - Navigate to the ESPresense devices page in your browser: `http://<ip>/ui/#/devices`.
-- Enter a name for your device in the name field and click the `Enroll` button.
-- Launch the `BluetoothLE` App on your Apple Watch (included as part of iOS Bluetooth Terminal app).
-- Tap on the bluetooth device named `ESPresense` and accept the request to pair securely.
-- The Enroll prompt should stop automatically, indicating the key has been obtained and added to the MQTT topic `espresense/settings`.
+- Enter a name for your device in the name field and click the `Enroll` button. You have **2 minutes** before the enrollment window closes.
+- On your **Apple Watch**, open `Settings` → `Bluetooth`.
+- Wait for an `ESPresense` device to appear (it advertises as a Heart Rate Monitor; some watchOS versions surface it under a "Health Devices" subhead).
+- Tap `ESPresense` and accept the pair request.
+- The Enroll prompt in the ESPresense UI stops automatically — the IRK has been captured and published to `espresense/settings`.
 
-If you're having trouble, please note: you will see ESPresense in the native settings, but it will refuse to securely pair. It's imperative to follow the steps under the 'Apple Watch (using Bluetooth Terminal App)' section above to ensure a successful pairing via the app.  Secure pairing is the key to us getting an IRK!
-
-If you're using the `BluetoothLE` App on your Apple Watch, you can see the bluetooth device `ESPresense` but pairing fails to intiate, you may need to force a refresh of the devices in the app. This typically applies when you have had a previously unsucesful pairing attempt or re-flashed the ESP basestation. Simply forcing the app to close and re-launch doesn't force a refresh of devices.
-On your Apple Watch:
-- Force the `BluetoothLE` App to close (Typically by clicking the watch button, swiping the `BluetoothLE` App card left and then the red X button).
-- Turn off Bluetooth via Settings > Bluetooth > Bluetooth Switch (at bottom of screen).
-- Launch `BluetoothLE` App on your Apple Watch. This will ask you to Turn on Bluetooth to allow the app to detect devices. Do so by clicking the Settings button etc.
-- **Important** when Bluetooth is enabled, you will be in the Apple Watch Bluetooth devices discovery mode. **DO NOT** try to connect to ESPresense here!
-- Open the `BluetoothLE` App once again and you will see the discovered BLE deviced being refreshed. Now follow the steps under the 'Apple Watch (using Bluetooth Terminal App)' section above to ensure a successful pairing via the app.
+If `ESPresense` doesn't appear within ~30 seconds, toggle Bluetooth off and back on (`Settings → Bluetooth`) on the watch, then click `Enroll` again in the ESPresense UI to restart the 2-minute window. If pairing still fails, use the [Mac Keychain fallback](#lookup-method-requires-a-mac) below.
 
 ## Lookup Method (requires a Mac)
 
@@ -75,3 +71,7 @@ This method can be used for any iOS/iPadOS/Watch OS device:
 ### Option 2
 
 - Alternatively you can publish an MQTT message to the settings topic to simulate what would happen were you to pair from the UI. To do this you can publish to the topic: `espresense/settings/irk:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/config` with a payload `{"id":"device_id", "name":"Device Name"}`. _Make sure there are no spaces in the `id` value._
+
+---
+
+*Reference · Last verified against firmware [v4.0.6](https://github.com/ESPresense/ESPresense/releases/tag/v4.0.6) on 2026-05-11.*

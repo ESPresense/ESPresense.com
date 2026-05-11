@@ -17,8 +17,8 @@ Source matrix: canonical pin [#2324 "Enrolling devices: what works, what doesn't
 |---|---|---|
 | iPhone / iPad | Pair to ESPresense node, IRK auto-captured | ✅ Settled |
 | iPhone (iOS 17+, in-firmware pair fails) | Mac → Keychain Access fallback | ✅ Settled (fallback) |
-| Apple Watch | `BluetoothLE` companion app pair, then verify there's one entry not two | ⚠️ Mixed — read [the section](#apple-watch) |
-| Apple Watch (alternative) | Mac → Keychain Access fallback | ✅ Settled (fallback) |
+| Apple Watch | Pair from watch `Settings → Bluetooth` (firmware emulates an HRM) | ✅ Settled |
+| Apple Watch (fallback) | Mac → Keychain Access lookup | ✅ Settled (fallback) |
 | AirPods / BeatsX / HomePod | none | ❌ No settled path |
 | Withings ScanWatch | Android HCI snoop → Wireshark → IRK | ✅ Settled (involved) |
 | Polar HR straps (H10 / H9) | Broadcast HR mode on, generic `name:` enrollment | ✅ Works |
@@ -70,25 +70,31 @@ If you hit this, the IRK enrollment is not the problem. Add an Apple Watch on th
 
 ## Apple Watch
 
-**Source:** [#2099](https://github.com/ESPresense/ESPresense/discussions/2099) · existing recipe on [/apple](/apple/#apple-watch-using-bluetooth-terminal-app). Reported by [@prankhd](https://github.com/prankhd); community has *not* settled this.
+**Source:** [#2099](https://github.com/ESPresense/ESPresense/discussions/2099) · canonical recipe on [/apple → Apple Watch](/apple/#apple-watch). Confirmed by [@DTTerastar](https://github.com/DTTerastar) (maintainer): current firmware emulates a Heart Rate Monitor well enough that watchOS pairs to it natively from the watch's Bluetooth settings.
 
-:::caution[Limited — no fully-settled solution]
-Apple Watch enrollment works for some users via the [Bluetooth Terminal](https://apps.apple.com/app/id1058693037) companion app's watchOS pair flow, and works for others via Settings → Bluetooth → ESPresense directly. The same procedure produces different results across watchOS versions and watch models. We do not have a procedure that works for every reader.
+The settled path is identical to the iPhone path: put the firmware in enrollment mode, then pair from the watch.
+
+1. Open `http://<node-ip>/ui/#/devices` on the same network as the node.
+2. Type a friendly name (e.g., `dt-watch`) in the **Enroll** field and click **Enroll**. The node starts advertising a Heart Rate Monitor service named `ESPresense` for 120 seconds.
+3. On the **Apple Watch**, open **Settings → Bluetooth**. Wait for `ESPresense` to appear (some watchOS versions surface it under "Health Devices") and tap it. Accept the pair request.
+4. The Enroll prompt clears automatically. The firmware publishes:
+
+   ```text
+   espresense/settings/irk:<32-hex>/config   (retained)
+   {"id": "dt-watch", "name": "dt-watch"}
+   ```
+
+5. Other nodes pick up the retained config and resolve the same watch the next time it advertises.
+
+If pairing doesn't start within ~30 seconds, toggle Bluetooth off and back on (`Settings → Bluetooth`) on the watch and click **Enroll** again to restart the 2-minute window.
+
+:::note[Why this is the same path as iPhone]
+While enrollment is active the node advertises a Heart Rate Monitor service (UUID `0x180D`) with an encrypted-read characteristic. watchOS treats this like any other heart-rate sensor and runs the same secure-pairing handshake that delivers the IRK. The previous workaround using the [Bluetooth Terminal](https://apps.apple.com/app/id1058693037) companion app is no longer needed on current firmware; if you're stuck on an older release that won't pair natively, fall back to the Mac Keychain procedure below.
 :::
 
-The shape of the problem from [#2099](https://github.com/ESPresense/ESPresense/discussions/2099):
+### Mac Keychain fallback
 
-- The native **Settings → Bluetooth → ESPresense** path sometimes pairs but skips the secure-connection prompt that delivers the IRK — you end up with the watch as an unresolved entry.
-- Some users see **two** entries appear: a "static" entry that lives at one position on the floorplan and a "moving" entry that tracks the watch. Only the moving one is the real IRK-backed identity; the other is the pre-resolution fingerprint.
-- The Bluetooth Terminal companion app's watchOS BluetoothLE view sometimes refuses to initiate pairing if a prior attempt failed. Force-quit the watchOS app, toggle Bluetooth off and on, relaunch — covered in detail at [/apple → Apple Watch troubleshooting](/apple/#apple-watch-using-bluetooth-terminal-app).
-
-**What to do today:**
-
-1. Try [/apple → Apple Watch (using Bluetooth Terminal App)](/apple/#apple-watch-using-bluetooth-terminal-app) first.
-2. If it produces two entries, the moving one is the right one. Delete the static one.
-3. If neither path works, use the **Mac Keychain fallback** ([/apple → Lookup Method](/apple/#lookup-method-requires-a-mac)) — read the watch's IRK from your iCloud Keychain. The watch's Bluetooth MAC is at **Watch → Settings → About**.
-
-If you find a watchOS-version-specific recipe that works reliably, please add it to [#2099](https://github.com/ESPresense/ESPresense/discussions/2099) — the canonical pin is updated from confirmed Discussions content.
+If the watch never produces the pairing prompt (older firmware, edge-case watchOS version), read the watch's IRK from your iCloud Keychain on a paired Mac. The full procedure (Keychain Access → search `bluetooth` → `Public: XX:XX:...` → Show Password) is on [/apple → Lookup Method](/apple/#lookup-method-requires-a-mac). The watch's Bluetooth address is at **Watch → Settings → About**. The decoded 32-character hex IRK goes into the same `espresense/settings/irk:<hex>/config` topic as the iPhone path.
 
 ## AirPods / BeatsX / HomePod
 
