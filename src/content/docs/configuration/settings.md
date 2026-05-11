@@ -7,14 +7,14 @@ sidebar:
 
 <img src="/images/settings_screen.png" alt="Screenshot of ESP32 full settings interface" style="float:right;margin-left:20px;width:340px" />
 
-These settings are accessible from the **Settings** page in the device web UI. They can also be written live over [MQTT](/configuration/mqtt) — defaults and ranges for every option are listed in the [MQTT settings reference](/configuration/mqtt/#settings-reference).
+These settings are accessible from the **Settings** page in the device web UI. Most can also be written live over [MQTT](/configuration/mqtt) — defaults and ranges for every option are listed in the [MQTT settings reference](/configuration/mqtt/#settings-reference). The ones marked **boot only** below are read once at startup and have no `<key>/set` handler; change them in the captive portal / Settings page and reboot the node.
 
 ## Scanning
 
 * **Known BLE mac addresses** (no colons, space separated) — devices that use a random-but-static MAC. ESPresense publishes them with the stable id `known:{mac}`.
 * **Known BLE identity resolving keys** — 32-hex-character IRKs (space separated) that let ESPresense recognise Apple devices through their address rotation. See [Apple devices](/apple) for extraction tips.
-* **Forget beacon if not seen for (in milliseconds)** — drop idle fingerprints (`forget_ms`, default `150000` ms = 2.5 minutes).
-* **Maximum BLE fingerprints to track** — caps fingerprint memory at boot (`max_fingerprints`, default `100`; `200` on ESP32-S3/C3/C6).
+* **Forget beacon if not seen for (in milliseconds)** — drop idle fingerprints (`forget_ms`, default `150000` ms = 2.5 minutes). **Boot only.**
+* **Maximum BLE fingerprints to track** — caps fingerprint memory at boot (`max_fingerprints`, default `100`; `200` on ESP32-S3/C3/C6). **Boot only.**
 * **Allow active BLE connections to all devices** — `connect_all`. Bypasses the `query` allow-list and connects to everything. Expensive and rarely useful outside protocol debugging.
 
 ## Querying
@@ -22,16 +22,18 @@ These settings are accessible from the **Settings** page in the device web UI. T
 Most BLE devices give a usable id from passive advertisements alone, but some need an active GATT connection to identify themselves. **Query** opens that connection and reads the Room Assistant id, model, and name characteristics. When the device responds, ESPresense upgrades to the most-selective id available.
 
 * **Query device ids for characteristics** — id-prefix allow-list (`query`), e.g. `flora:` for Xiaomi Mi Flora plant sensors.
-* **Requery interval in seconds** — re-issue the active query every N seconds (`requery_ms`, default `300`, range 30–3600).
+* **Requery interval in seconds** — re-issue the active query every N seconds (`requery_ms`, default `300`, range 30–3600). **Boot only.**
 
 ## Counting
 
 A beta feature for devices that you can't fingerprint individually but where the *count* itself is useful — `exp:20` (COVID exposure apps), `apple:` (anonymous Apple devices), `Microsoft:cdp` (Microsoft devices). When set, auto-discovery adds a count sensor to your ESPresense node.
 
+Only `count_ids` is live-settable. The three hysteresis knobs (`count_enter`, `count_exit`, `count_ms`) are read once at boot.
+
 * **Include ID prefixes** (`count_ids`).
-* **Start counting devices less than distance** (m) — "enter" radius (`count_enter`, default `2.0`).
-* **Stop counting devices greater than distance** (m) — "leave" radius (`count_exit`, default `4.0`). Setting this above the enter radius creates a hysteresis band that prevents flapping.
-* **Include devices with age less than** (ms) — drop a device from the count if its last advertisement is older than this (`count_ms`, default `10000`).
+* **Start counting devices less than distance** (m) — "enter" radius (`count_enter`, default `2.0`). **Boot only.**
+* **Stop counting devices greater than distance** (m) — "leave" radius (`count_exit`, default `4.0`). Setting this above the enter radius creates a hysteresis band that prevents flapping. **Boot only.**
+* **Include devices with age less than** (ms) — drop a device from the count if its last advertisement is older than this (`count_ms`, default `10000`). **Boot only.**
 
 ## Filtering
 
@@ -50,7 +52,7 @@ Do not filter out the per-node iBeacon ids. Nodes use one another's advertisemen
 These settings control how ESPresense converts RSSI to a distance estimate. See [Calibration](/guides/calibration) for the full procedure.
 
 * **RSSI expected from a 0dBm transmitter at 1 meter** — reference RSSI for ad-hoc devices (`ref_rssi`, default `-65`). *Not* used for iBeacons or Eddystone — those carry their own calibrated RSSI in the advertisement.
-* **RSSI adjustment for receiver** — per-node offset to align antennas across boards (`rx_adj_rssi`, default `0`; `20` on ESP32-S3 by default to compensate for the on-chip antenna).
+* **RSSI adjustment for receiver** — per-node offset to align antennas across boards (`rx_adj_rssi`, default `0`; `20` on bare ESP32-S3 builds to compensate for the on-chip antenna). M5STICK and M5ATOM builds — even when they're S3-based — keep the default at `0` because those board defines are matched before `ESP32S3` in `include/defaults.h`.
 * **Factor used to account for absorption, reflection, or diffraction** — environmental path-loss exponent (`absorption`, default `2.7`, range 1–5). Higher = more attenuation per meter.
 * **RSSI expected from this tx power at 1m** — calibration target for this node's own iBeacon broadcasts (`tx_ref_rssi`, default `-59`).
 

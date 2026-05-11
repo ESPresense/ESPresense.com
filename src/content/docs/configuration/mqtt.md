@@ -86,8 +86,8 @@ mosquitto_pub -h homeassistant.local -u <username> -P <password> \
 | `skip_distance` | float (0–10) | `0.5` | Report immediately if the beacon has moved more than this (m). |
 | `skip_ms` | integer (0–3000000) | `5000` | Skip reporting if the message is younger than this (ms). Reduces MQTT chatter. |
 | `max_divisor` | integer (2–10) | `10` | Maximum divisor for the report interval. Larger movements divide `skip_ms` to report sooner. |
-| `forget_ms` | integer (0–3000000) | `150000` | Forget (drop) a fingerprint if not seen for this long (ms). |
-| `max_fingerprints` | integer (16–2048) | `100` (`200` on ESP32-S3/C3/C6) | Maximum number of tracked BLE fingerprints. Configured at boot only. |
+| `forget_ms` | integer (0–3000000) | `150000` | Forget (drop) a fingerprint if not seen for this long (ms). **Boot only** — not in the `Command()` dispatcher; writes to `<room>/forget_ms/set` are ignored. Set in the captive portal / Settings page and reboot. |
+| `max_fingerprints` | integer (16–2048) | `100` (`200` on ESP32-S3/C3/C6) | Maximum number of tracked BLE fingerprints. **Boot only.** |
 
 ### Calibration (RSSI)
 
@@ -95,7 +95,7 @@ mosquitto_pub -h homeassistant.local -u <username> -P <password> \
 |---|---|---|---|
 | `ref_rssi` | integer (-100 to 100) | `-65` | RSSI expected from a 0 dBm transmitter at 1 m. **Not** used for iBeacon / Eddystone (those carry their own calibrated RSSI). |
 | `tx_ref_rssi` | integer (-100 to 0) | `-59` | RSSI expected from this node's iBeacon transmit power at 1 m. |
-| `rx_adj_rssi` | integer (-100 to 100) | `0`* | Per-node receive RSSI adjustment. Use only when this board has a known-weak (or known-strong) antenna. <br>*Default `20` on ESP32-S3, `0` on everything else. |
+| `rx_adj_rssi` | integer (-100 to 100) | `0`* | Per-node receive RSSI adjustment. Use only when this board has a known-weak (or known-strong) antenna. <br>*Default `20` on bare ESP32-S3 builds; `0` on M5STICK and M5ATOM (even when S3-based — those board defines are matched before `ESP32S3` in `include/defaults.h:79-95`) and `0` on every other variant. |
 
 See [Calibration](/guides/calibration) for the full procedure.
 
@@ -108,19 +108,21 @@ See [Calibration](/guides/calibration) for the full procedure.
 | `known_macs` | string | `""` | Whitespace-separated BLE MACs (no colons, lowercase) treated as stable ids. Useful for devices that advertise a random-but-static MAC. Published as `known:<mac>`. |
 | `known_irks` | string | `""` | Whitespace-separated 32-hex-character IRKs for resolving Apple random-resolvable MACs into a stable id. See [Apple devices](/apple) for how to extract them. |
 | `query` | string | `""` | Whitespace-separated id prefixes to **actively connect** to over BLE and ask for Room Assistant / model / name characteristics. Example: `flora:` for Mi Flora plant sensors. |
-| `requery_ms` | integer seconds (30–3600) | `300` | How often to re-issue active queries against matched devices. |
+| `requery_ms` | integer seconds (30–3600) | `300` | How often to re-issue active queries against matched devices. **Boot only.** |
 | `connect_all` | ON / OFF | `OFF` | Allow active BLE connections to **every** device, bypassing the `query` filter. Intended for advanced debugging only — connecting to everything is expensive and can starve the scanner. |
 
 ### Counting
 
 The count feature publishes a sensor with the number of unique devices currently within the count window. Useful when you can't fingerprint individuals but the population count itself is informative (e.g. `exp:20` COVID exposure apps, generic `apple:`).
 
+Only `count_ids` is live-settable over MQTT. The three hysteresis knobs are read once at boot — set them in the captive portal / Settings page and reboot.
+
 | Setting | Type | Default | Description |
 |---|---|---|---|
 | `count_ids` | string | `""` | Whitespace-separated id prefixes to count. |
-| `count_enter` | float (0–100) | `2.0` | Start counting a device once it's closer than this (m). |
-| `count_exit` | float (0–100) | `4.0` | Stop counting once it's farther than this (m). Higher than `count_enter` creates hysteresis to prevent flapping. |
-| `count_ms` | integer ms (0–3000000) | `10000` | Stop counting a device if its last advertisement is older than this. |
+| `count_enter` | float (0–100) | `2.0` | Start counting a device once it's closer than this (m). **Boot only.** |
+| `count_exit` | float (0–100) | `4.0` | Stop counting once it's farther than this (m). Higher than `count_enter` creates hysteresis to prevent flapping. **Boot only.** |
+| `count_ms` | integer ms (0–3000000) | `10000` | Stop counting a device if its last advertisement is older than this. **Boot only.** |
 
 ### Network / MQTT
 
