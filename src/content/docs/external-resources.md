@@ -1,11 +1,12 @@
 ---
-title: Quick Starts
+title: External resources
+description: Community-written articles and YouTube videos covering ESPresense setup, integrations, and use cases.
 sidebar:
-  order: 1
+  order: 99
 ---
 
 
-Instead of reading our documentation check out these great videos/links to get you started quickly. Please note some of the details have changes or become outdate due to constant developments and refinements.
+Once you've finished the [Get started tutorial](/getting-started), these community-written articles and videos cover more advanced or alternative ESPresense setups. Some predate the current firmware release, so treat them as orientation, not as authoritative steps — when something in a third-party tutorial conflicts with the docs here, the docs here are current.
 
 ## Articles
 
