@@ -105,7 +105,7 @@ These came out of the [ESPA-38](https://github.com/ESPresense/ESPresense/issues)
 - **Placeholder values that don't run.** `host: your_host` in the External MQTT block. A reader can't verify a config that won't connect.
 - **Pages that are link dumps.** `guides/technical.md` is 20+ academic PDFs with no commentary. Useful raw material; not a docs page. Either turn it into real explanation citing 3–5 of them, or move it out of the public docs.
 - **Component-only pages.** `troubleshooting/terminal.mdx` is 9 lines and an embedded `<SerialTerminal />`. A first-time user lands on a black box. Always wrap a component with: what it does, browser requirements, what a healthy result looks like.
-- **Empty H2s.** Two consecutive `## ` headings with no content between them — a sign of an abandoned split. `apple.mdx` had this; don't ship it.
+- **Empty H2s.** Two consecutive `##` headings with nothing between them — a sign of an abandoned split. `apple.mdx` had this; don't ship it.
 - **No freshness line, anywhere.** Before this contributing guide, no page on the site told the reader which firmware it was verified against. We're backfilling. Don't add to the deficit.
 - **Affiliate-link rot.** Amazon/AliExpress links in `devices.md` and `nodes.md` go stale. If you add a board recommendation, link the manufacturer page first and the marketplace as a secondary "where to buy."
 
