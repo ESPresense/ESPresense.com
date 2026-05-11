@@ -97,6 +97,7 @@ export default defineConfig({
           label: 'Guides',
           items: [
             { slug: 'guides/calibration' },
+            { slug: 'guides/enrolling-devices' },
             { slug: 'guides/technical' },
           ],
         },

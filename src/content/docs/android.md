@@ -17,3 +17,7 @@ Android devices are typically tight lipped and need an app to get them to emit B
 ### Add to the list
 
 Have you found/created a better app, please click Edit this page below.
+
+### See also
+
+- [Enrolling devices](/guides/enrolling-devices#android-phones) — step-by-step BLE Transmitter setup and the underscore/hyphen fingerprint gotcha from [#880](https://github.com/ESPresense/ESPresense/discussions/880).
