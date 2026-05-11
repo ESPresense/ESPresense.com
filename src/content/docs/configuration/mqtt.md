@@ -18,6 +18,13 @@ mosquitto_sub -h homeassistant.local -u <username> -P <password> -v -t "espresen
 For configuration of the Companion App also check the [Companion MQTT](/companion/installation/#mqtt-setup) section
 :::
 
+## Direction of Data
+
+For a focused breakdown of which topics each component publishes and subscribes to, see:
+
+- [Firmware MQTT behavior](/configuration/mqtt/firmware)
+- [Companion MQTT behavior](/configuration/mqtt/companion)
+
 ## Reading Current Settings
 
 Example output when subscribing to a room:
