@@ -85,7 +85,7 @@ If MQTT auto-discovery is enabled in Home Assistant (it is by default), the node
 
 1. In Home Assistant, go to **Settings → Devices & Services → MQTT**.
 2. Click **devices** at the bottom.
-3. You should see a new device named after the room you chose in Step 2 (`Office`, `Kitchen`, …). It comes with several entities: a connectivity sensor (online / offline), a **Max Distance** number, a **Active Scan** switch, a **Query** text input.
+3. You should see a new device named after the room you chose in Step 2 (`Office`, `Kitchen`, …). It comes with several entities — a connectivity sensor (online / offline), **Uptime** and **Free Mem** diagnostics, a **Restart** button, **Max Distance** and **Absorption** numbers, an **Enroll** button, plus auto-update controls when enabled in settings.
 
 If the device doesn't appear after about a minute:
 
@@ -110,7 +110,7 @@ That's it for the first pass — the defaults are reasonable. Once you have more
 
 ## Step 5 — Enroll your phone
 
-To track a specific Apple device reliably, you "enroll" it with ESPresense. Enrollment captures the device's **Identity Resolving Key (IRK)** so ESPresense can recognise the device even after its Bluetooth MAC rotates (which iOS does every ~15 minutes).
+To track a specific Apple device reliably, you "enroll" it with ESPresense. Enrollment captures the device's **Identity Resolving Key (IRK)** so ESPresense can recognise the device even after its Bluetooth MAC rotates (which iOS does periodically for privacy).
 
 1. In the node's web UI, click **Devices**, or visit `http://<room-name>.local/ui/#/devices`.
 2. In the **Name** field at the top, type a stable name for your phone — for example `dans-iphone`. No spaces. This is the id Home Assistant will use.
