@@ -25,8 +25,7 @@ Some store links on this page (Amazon, AliExpress) are affiliate links. As an Am
 
 | Name               | Stores         | Notes |
 |:-------------------|:--------------:|-------|
-| M5 Atom S3 Lite    | [ali](https://s.click.aliexpress.com/e/_oFSxCND) | 8MB flash memory, built-in 3D antenna, IR emitter,  RGB LED, Button and GROVE interface [^cdc] |
-| M5 Atom S3         | [m5stack](https://docs.m5stack.com/en/core/AtomS3) [amz/us](https://amzn.to/4v3qPFm) | 0.85" IPS LCD, MPU6886 6-axis IMU, 8MB flash, built-in 3D antenna, USB-C [^cdc] |
+| M5 Atom S3 Lite    | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/4v3qPFm) | 8MB flash memory, built-in 3D antenna, IR emitter, RGB LED, Button and GROVE interface [^cdc] |
 | M5 Atom S3U        | [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) | USB-A w/ 8MB flash memory, built-in 3D antenna, IR emitter, PDM mic, RGB LED, Button and GROVE interface [^cdc] |
 | M5 Stamp S3        | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) | Stamp form factor w/ 8MB flash memory, built-in 3D antenna, and RGB LED [^cdc] |
 | Teyleten Robot | [ali](https://s.click.aliexpress.com/e/_c3JEwtzv) [amz/us](https://amzn.to/4jXMRUl) | 8MB flash and 2MB PSRAM dev board, sold as a 3-pack |
