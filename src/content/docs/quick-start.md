@@ -1,5 +1,5 @@
 ---
-title: Get started
+title: Quick Start
 description: End-to-end tutorial — go from a fresh ESP32 to your phone showing in the right room in Home Assistant.
 sidebar:
   order: 2

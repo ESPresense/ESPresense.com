@@ -6,7 +6,7 @@ sidebar:
 ---
 
 
-Once you've finished the [Get started tutorial](/getting-started), these community-written articles and videos cover more advanced or alternative ESPresense setups. Some predate the current firmware release, so treat them as orientation, not as authoritative steps — when something in a third-party tutorial conflicts with the docs here, the docs here are current.
+Once you've finished the [Quick Start tutorial](/quick-start), these community-written articles and videos cover more advanced or alternative ESPresense setups. Some predate the current firmware release, so treat them as orientation, not as authoritative steps — when something in a third-party tutorial conflicts with the docs here, the docs here are current.
 
 ## Articles
 

@@ -16,7 +16,6 @@ export default defineConfig({
     '/troubleshooting': '/troubleshooting/data-flow',
     '/troubleshooting/rebooting': '/troubleshooting/reboot-loops',
     '/integrations/home_assistant': '/integrations/home-assistant',
-    '/quick-start': '/external-resources',
   },
   integrations: [
     starlight({
@@ -46,7 +45,7 @@ export default defineConfig({
           label: 'Getting started',
           items: [
             { slug: 'approach' },
-            { slug: 'getting-started' },
+            { slug: 'quick-start' },
             { slug: 'external-resources' },
           ],
         },
