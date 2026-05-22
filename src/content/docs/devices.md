@@ -4,6 +4,9 @@ sidebar:
   order: 3
 ---
 
+:::note[Affiliate disclosure]
+Some store links on this page (Amazon, AliExpress) are affiliate links. As an Amazon Associate, ESPresense earns from qualifying purchases, at no extra cost to you. Affiliate revenue helps fund the project — see [Credits](/credits) for other ways to support.
+:::
 
 ## Known working
 
