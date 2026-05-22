@@ -86,7 +86,7 @@ Each of these comes up often enough that it's worth saying plainly:
 ### USB-C chargers
 
 * [20W USB-C Wall Charger](https://amzn.to/4kXGphK) &mdash; small fast charger with foldable plug
-* [20W USB-C Wall Charger (3 pack)](https://amzn.to/4hFLcBz)
+* [20W USB-C Wall Charger (3-pack)](https://amzn.to/4hFLcBz)
 * [20W USB-C Charger (AliExpress)](https://s.click.aliexpress.com/e/_c4Myg1Bl) &mdash; PD/QC 3.0
 
 ### USB-C to C cables
@@ -96,14 +96,14 @@ Each of these comes up often enough that it's worth saying plainly:
 
 ### USB-A chargers
 
-* [Dual USB-A 3 pack](https://amzn.to/4iA0EAq) &mdash; compact cube design
+* [Dual USB-A 3-pack](https://amzn.to/4iA0EAq) &mdash; compact cube design
 
 ### USB-A to C cables
 
-* [16 ft, 2 pack](https://amzn.to/3zzTTXW)
-* [1 ft, 6 pack](https://amzn.to/3kyD8Is)
-* [Straight adapter 4 pack](https://amzn.to/4hNrh3O)
-* [Right-angle adapter 4 pack](https://amzn.to/4bWWH6o)
+* [16 ft, 2-pack](https://amzn.to/3zzTTXW)
+* [1 ft, 6-pack](https://amzn.to/3kyD8Is)
+* [Straight adapter 4-pack](https://amzn.to/4hNrh3O)
+* [Right-angle adapter 4-pack](https://amzn.to/4bWWH6o)
 
 ### USB-A to Micro-B cables
 
