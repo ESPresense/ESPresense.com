@@ -5,7 +5,9 @@ sidebar:
   order: 4
 ---
 
-> **Last verified against firmware v4.0.6** &mdash; 2026-05-11. Community-voiced board data and quotes are lifted from the canonical pin: [discussion #2334 &mdash; Boards: what works, what's flaky, what to avoid](https://github.com/ESPresense/ESPresense/discussions/2334). If a board you've run isn't listed, comment on that thread and we'll fold it in.
+<!-- Last verified against firmware v4.0.6 on 2026-05-11. -->
+
+Community-voiced board data and quotes are lifted from the canonical pin: [discussion #2334 &mdash; Boards: what works, what's flaky, what to avoid](https://github.com/ESPresense/ESPresense/discussions/2334). If a board you've run isn't listed, comment on that thread and we'll fold it in.
 
 ## First-time buyer (tier&nbsp;1)
 
