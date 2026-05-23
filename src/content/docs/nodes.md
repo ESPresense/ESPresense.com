@@ -11,7 +11,7 @@ Community-voiced board data and quotes are lifted from the canonical pin: [discu
 
 ## First-time buyer (tier 1)
 
-If you've never deployed ESPresense before, buy one of these. Both are branded, enclosed (or stamp-form, not a bare clone PCB), ship with a 3D antenna, and are well-supported by the [browser installer](/firmware) — it detects the chip family and lists the matching firmware builds in the dropdown.
+If you've never deployed ESPresense before, buy one of these. Both are branded, enclosed (or stamp-form, not a bare clone PCB), and ship with a 3D antenna. Flash them with the [browser installer](/firmware) and you're done.
 
 :::note[Affiliate disclosure]
 Some store links on this page (Amazon, AliExpress) are affiliate links. As an Amazon Associate, ESPresense earns from qualifying purchases, at no extra cost to you. Affiliate revenue helps fund the project — see [Credits](/credits) for other ways to support.
@@ -37,7 +37,7 @@ Pick a chip first, then a board within it.
 
 ## Community-tested (branded)
 
-Branded boards we actively point new users at. The [browser installer](/firmware) detects the chip family and lists the matching firmware builds in its flavour dropdown. [^cdc]
+Branded boards we actively point new users at. All flash with the [browser installer](/firmware). [^cdc]
 
 ### ESP32-S3
 
