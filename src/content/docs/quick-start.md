@@ -170,6 +170,5 @@ Walk back. The sensor flips back to the room name.
 
 For everything else, the [Troubleshooting section](/troubleshooting/data-flow) and the [GitHub Discussions](https://github.com/ESPresense/ESPresense/discussions) are the places to look. Search before posting — most first-run problems have been answered before.
 
----
+<!-- Last verified against firmware v4.0.6 on 2026-05-10 with an M5 Atom S3 Lite, a Home Assistant 2026.4 install running the Mosquitto add-on, and an iPhone 15 enrolled via the UI flow. -->
 
-*Last verified against firmware v4.0.6 on 2026-05-10 with an M5 Atom S3 Lite, a Home Assistant 2026.4 install running the Mosquitto add-on, and an iPhone 15 enrolled via the UI flow.*
