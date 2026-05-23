@@ -44,7 +44,7 @@ Branded boards we actively point new users at. The [browser installer](/firmware
 | Board | Stores | Notes |
 |:------|:-------|:------|
 | M5 Atom S3 Lite | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/4v3qPFm) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
-| M5 Atom S3U | [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) | Enclosed, USB-A. 8 MB flash, 3D antenna, IR emitter, PDM mic, RGB LED, button, GROVE [^cdc] |
+| M5 Atom S3U | [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) [amz/us](https://amzn.to/4uZJFgE) | Enclosed, USB-A. 8 MB flash, 3D antenna, IR emitter, PDM mic, RGB LED, button, GROVE [^cdc] |
 | M5 Stamp S3 | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) | Stamp form. 8 MB flash, 3D antenna, RGB LED [^cdc] |
 | Teyleten Robot S3 | [ali](https://s.click.aliexpress.com/e/_c3JEwtzv) [amz/us](https://amzn.to/4jXMRUl) | Dev board. 8 MB flash + 2 MB PSRAM. Sold as a 3-pack [^cdc] |
 
