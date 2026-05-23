@@ -30,7 +30,7 @@ Pick a chip first, then a board within it.
 |:-----|:----------|:------|
 | ESP32-S3 | yes — recommended for new deployments | 8 MB flash typical, BT 5.0 LE coded PHY, USB-CDC |
 | ESP32-C3 | yes — recommended for cost-sensitive deployments | RISC-V, 4 MB flash typical |
-| ESP32-C6 | yes | Newer RISC-V part with BT 5.3; firmware build available |
+| ESP32-C6 | yes — bleeding edge | Newer RISC-V part with BT 5.3; firmware build available |
 | Original ESP32 | yes, for now | Older silicon with less CPU and RAM than the S3/C3/C6 parts. Still supported, but expect it to age out of new firmware features eventually — prefer a newer chip for new deployments. |
 | ESP32-S2 | no | No Bluetooth radio |
 | ESP8266 | no | No Bluetooth radio |
