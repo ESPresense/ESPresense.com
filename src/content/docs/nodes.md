@@ -35,7 +35,7 @@ Pick a chip first, then a board within it.
 | ESP32-S2 | no | No Bluetooth radio |
 | ESP8266 | no | No Bluetooth radio |
 
-## Community-tested (branded)
+## Community-tested (tier 2)
 
 Branded boards we actively point new users at. All flash with the [browser installer](/firmware). [^cdc]
 
