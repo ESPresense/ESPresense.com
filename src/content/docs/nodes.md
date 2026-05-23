@@ -1,80 +1,127 @@
 ---
 title: Nodes
+description: Reference list of ESP32 boards that run ESPresense, organised by tier from first-time-buyer pick to steer-away.
 sidebar:
   order: 4
 ---
 
+<!-- Last verified against firmware v4.0.6 on 2026-05-11. -->
 
-The firmware is currently compatible with the original ESP32, ESP32-C3, and the ESP32-S3.  Generally C3 or S3 is recommended for new deployments.  The C3 is nice and cheap and the RISC-V is fast!  The S3 has better bluetooth range but is a bit more pricey.
+Community-voiced board data and quotes are lifted from the canonical pin: [discussion #2334 — Boards: what works, what's flaky, what to avoid](https://github.com/ESPresense/ESPresense/discussions/2334). If a board you've run isn't listed, comment on that thread and we'll fold it in.
 
-It is not compatible with the ESP32-S2 (doesn't have bluetooth), ESP32-C6 (too new no support in our dev environment), or ESP8266 (old, no bluetooth).
+## Chip families
+
+Pick a chip first, then a board within it.
+
+| Chip | Supported | Notes |
+|:-----|:----------|:------|
+| ESP32-S3 | yes — recommended for new deployments | 8 MB flash typical, BT 5.0 LE coded PHY, USB-CDC |
+| ESP32-C3 | yes — recommended for cost-sensitive deployments | RISC-V, 4 MB flash typical |
+| ESP32-C6 | yes — bleeding edge | Newer RISC-V part with BT 5.3; firmware build available |
+| Original ESP32 | yes, for now | Older silicon with less CPU and RAM than the S3/C3/C6 parts. Still supported, but expect it to age out of new firmware features eventually — prefer a newer chip for new deployments. |
+| ESP32-S2 | no | No Bluetooth radio |
+| ESP8266 | no | No Bluetooth radio |
+
+## Recommended boards
+
+**The boards in bold are the picks if you don't want to think about it** — M5 Atom S3 Lite as the default, M5 Stamp C3 Mate as a cost-conscious alternative.
+
+All branded boards listed here flash with the [browser installer](/firmware). [^cdc]
 
 :::note[Affiliate disclosure]
 Some store links on this page (Amazon, AliExpress) are affiliate links. As an Amazon Associate, ESPresense earns from qualifying purchases, at no extra cost to you. Affiliate revenue helps fund the project — see [Credits](/credits) for other ways to support.
 :::
 
-## ESP32-C3
+### ESP32-S3
 
-| Name                | Stores       | Notes |
-|:--------------------|:------------:|-------|
-| M5 Stamp C3 Mate    | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers) [ali](https://s.click.aliexpress.com/e/_omweFp9) | Stamp form factor w/ 4MB flash memory, built-in 3D antenna, RGB LED and button |
-| M5 Stamp C3U Mate   | [ali](https://s.click.aliexpress.com/e/_onkgbFp) | Stamp form factor w/ 4MB flash memory, built-in 3D antenna, RGB LED and button [^cdc] |
-| ESP32-C3-DevKitM-1U | [ali](https://s.click.aliexpress.com/e/_c3bVwFQb) [amz/us](https://amzn.to/41WQXFa) | Espressif's official development board with ESP32-C3-MINI-1U module, 4MB flash, 160MHz CPU |
+| Board | Stores | Notes |
+|:------|:-------|:------|
+| **M5 Atom S3 Lite** | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/4v3qPFm) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
+| M5 Atom S3U | [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) [amz/us](https://amzn.to/4uZJFgE) | Enclosed, USB-A. 8 MB flash, 3D antenna, IR emitter, PDM mic, RGB LED, button, GROVE [^cdc] |
+| M5 Stamp S3 | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) | Stamp form. 8 MB flash, 3D antenna, RGB LED [^cdc] |
+| Teyleten Robot S3 | [ali](https://s.click.aliexpress.com/e/_c3JEwtzv) [amz/us](https://amzn.to/4jXMRUl) | Dev board. 8 MB flash + 2 MB PSRAM. Sold as a 3-pack [^cdc] |
 
-## ESP32-S3
+### ESP32-C3
 
-| Name               | Stores         | Notes |
-|:-------------------|:--------------:|-------|
-| M5 Atom S3 Lite    | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/4v3qPFm) | 8MB flash memory, built-in 3D antenna, IR emitter, RGB LED, Button and GROVE interface [^cdc] |
-| M5 Atom S3U        | [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) | USB-A w/ 8MB flash memory, built-in 3D antenna, IR emitter, PDM mic, RGB LED, Button and GROVE interface [^cdc] |
-| M5 Stamp S3        | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) | Stamp form factor w/ 8MB flash memory, built-in 3D antenna, and RGB LED [^cdc] |
-| Teyleten Robot | [ali](https://s.click.aliexpress.com/e/_c3JEwtzv) [amz/us](https://amzn.to/4jXMRUl) | 8MB flash and 2MB PSRAM dev board, sold as a 3-pack |
+| Board | Stores | Notes |
+|:------|:-------|:------|
+| **M5 Stamp C3 Mate** | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-5pcs) [ali](https://s.click.aliexpress.com/e/_omweFp9) [amz/us](https://amzn.to/4tVkzP4) | Stamp form. 4 MB flash, 3D antenna, RGB LED, button |
+| M5 Stamp C3U Mate | [ali](https://s.click.aliexpress.com/e/_onkgbFp) | Stamp form, USB-A. 4 MB flash, 3D antenna, RGB LED, button [^cdc] |
+| ESP32-C3-DevKitM-1U | [ali](https://s.click.aliexpress.com/e/_c3bVwFQb) [amz/us](https://amzn.to/41WQXFa) | Espressif's dev board with ESP32-C3-MINI-1U module and U.FL connector. 4 MB flash, 160 MHz |
 
-## ESP32
+### Original ESP32
 
-| Name                | Stores         | Notes |
-|:--------------------|:--------------:|-------|
-| M5 Atom (all kinds) | [ali](https://s.click.aliexpress.com/e/_oDWoyd1) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/atom-lite-esp32-development-kit) [digi](https://www.digikey.com/en/products/detail/m5stack-technology-co-ltd/C008/12088545) | The 3D antenna is much better |
-| M5 Stamp Pico       | [ali](https://s.click.aliexpress.com/e/_olAPbYT) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/m5stamp-pico-diy-kit) | Small and still has nice 3D antenna |
-| Huzzah32            | [amz/us](https://amzn.to/4kWlmw4) | Much better quality than generic ESP32 dev boards |
+| Board | Stores | Notes |
+|:------|:-------|:------|
+| M5 Atom (Lite / Echo / Matrix) | [ali](https://s.click.aliexpress.com/e/_oDWoyd1) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/atom-lite-esp32-development-kit) [digi](https://www.digikey.com/en/products/detail/m5stack-technology-co-ltd/C008/12088545) | Enclosed. The 3D antenna is much better than generic clones |
+| M5 Stamp Pico | [ali](https://s.click.aliexpress.com/e/_olAPbYT) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/m5stamp-pico-diy-kit) | Stamp form. Small, still has a 3D antenna |
+| Adafruit Huzzah32 | [amz/us](https://amzn.to/4kWlmw4) | Dev board. Branded, quality control unlike generic ESP32 dev boards |
 
-## Works with caveats
+## Works, with caveats
 
-| Name               | Stores         | Notes |
-|:-------------------|:--------------:|-------|
-| ESP32 dev board clones   | [ali](https://s.click.aliexpress.com/e/_okTMXEr) [amz/us](https://amzn.to/4iWKv86) [amz/uk](https://amzn.to/4iyqHYK) | [^unbranded] No brand |
-| D1 Mini ESP32 (Micro B)  | [amz/us](https://amzn.to/3tlkK8D) | [^unbranded] No brand *Make sure you get the ESP32 NOT the ESP8266* |
-| D1 Mini ESP32 (Type C)   | [ali](https://s.click.aliexpress.com/e/_oC7KI4X) [amz/us](https://amzn.to/41VjFGq) | [^unbranded] No brand |
-| LOLIN D32 ESP32    | [ali](https://s.click.aliexpress.com/e/_onxVPQX) | [^unbranded] No brand |
-| M5Stick-C Plus     | [ali](https://s.click.aliexpress.com/e/_oo2TM0P) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/m5stickc-plus-esp32-pico-mini-iot-development-kit) [amz/us](https://amzn.to/4iOzTZj) | These are great little devices, but their built-in battery makes them less ideal |
+These boards run ESPresense, but antenna and module QC vary — RSSI from one of these often won't agree with a branded board at the same distance, which makes fleet calibration harder and is a real problem for Companion's room solver. Use one you already own rather than buying a new one. **If a "with caveats" board misbehaves, reproduce on a tier-1 board before opening a firmware issue** — RF problems on a marginal clone look identical to firmware bugs and burn a lot of triage time.
 
-## USB C chargers
+| Board | Caveat | Source |
+|:------|:-------|:-------|
+| AZDelivery ESP32 NodeMCU (WROOM-32 module on a generic dev board) | Works but no brand QC | [#2334][p] / [#1567][1567], [#1577][1577] |
+| Generic D1 Mini ESP32 (Micro-B and USB-C) | Multiple users report working in practice; same no-brand → no-QC caveat on the RF front-end | [#2334][p] / [#162][162] |
+| LOLIN D32 ESP32 | Works; unbranded RF caveat | [#2334][p] |
+| M5StickC Plus | Built-in battery is a liability for a fixed-in-place node | [#2334][p] |
+| SEEEDSTUDIO XIAO ESP32-C3 | Runs on the `esp32C3` flavour. One report of a board overheating ([#1364][1364]); use a known-good USB-C cable and a real power supply | [#2334][p] / [#1364][1364] |
 
-* [20W USB C Wall Charger](https://amzn.to/4kXGphK) - Small Fast Charger with Foldable Plug
-* [20W USB C Wall Charger (3 pack)](https://amzn.to/4hFLcBz)
-* [20W USB C Charger](https://s.click.aliexpress.com/e/_c4Myg1Bl) (AliExpress) - PD/QC 3.0 fast charger
+## Steer away
 
-## USB C to C cables
+Each of these comes up often enough that it's worth saying plainly:
 
-* [0.5ft USB C to C](https://amzn.to/4j02B9f)
-* [15cm USB C to C](https://s.click.aliexpress.com/e/_c2vxVV1D) (AliExpress) - right angle, fast charging
+- **Unbranded "ESP32 dev board" listings (Amazon / AliExpress).** ESPresense uses RSSI as its primary input — every distance estimate and every Companion room solve assumes the fleet's readings agree with each other. Unbranded clones don't have consistent antenna designs even within a single product listing; two boards from the same batch routinely differ by several dB at the same distance, which translates to feet of error in the Companion floor plan. None of that matters for sensor/relay/presence projects like ESPHome, which is why *"these same cheap boards never drop with ESPHome"* is a common (and accurate, but irrelevant) objection — ESPHome isn't doing RSSI distance estimation across a calibrated fleet. The failure mode here is also silent: the board flashes, joins WiFi, reports to MQTT, but its RSSI numbers don't line up with the rest of the fleet and you can't tell whether bad tracking is firmware, calibration, or a bad RF front-end. @maxi1134 separately reports a 40-50% WiFi-retry rate on generic ESP32 dev boards ([#1364][1364], summarised in [#2334][p]). For any node you intend to calibrate against the fleet — and especially for Companion — spend the extra few dollars on a branded board.
+- **ESP32-CAM.** Not officially supported. Camera owns most of the GPIOs, tighter RAM, no maintained firmware variant. One community member keeps a fork working with source-side modifications ([#1347][1347]); we don't build for it.
+- **ESP32-S2 / ESP8266.** No Bluetooth radio — physically can't run ESPresense.
+- **NSPanel as a base station.** Open question. The chip is an ESP32, but no one has reported flashing ESPresense over the stock NSPanel firmware and getting both the touch UI and BT scanning working ([#1335][1335]).
+- **GL-S10 Bluetooth IoT Gateway.** Not an ESP32 — MediaTek MT7621 with a separate BLE module — so the ESPresense firmware doesn't apply ([#1263][1263]).
 
-## USB A chargers
+## Power and cabling
 
-* [Dual USB A 3 pack](https://amzn.to/4iA0EAq) - 3-pack of dual-port USB-A chargers with compact cube design
+### USB-C chargers
 
-## USB A to C cables
+* [20W USB-C Wall Charger](https://amzn.to/4kXGphK) — small fast charger with foldable plug
+* [20W USB-C Wall Charger (3-pack)](https://amzn.to/4hFLcBz)
+* [20W USB-C Charger (AliExpress)](https://s.click.aliexpress.com/e/_c4Myg1Bl) — PD/QC 3.0
 
-* [16ft 2 pack](https://amzn.to/3zzTTXW)
-* [1ft 6 pack](https://amzn.to/3kyD8Is)
-* [Straight Adapter 4 Pack](https://amzn.to/4hNrh3O)
-* [Right Angle Adapter 4 Pack](https://amzn.to/4bWWH6o)
+### USB-C to C cables
 
-## USB-A to Micro-B cables
+* [0.5 ft USB-C to C](https://amzn.to/4j02B9f)
+* [15 cm USB-C to C, right angle (AliExpress)](https://s.click.aliexpress.com/e/_c2vxVV1D)
 
-* [0.5 ft Micro USB Cable](https://amzn.to/4hzksTa)
+### USB-A chargers
+
+* [Dual USB-A 3-pack](https://amzn.to/4iA0EAq) — compact cube design
+
+### USB-A to C cables
+
+* [16 ft, 2-pack](https://amzn.to/3zzTTXW)
+* [1 ft, 6-pack](https://amzn.to/3kyD8Is)
+* [Straight adapter 4-pack](https://amzn.to/4hNrh3O)
+* [Right-angle adapter 4-pack](https://amzn.to/4bWWH6o)
+
+### USB-A to Micro-B cables
+
+* [0.5 ft Micro USB cable](https://amzn.to/4hzksTa)
+
+## See also
+
+* [Canonical pin #2334][p] — community discussion, raw quotes, source threads
+* [Install Firmware](/firmware) — browser-based installer
+* [Discord](https://discord.gg/jbqmn7V6n6) — faster human turnaround on board questions
 
 ## Footnotes
 
-[^unbranded]: These are cheap, but no brand usually means no quality control, especially on the WiFi/BLE components
-[^cdc]: Use CDC firmware flavor
+[^cdc]: USB-CDC firmware flavour. Pick the `cdc` variant from the [browser installer](/firmware) flavour dropdown (or when flashing manually).
+
+[p]: https://github.com/ESPresense/ESPresense/discussions/2334
+[162]: https://github.com/ESPresense/ESPresense/discussions/162
+[1263]: https://github.com/ESPresense/ESPresense/discussions/1263
+[1335]: https://github.com/ESPresense/ESPresense/discussions/1335
+[1347]: https://github.com/ESPresense/ESPresense/discussions/1347
+[1364]: https://github.com/ESPresense/ESPresense/discussions/1364
+[1567]: https://github.com/ESPresense/ESPresense/discussions/1567
+[1577]: https://github.com/ESPresense/ESPresense/discussions/1577
