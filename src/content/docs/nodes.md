@@ -9,19 +9,6 @@ sidebar:
 
 Community-voiced board data and quotes are lifted from the canonical pin: [discussion #2334 — Boards: what works, what's flaky, what to avoid](https://github.com/ESPresense/ESPresense/discussions/2334). If a board you've run isn't listed, comment on that thread and we'll fold it in.
 
-## First-time buyer (tier 1)
-
-If you've never deployed ESPresense before, buy one of these. Both are branded, enclosed (or stamp-form, not a bare clone PCB), and ship with a 3D antenna. Flash them with the [browser installer](/firmware) and you're done.
-
-:::note[Affiliate disclosure]
-Some store links on this page (Amazon, AliExpress) are affiliate links. As an Amazon Associate, ESPresense earns from qualifying purchases, at no extra cost to you. Affiliate revenue helps fund the project — see [Credits](/credits) for other ways to support.
-:::
-
-| Board | Chip | Why it's tier 1 | Stores |
-|:------|:-----|:--------------------|:-------|
-| **M5 Atom S3 Lite** | ESP32-S3 | First-timer pick: ~$15, enclosed, USB-C, status LED, 8 MB flash, noticeably better BT range than original ESP32 [^cdc] | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/4v3qPFm) |
-| **M5 Stamp C3 Mate** | ESP32-C3 | Cost-conscious pick: stamp form, RISC-V, runs cool, 4 MB flash, 3D antenna, RGB LED | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-5pcs) [ali](https://s.click.aliexpress.com/e/_omweFp9) [amz/us](https://amzn.to/4tVkzP4) |
-
 ## Chip families
 
 Pick a chip first, then a board within it.
@@ -35,15 +22,21 @@ Pick a chip first, then a board within it.
 | ESP32-S2 | no | No Bluetooth radio |
 | ESP8266 | no | No Bluetooth radio |
 
-## Community-tested (tier 2)
+## Recommended boards
 
-Branded boards we actively point new users at. All flash with the [browser installer](/firmware). [^cdc]
+**The boards in bold are the picks if you don't want to think about it** — M5 Atom S3 Lite as the default, M5 Stamp C3 Mate as a cost-conscious alternative.
+
+All branded boards listed here flash with the [browser installer](/firmware). [^cdc]
+
+:::note[Affiliate disclosure]
+Some store links on this page (Amazon, AliExpress) are affiliate links. As an Amazon Associate, ESPresense earns from qualifying purchases, at no extra cost to you. Affiliate revenue helps fund the project — see [Credits](/credits) for other ways to support.
+:::
 
 ### ESP32-S3
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| M5 Atom S3 Lite | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/4v3qPFm) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
+| **M5 Atom S3 Lite** | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/4v3qPFm) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
 | M5 Atom S3U | [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) [amz/us](https://amzn.to/4uZJFgE) | Enclosed, USB-A. 8 MB flash, 3D antenna, IR emitter, PDM mic, RGB LED, button, GROVE [^cdc] |
 | M5 Stamp S3 | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) | Stamp form. 8 MB flash, 3D antenna, RGB LED [^cdc] |
 | Teyleten Robot S3 | [ali](https://s.click.aliexpress.com/e/_c3JEwtzv) [amz/us](https://amzn.to/4jXMRUl) | Dev board. 8 MB flash + 2 MB PSRAM. Sold as a 3-pack [^cdc] |
@@ -52,7 +45,7 @@ Branded boards we actively point new users at. All flash with the [browser insta
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| M5 Stamp C3 Mate | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-5pcs) [ali](https://s.click.aliexpress.com/e/_omweFp9) [amz/us](https://amzn.to/4tVkzP4) | Stamp form. 4 MB flash, 3D antenna, RGB LED, button |
+| **M5 Stamp C3 Mate** | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-5pcs) [ali](https://s.click.aliexpress.com/e/_omweFp9) [amz/us](https://amzn.to/4tVkzP4) | Stamp form. 4 MB flash, 3D antenna, RGB LED, button |
 | M5 Stamp C3U Mate | [ali](https://s.click.aliexpress.com/e/_onkgbFp) | Stamp form, USB-A. 4 MB flash, 3D antenna, RGB LED, button [^cdc] |
 | ESP32-C3-DevKitM-1U | [ali](https://s.click.aliexpress.com/e/_c3bVwFQb) [amz/us](https://amzn.to/41WQXFa) | Espressif's dev board with ESP32-C3-MINI-1U module and U.FL connector. 4 MB flash, 160 MHz |
 
