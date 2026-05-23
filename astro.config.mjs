@@ -1,7 +1,13 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import rehypeExternalLinks from 'rehype-external-links';
 export default defineConfig({
   site: 'https://espresense.com',
+  markdown: {
+    rehypePlugins: [
+      [rehypeExternalLinks, { target: '_blank', rel: ['noopener', 'noreferrer'] }],
+    ],
+  },
   redirects: {
     '/beacons': '/devices',
     '/beacons/android': '/android',
