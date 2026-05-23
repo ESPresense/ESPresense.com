@@ -11,7 +11,7 @@ Community-voiced board data and quotes are lifted from the canonical pin: [discu
 
 ## First-time buyer (tier 1)
 
-If you've never deployed ESPresense before, buy one of these. Both are branded, enclosed (or stamp-form, not a bare clone PCB), ship with a 3D antenna, and the [browser installer](/firmware) picks the right firmware flavour automatically.
+If you've never deployed ESPresense before, buy one of these. Both are branded, enclosed (or stamp-form, not a bare clone PCB), ship with a 3D antenna, and are well-supported by the [browser installer](/firmware) — it detects the chip family and lists the matching firmware builds in the dropdown.
 
 :::note[Affiliate disclosure]
 Some store links on this page (Amazon, AliExpress) are affiliate links. As an Amazon Associate, ESPresense earns from qualifying purchases, at no extra cost to you. Affiliate revenue helps fund the project — see [Credits](/credits) for other ways to support.
@@ -37,7 +37,7 @@ Pick a chip first, then a board within it.
 
 ## Community-tested (branded)
 
-Branded boards we actively point new users at. The [browser installer](/firmware) selects the right firmware flavour automatically. [^cdc]
+Branded boards we actively point new users at. The [browser installer](/firmware) detects the chip family and lists the matching firmware builds in its flavour dropdown. [^cdc]
 
 ### ESP32-S3
 
@@ -122,7 +122,7 @@ Each of these comes up often enough that it's worth saying plainly:
 
 ## Footnotes
 
-[^cdc]: USB-CDC firmware flavour. The [browser installer](/firmware) selects this automatically; pick the `cdc` variant if you're flashing manually.
+[^cdc]: USB-CDC firmware flavour. Pick the `cdc` variant from the [browser installer](/firmware) flavour dropdown (or when flashing manually).
 
 [p]: https://github.com/ESPresense/ESPresense/discussions/2334
 [162]: https://github.com/ESPresense/ESPresense/discussions/162
