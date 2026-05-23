@@ -20,7 +20,7 @@ Some store links on this page (Amazon, AliExpress) are affiliate links. As an Am
 | Board | Chip | Why it's tier 1 | Stores |
 |:------|:-----|:--------------------|:-------|
 | **M5 Atom S3 Lite** | ESP32-S3 | First-timer pick: ~$15, enclosed, USB-C, status LED, 8 MB flash, noticeably better BT range than original ESP32 [^cdc] | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/4v3qPFm) |
-| **M5 Stamp C3 Mate** | ESP32-C3 | Cost-conscious pick: stamp form, RISC-V, runs cool, 4 MB flash, 3D antenna, RGB LED | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers) [ali](https://s.click.aliexpress.com/e/_omweFp9) |
+| **M5 Stamp C3 Mate** | ESP32-C3 | Cost-conscious pick: stamp form, RISC-V, runs cool, 4 MB flash, 3D antenna, RGB LED | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers) [ali](https://s.click.aliexpress.com/e/_omweFp9) [amz/us](https://amzn.to/4tVkzP4) |
 
 ## Chip families
 
@@ -52,7 +52,7 @@ Branded boards we actively point new users at. The [browser installer](/firmware
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| M5 Stamp C3 Mate | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers) [ali](https://s.click.aliexpress.com/e/_omweFp9) | Stamp form. 4 MB flash, 3D antenna, RGB LED, button |
+| M5 Stamp C3 Mate | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers) [ali](https://s.click.aliexpress.com/e/_omweFp9) [amz/us](https://amzn.to/4tVkzP4) | Stamp form. 4 MB flash, 3D antenna, RGB LED, button |
 | M5 Stamp C3U Mate | [ali](https://s.click.aliexpress.com/e/_onkgbFp) | Stamp form, USB-A. 4 MB flash, 3D antenna, RGB LED, button [^cdc] |
 | ESP32-C3-DevKitM-1U | [ali](https://s.click.aliexpress.com/e/_c3bVwFQb) [amz/us](https://amzn.to/41WQXFa) | Espressif's dev board with ESP32-C3-MINI-1U module and U.FL connector. 4 MB flash, 160 MHz |
 
