@@ -7,7 +7,7 @@ sidebar:
 
 If you end up deploying a fleet of ESP32s in your home, it can quickly become painful to go to each device to update settings.
 
-You can use tools like [MQTT explorer](https://mqtt-explorer.com) or if you are using mosquitto (default for Home Assistant), the `mosquitto_sub` and `mosquitto_pub` tools to view and manage the settings.
+Any standard MQTT client works for inspecting and updating settings — [MQTT Explorer](https://mqtt-explorer.com) for a GUI, or the `mosquitto_sub` / `mosquitto_pub` CLI tools (they ship with the Mosquitto project but talk to any MQTT broker).
 
 
 ```bash
