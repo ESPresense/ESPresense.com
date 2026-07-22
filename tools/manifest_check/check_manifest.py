@@ -88,7 +88,7 @@ def http_request(url: str, *, method: str, timeout: float, retries: int, backoff
                 body = resp.read() if method == "GET" else b""
                 return resp.status, body, resp.headers.get("Content-Type", "")
         except urllib.error.HTTPError as exc:
-            if exc.code < 500 or attempt == retries:
+            if (exc.code < 500 and exc.code != 429) or attempt == retries:
                 body = exc.read() if method == "GET" else b""
                 return exc.code, body, exc.headers.get("Content-Type", "") if exc.headers else ""
             last_exc = exc
@@ -173,7 +173,7 @@ def check_target(
             if path.startswith(("http://", "https://")):
                 part_url = path
             else:
-                part_url = urllib.parse.urljoin(base + "/", path.lstrip("/"))
+                part_url = urllib.parse.urljoin(url, path)
             try:
                 pstatus, _, _ = http_request(
                     part_url, method="HEAD", timeout=timeout, retries=retries, backoff=backoff
