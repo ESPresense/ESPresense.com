@@ -1,0 +1,47 @@
+name: manifest-check
+
+# Catch issue #2225 ("Failed to download manifest") regressions. Probes the
+# public ESP Web Tools manifest endpoints served by functions/releases/[[path]].ts
+# and asserts they return well-formed JSON with reachable binaries.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/manifest_check/**"
+      - "functions/releases/**"
+      - ".github/workflows/manifest-check.yml"
+  pull_request:
+    paths:
+      - "tools/manifest_check/**"
+      - "functions/releases/**"
+      - ".github/workflows/manifest-check.yml"
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    name: Schema unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python3 tools/manifest_check/test_check_manifest.py
+
+  probe-manifest:
+    name: Probe public manifest endpoints
+    runs-on: ubuntu-latest
+    needs: unit-tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Probe manifest URLs
+        run: python3 tools/manifest_check/check_manifest.py
