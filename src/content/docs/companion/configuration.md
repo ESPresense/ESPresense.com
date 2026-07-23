@@ -280,10 +280,12 @@ nodes:
   - id: esp32-1 # optional
     name: Living Room Node
     room: living-room # room id, see rooms section
-    point: [2,2,1]  # x,y,z coordinates within room
+    point: [2,2,1]  # absolute x,y,z coordinates (same origin as rooms, NOT relative to the room)
     floors: ["ground", "outside"] # floor id, LIST THE FLOOR THE NODE IS ON FIRST, followed by the next closest location.
 ```
 Note: Multiple nodes can be mapped to one room, but each needs a unique name.
+
+**Coordinates are absolute, not room- or floor-relative.** Like rooms, node points are measured from the map's origin, and z must include the floor's base elevation. On a multi-story home, a node mounted 1.7m up a wall on a floor whose `bounds` start at z=3 gets `point: [x, y, 4.7]` — not `1.7`. If a node's z falls outside the z-range of its floor's `bounds`, it will be excluded from locating on that floor and will render at the wrong height in the 3D view.
 
 ### Devices
 ```yaml
