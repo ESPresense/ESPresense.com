@@ -12,7 +12,7 @@
   "dependencies": {
     "@astrojs/markdown-remark": "7.2.2",
     "@astrojs/starlight": "^0.41.6",
-    "astro": "^7.1.6",
+    "astro": "^7.3.2",
     "fflate": "^0.7.5",
     "hono": "^4.13.5",
     "rehype-external-links": "^3.0.0",
