@@ -111,6 +111,27 @@ app.use("*", cors())
 
 app.use('*', prettyJSON())
 
+// Basic per-IP rate limiting to protect upstream GitHub/nightly.link calls
+// from being exhausted by unbounded request volume.
+const RATE_LIMIT_WINDOW_MS = 60_000
+const RATE_LIMIT_MAX_REQUESTS = 60
+const rateLimitBuckets = new Map<string, { count: number; reset: number }>()
+
+app.use('*', async (c: Context, next) => {
+  const ip = c.req.header('CF-Connecting-IP') ?? 'unknown'
+  const now = Date.now()
+  const bucket = rateLimitBuckets.get(ip)
+  if (!bucket || now > bucket.reset) {
+    rateLimitBuckets.set(ip, { count: 1, reset: now + RATE_LIMIT_WINDOW_MS })
+  } else {
+    bucket.count++
+    if (bucket.count > RATE_LIMIT_MAX_REQUESTS) {
+      return c.json({ error: 'Too many requests' }, 429)
+    }
+  }
+  await next()
+})
+
 // Latest builds change frequently, cache GitHub API responses for 5 minutes
 app.all('/latest/download/:branch/:bin',
   cache({ cacheName: 'artifacts', cacheControl: 'public, max-age=300' }),
