@@ -102,6 +102,7 @@ interface Asset {
 
 interface Release {
   name: string
+  tag_name: string
   assets: Asset[]
 }
 
@@ -124,7 +125,10 @@ app.get('/:tag{[^/]+\\.json}',
     // latest changes frequently, specific releases are immutable
     const maxAge = tag === 'latest' ? 300 : 86400
 
-    const response = await fetch(`https://api.github.com/repos/ESPresense/ESPresense/releases/tags/${tag}`, {
+    // 'latest' is not a real Git tag; GitHub's /releases/latest resolves it
+    // to the newest non-prerelease. Specific tags use /releases/tags/{tag}.
+    const releasePath = tag === 'latest' ? 'releases/latest' : `releases/tags/${tag}`
+    const response = await fetch(`https://api.github.com/repos/ESPresense/ESPresense/${releasePath}`, {
       headers: { "User-Agent": "espresense-release-proxy" },
       cf: {
         cacheTtlByStatus: { '200-299': 300, '400-499': 60, '500-599': 0 }
@@ -139,6 +143,9 @@ app.get('/:tag{[^/]+\\.json}',
     }
 
     const rel: Release = await response.json()
+    // Binary paths must point at the resolved release's real tag (e.g. v4.0.6),
+    // not the literal 'latest' token which has no GitHub download URL.
+    const realTag = rel.tag_name || tag
 
     const manifest = {
       "name": "ESPresense " + rel.name + (flavor && flavor !== "" ? ` (${flavor})` : ""),
@@ -148,25 +155,25 @@ app.get('/:tag{[^/]+\\.json}',
     }
 
     const a32 = findAsset(rel, `esp32-${flavor}.bin`) || findAsset(rel, `${flavor}.bin`) || findAsset(rel, `esp32.bin`)
-    if (a32) manifest.builds.push(esp32(`download/${tag}/${a32.name}`))
+    if (a32) manifest.builds.push(esp32(`download/${realTag}/${a32.name}`))
 
     const c3 = findAsset(rel, `esp32c3-${flavor}.bin`) || findAsset(rel, `esp32c3.bin`)
-    if (c3) manifest.builds.push(esp32c3(`download/${tag}/${c3.name}`, "uart"))
+    if (c3) manifest.builds.push(esp32c3(`download/${realTag}/${c3.name}`, "uart"))
 
     const c3_cdc = findAsset(rel, `esp32c3-${flavor}-cdc.bin`) || findAsset(rel, `esp32c3-cdc.bin`)
-    if (c3_cdc) manifest.builds.push(esp32c3(`download/${tag}/${c3_cdc.name}`, "cdc"))
+    if (c3_cdc) manifest.builds.push(esp32c3(`download/${realTag}/${c3_cdc.name}`, "cdc"))
 
     const s3 = findAsset(rel, `esp32s3-${flavor}.bin`) || findAsset(rel, `esp32s3.bin`)
-    if (s3) manifest.builds.push(esp32s3(`download/${tag}/${s3.name}`, "uart"))
+    if (s3) manifest.builds.push(esp32s3(`download/${realTag}/${s3.name}`, "uart"))
 
     const s3_cdc = findAsset(rel, `esp32s3-${flavor}-cdc.bin`) || findAsset(rel, `esp32s3-cdc.bin`)
-    if (s3_cdc) manifest.builds.push(esp32s3(`download/${tag}/${s3_cdc.name}`, "cdc"))
+    if (s3_cdc) manifest.builds.push(esp32s3(`download/${realTag}/${s3_cdc.name}`, "cdc"))
 
     const c6 = findAsset(rel, `esp32c6-${flavor}.bin`) || findAsset(rel, `esp32c6.bin`)
-    if (c6) manifest.builds.push(esp32c6(`download/${tag}/${c6.name}`, "uart"))
+    if (c6) manifest.builds.push(esp32c6(`download/${realTag}/${c6.name}`, "uart"))
 
     const c6_cdc = findAsset(rel, `esp32c6-${flavor}-cdc.bin`) || findAsset(rel, `esp32c6-cdc.bin`)
-    if (c6_cdc) manifest.builds.push(esp32c6(`download/${tag}/${c6_cdc.name}`, "cdc"))
+    if (c6_cdc) manifest.builds.push(esp32c6(`download/${realTag}/${c6_cdc.name}`, "cdc"))
 
     c.header('Cache-Control', `public, max-age=${maxAge}`)
     return c.json(manifest)
