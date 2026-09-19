@@ -111,6 +111,16 @@ app.use("*", cors())
 
 app.use('*', prettyJSON())
 
+// Rate limiting is intentionally NOT implemented in application code here.
+// This is a Cloudflare Pages project (not a Worker), so a module-level Map is
+// per-isolate, not shared/durable across requests, and the Workers Rate
+// Limiting binding / Durable Objects aren't available without standing up a
+// separate Worker. See github.com/ESPresense/ESPresense.com/pull/378 for the
+// prior attempt and discussion. The real protection for these routes is the
+// edge caching below (5 min / 24h), which keeps repeat requests from ever
+// reaching origin; if additional throttling is ever needed, add a Cloudflare
+// WAF rate-limiting rule scoped to /artifacts* instead.
+
 // Latest builds change frequently, cache GitHub API responses for 5 minutes
 app.all('/latest/download/:branch/:bin',
   cache({ cacheName: 'artifacts', cacheControl: 'public, max-age=300' }),
