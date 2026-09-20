@@ -174,10 +174,18 @@ app.get('/:tag{[^/]+\\.json}',
 )
 
 // Release downloads: latest = 5 min, specific releases = 1 day
+const SAFE_SEGMENT = /^[A-Za-z0-9._-]+$/
+
 app.get('/download/:tag/:filename',
   async (c: Context) => {
     const tag = c.req.param('tag')
     const filename = c.req.param('filename')
+
+    // Reject anything that isn't a plain filename/tag segment to prevent
+    // path traversal or URL manipulation via encoded '/', '..', etc.
+    if (!SAFE_SEGMENT.test(tag) || !SAFE_SEGMENT.test(filename)) {
+      return c.json({ error: "Invalid tag or filename" }, 400)
+    }
 
     // latest changes frequently, specific releases are immutable
     const maxAge = tag === 'latest' ? 300 : 86400
