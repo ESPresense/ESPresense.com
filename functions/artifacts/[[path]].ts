@@ -149,14 +149,14 @@ app.all('/latest/download/:branch/:bin',
 const SAFE_SEGMENT = /^(?!\.+$)[A-Za-z0-9._-]+$/
 
 // Specific run artifacts are immutable, cache for 24 hours
-app.all('/download/runs/:run_id/:bin',
+app.all('/download/runs/:run_id{[0-9]+}/:bin',
   cache({ cacheName: 'artifacts', cacheControl: 'public, max-age=86400' }),
   async (c: Context) => {
     const run_id = parseInt(c.req.param('run_id'))
     const bin = c.req.param('bin')
     console.log({ run_id, bin })
-    if (!Number.isInteger(run_id) || !SAFE_SEGMENT.test(bin)) {
-      return c.json({ error: "Invalid run id or artifact name" }, 400)
+    if (!SAFE_SEGMENT.test(bin)) {
+      return c.json({ error: "Invalid artifact name" }, 400)
     }
     const artifact = await fetch(`https://nightly.link/ESPresense/ESPresense/actions/runs/${run_id}/${bin}.zip`)
     if (artifact.status !== 200) {
