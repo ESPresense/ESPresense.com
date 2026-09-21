@@ -174,7 +174,9 @@ app.get('/:tag{[^/]+\\.json}',
 )
 
 // Release downloads: latest = 5 min, specific releases = 1 day
-const SAFE_SEGMENT = /^[A-Za-z0-9._-]+$/
+// Rejects bare dot segments ("." / "..") too, which would otherwise survive
+// this character class and be collapsed by URL normalization.
+const SAFE_SEGMENT = /^(?!\.+$)[A-Za-z0-9._-]+$/
 
 app.get('/download/:tag/:filename',
   async (c: Context) => {
