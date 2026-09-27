@@ -210,81 +210,92 @@ app.get('/download/:tag/:filename',
   }
 )
 
+const GITHUB = 'https://github.com/ESPresense/ESPresense'
+
+// Release lookups go through github.com's own redirects and the releases feed
+// rather than api.github.com: the unauthenticated API allows 60 requests/hour
+// per IP, which update checks from devices in the field exhaust.
+function lookup(url: string) {
+  return fetch(url, {
+    redirect: 'manual',
+    headers: { "User-Agent": "espresense-release-proxy" },
+    cf: {
+      cacheTtlByStatus: { '200-399': 300, '400-499': 60, '500-599': 0 }
+    }
+  } as any)
+}
+
+// IMPORTANT: Must redirect, not proxy!
+// ESP32 firmware checks for updates by sending HEAD requests and expects a 3xx redirect.
+// It compares the Location header against a version marker to detect new versions,
+// so Location must be the tagged releases/download URL, never a "latest" alias
+// or a signed asset URL. See Updater::checkForUpdates() in the ESPresense firmware.
+function firmwareRedirect(c: Context, location: string) {
+  const redirectResponse = c.redirect(location)
+  redirectResponse.headers.set('Cache-Control', 'public, max-age=300')
+  return redirectResponse
+}
+
 // Latest stable release (excludes prereleases), cache for 5 minutes
 app.get('/latest/download/:filename',
   async (c: Context) => {
     const filename = c.req.param('filename')
-
-    // GitHub's /releases/latest endpoint excludes prereleases
-    const response = await fetch("https://api.github.com/repos/ESPresense/ESPresense/releases/latest", {
-      headers: { "User-Agent": "espresense-release-proxy" },
-      cf: {
-        cacheTtlByStatus: { '200-299': 300, '400-499': 60, '500-599': 0 }
-      }
-    } as any)
-
-    if (!response.ok) {
-      if (response.status === 403) {
-        throw new Error(`GitHub API returned 403 when fetching latest release`)
-      }
-      return c.json({ error: "No release found" }, response.status as any)
+    if (!SAFE_SEGMENT.test(filename)) {
+      return c.json({ error: "Invalid filename" }, 400)
     }
 
-    const rel: Release = await response.json()
+    // GitHub's releases/latest alias excludes prereleases and redirects to the tagged URL
+    const response = await lookup(`${GITHUB}/releases/latest/download/${filename}`)
+    const location = response.headers.get('Location')
+    if (response.status !== 302 || !location?.startsWith(`${GITHUB}/releases/download/`)) {
+      return c.json({ error: "Release lookup failed" }, 502)
+    }
 
-    const asset = rel.assets.find(a => a.name === filename)
-    if (!asset) {
+    // The alias redirects whether or not the file exists, so check the tagged URL
+    const asset = await lookup(location)
+    if (asset.status === 404) {
       return c.json({ error: "No asset found" }, 404)
     }
-
-    // IMPORTANT: Must redirect, not proxy!
-    // ESP32 firmware checks for updates by sending HEAD requests and expects a 3xx redirect.
-    // It compares the Location header against a version marker to detect new versions.
-    // See Updater::checkForUpdates() in the ESPresense firmware.
-    const redirectResponse = c.redirect(asset.browser_download_url)
-    redirectResponse.headers.set('Cache-Control', 'public, max-age=300')
-    return redirectResponse
+    if (asset.status !== 302) {
+      return c.json({ error: "Release lookup failed" }, 502)
+    }
+    return firmwareRedirect(c, location)
   }
 )
+
+// How many of the newest releases to probe for the requested asset
+const LATEST_ANY_DEPTH = 3
 
 // Latest release including prereleases, cache for 5 minutes
 app.get('/latest-any/download/:filename',
   async (c: Context) => {
     const filename = c.req.param('filename')
+    if (!SAFE_SEGMENT.test(filename)) {
+      return c.json({ error: "Invalid filename" }, 400)
+    }
 
-    const response = await fetch("https://api.github.com/repos/ESPresense/ESPresense/releases", {
-      headers: { "User-Agent": "espresense-release-proxy" },
-      cf: {
-        cacheTtlByStatus: { '200-299': 300, '400-499': 60, '500-599': 0 }
+    const feed = await lookup(`${GITHUB}/releases.atom`)
+    if (!feed.ok) {
+      return c.json({ error: "Release lookup failed" }, 502)
+    }
+
+    // Feed is newest first and includes prereleases
+    const tags = [...(await feed.text()).matchAll(/\/releases\/tag\/([^"<\s]+)/g)]
+      .map(m => decodeURIComponent(m[1]))
+      .filter((tag, i, all) => SAFE_SEGMENT.test(tag) && all.indexOf(tag) === i)
+      .slice(0, LATEST_ANY_DEPTH)
+
+    // A release can be published before its assets are uploaded, so take the
+    // newest one that actually has this file
+    for (const tag of tags) {
+      const url = `${GITHUB}/releases/download/${tag}/${filename}`
+      const response = await lookup(url)
+      if (response.status === 302) return firmwareRedirect(c, url)
+      if (response.status !== 404) {
+        return c.json({ error: "Release lookup failed" }, 502)
       }
-    } as any)
-
-    if (!response.ok) {
-      if (response.status === 403) {
-        throw new Error(`GitHub API returned 403 when fetching releases`)
-      }
-      return c.json({ error: "No releases found" }, response.status as any)
     }
-
-    const releases: Release[] = await response.json()
-    const rel = releases.find(r => r.assets.length)
-
-    if (!rel) {
-      return c.json({ error: "No release found" }, 404)
-    }
-
-    const asset = rel.assets.find(a => a.name === filename)
-    if (!asset) {
-      return c.json({ error: "No asset found" }, 404)
-    }
-
-    // IMPORTANT: Must redirect, not proxy!
-    // ESP32 firmware checks for updates by sending HEAD requests and expects a 3xx redirect.
-    // It compares the Location header against a version marker to detect new versions.
-    // See Updater::checkForUpdates() in the ESPresense firmware.
-    const redirectResponse = c.redirect(asset.browser_download_url)
-    redirectResponse.headers.set('Cache-Control', 'public, max-age=300')
-    return redirectResponse
+    return c.json({ error: "No asset found" }, 404)
   }
 )
 
