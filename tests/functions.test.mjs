@@ -164,14 +164,14 @@ test('release manifest returns 404 for an unknown tag', async () => {
   assert.equal((await get(releases, '/releases/v0.0.0.json')).status, 404)
 })
 
-test('release manifest passes through a GitHub 429', async () => {
+test('release manifest returns 502 when GitHub answers 429', async () => {
   upstream[`${API}/releases/tags/v4.0.6`] = () => json({ message: 'slow down' }, 429)
-  assert.equal((await get(releases, '/releases/v4.0.6.json')).status, 429)
+  assert.equal((await get(releases, '/releases/v4.0.6.json')).status, 502)
 })
 
-test('release manifest returns 500 when GitHub answers 403', async () => {
+test('release manifest returns 502 when GitHub answers 403', async () => {
   upstream[`${API}/releases/tags/v4.0.6`] = () => json({ message: 'rate limit exceeded' }, 403)
-  assert.equal((await get(releases, '/releases/v4.0.6.json')).status, 500)
+  assert.equal((await get(releases, '/releases/v4.0.6.json')).status, 502)
 })
 
 test('release manifest rejects encoded separators in the tag', async () => {
@@ -193,6 +193,16 @@ test('tagged download proxies the asset body', async () => {
 test('tagged download caches the latest tag for 5 minutes', async () => {
   upstream[`${GITHUB}/releases/download/latest/esp32.bin`] = () => new Response('x')
   assert.equal((await get(releases, '/releases/download/latest/esp32.bin')).headers.get('Cache-Control'), 'public, max-age=300')
+})
+
+test('tagged download returns 502 when GitHub fails', async () => {
+  upstream[`${GITHUB}/releases/download/v4.0.6/esp32.bin`] = () => new Response('boom', { status: 500 })
+  assert.equal((await get(releases, '/releases/download/v4.0.6/esp32.bin')).status, 502)
+})
+
+test('release manifest returns 502 for a malformed GitHub response', async () => {
+  upstream[`${API}/releases/tags/v4.0.6`] = () => new Response('<html>oops</html>')
+  assert.equal((await get(releases, '/releases/v4.0.6.json')).status, 502)
 })
 
 test('tagged download returns 404 for a missing asset', async () => {
@@ -222,6 +232,24 @@ test('latest artifact redirects to the newest successful run', async () => {
   assert.equal(res.headers.get('Location'), '/artifacts/download/runs/222/esp32.bin')
 })
 
+test('latest artifact accepts branch names with slashes', async () => {
+  upstream[runsUrl('perf%2Fmedian-iqr-scratch')] = () => json({ workflow_runs: [{ id: 444 }] })
+
+  const res = await get(artifacts, '/artifacts/latest/download/perf/median-iqr-scratch/esp32.bin')
+  assert.equal(res.status, 302)
+  assert.equal(res.headers.get('Location'), '/artifacts/download/runs/444/esp32.bin')
+})
+
+test('latest artifact accepts deeply nested branch names', async () => {
+  upstream[runsUrl('a%2Fb%2Fc')] = () => json({ workflow_runs: [{ id: 555 }] })
+  assert.equal((await get(artifacts, '/artifacts/latest/download/a/b/c/esp32c3-cdc.bin')).headers.get('Location'), '/artifacts/download/runs/555/esp32c3-cdc.bin')
+})
+
+test('latest artifact needs both a branch and a file', async () => {
+  assert.equal((await get(artifacts, '/artifacts/latest/download/esp32.bin')).status, 404)
+  assert.deepEqual(fetched, [])
+})
+
 test('latest artifact encodes the branch into the query string', async () => {
   upstream[runsUrl('perf%2Fscratch%26status%3Dfailure')] = () => json({ workflow_runs: [{ id: 333 }] })
 
@@ -234,14 +262,14 @@ test('latest artifact returns 404 when the branch has no successful run', async 
   assert.equal((await get(artifacts, '/artifacts/latest/download/stale/esp32.bin')).status, 404)
 })
 
-test('latest artifact passes through a GitHub 429', async () => {
+test('latest artifact returns 502 when GitHub answers 429', async () => {
   upstream[runsUrl('main')] = () => json({ message: 'slow down' }, 429)
-  assert.equal((await get(artifacts, '/artifacts/latest/download/main/esp32.bin')).status, 429)
+  assert.equal((await get(artifacts, '/artifacts/latest/download/main/esp32.bin')).status, 502)
 })
 
-test('latest artifact returns 500 when GitHub answers 403', async () => {
+test('latest artifact returns 502 when GitHub answers 403', async () => {
   upstream[runsUrl('main')] = () => json({ message: 'rate limit exceeded' }, 403)
-  assert.equal((await get(artifacts, '/artifacts/latest/download/main/esp32.bin')).status, 500)
+  assert.equal((await get(artifacts, '/artifacts/latest/download/main/esp32.bin')).status, 502)
 })
 
 test('run artifact unzips and returns the firmware image', async () => {
@@ -256,6 +284,16 @@ test('run artifact unzips and returns the firmware image', async () => {
 
 test('run artifact returns 404 when nightly.link has no such artifact', async () => {
   assert.equal((await get(artifacts, '/artifacts/download/runs/123/nope.bin')).status, 404)
+})
+
+test('run artifact returns 502 for a corrupt zip', async () => {
+  upstream[`${NIGHTLY}/actions/runs/123/esp32.bin.zip`] = () => new Response('this is not a zip')
+  assert.equal((await get(artifacts, '/artifacts/download/runs/123/esp32.bin')).status, 502)
+})
+
+test('run artifact returns 502 when nightly.link fails', async () => {
+  upstream[`${NIGHTLY}/actions/runs/123/esp32.bin.zip`] = () => new Response('boom', { status: 500 })
+  assert.equal((await get(artifacts, '/artifacts/download/runs/123/esp32.bin')).status, 502)
 })
 
 test('run artifact returns 404 for an empty zip', async () => {
@@ -299,9 +337,9 @@ test('run manifest passes through a GitHub 404', async () => {
   assert.equal((await get(artifacts, '/artifacts/999.json')).status, 404)
 })
 
-test('run manifest returns 500 when GitHub answers 403', async () => {
+test('run manifest returns 502 when GitHub answers 403', async () => {
   upstream[`${API}/actions/runs/123/artifacts`] = () => json({ message: 'rate limit exceeded' }, 403)
-  assert.equal((await get(artifacts, '/artifacts/123.json')).status, 500)
+  assert.equal((await get(artifacts, '/artifacts/123.json')).status, 502)
 })
 
 test('run manifest does not route a non-numeric run id', async () => {

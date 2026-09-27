@@ -110,6 +110,13 @@ function findAsset(rel: Release, name: string): Asset | null {
 }
 
 const app = new Hono().basePath('/releases')
+
+// Anything unexpected here is an upstream problem (GitHub, nightly.link), so
+// report it as a bad gateway rather than letting Hono answer 500.
+app.onError((err, c) => {
+  console.error(err)
+  return c.json({ error: "Upstream error" }, 502)
+})
 app.use("*", cors())
 
 app.use('*', prettyJSON())
@@ -141,10 +148,7 @@ app.get('/:tag{[^/]+\\.json}',
     } as any)
 
     if (!response.ok) {
-      if (response.status === 403) {
-        throw new Error(`GitHub API returned 403 when fetching release ${tag}`)
-      }
-      return c.json({ error: "Release not found" }, response.status as any)
+      return c.json({ error: "Release not found" }, response.status === 404 ? 404 : 502)
     }
 
     const rel: Release = await response.json()
@@ -203,6 +207,10 @@ app.get('/download/:tag/:filename',
         cacheTtlByStatus: { '200-299': 300, '400-499': 60, '500-599': 0 }
       }
     } as any)
+
+    if (!response.ok) {
+      return c.json({ error: "Asset not found" }, response.status === 404 ? 404 : 502)
+    }
 
     return new Response(response.body, {
       status: response.status,

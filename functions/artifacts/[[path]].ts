@@ -107,16 +107,26 @@ function findAsset(rel: Artifact[], name: string): Artifact | null {
 }
 
 const app = new Hono().basePath('/artifacts')
+
+// Anything unexpected here is an upstream problem (GitHub, nightly.link), so
+// report it as a bad gateway rather than letting Hono answer 500.
+app.onError((err, c) => {
+  console.error(err)
+  return c.json({ error: "Upstream error" }, 502)
+})
 app.use("*", cors())
 
 app.use('*', prettyJSON())
 
 // Latest builds change frequently, cache GitHub API responses for 5 minutes
-app.all('/latest/download/:branch/:bin',
+// Branch names can contain slashes (perf/some-experiment), so match the rest
+// of the path and treat the last segment as the artifact name.
+app.all('/latest/download/:rest{.+/[^/]+}',
   cache({ cacheName: 'artifacts', cacheControl: 'public, max-age=300' }),
   async (c: Context) => {
-    const branch = c.req.param('branch')
-    const bin = c.req.param('bin')
+    const rest = c.req.param('rest')
+    const branch = rest.substring(0, rest.lastIndexOf('/'))
+    const bin = rest.substring(rest.lastIndexOf('/') + 1)
     console.log({ branch, bin })
 
     const response = await fetch(
@@ -130,10 +140,7 @@ app.all('/latest/download/:branch/:bin',
     )
 
     if (!response.ok) {
-      if (response.status === 403) {
-        throw new Error(`GitHub API returned 403 when fetching workflow runs for ${branch}`)
-      }
-      return c.json({ error: "Failed to fetch workflow runs" }, response.status as any)
+      return c.json({ error: "Failed to fetch workflow runs" }, response.status === 404 ? 404 : 502)
     }
 
     const data: any = await response.json()
@@ -160,7 +167,7 @@ app.all('/download/runs/:run_id{[0-9]+}/:bin',
     }
     const artifact = await fetch(`https://nightly.link/ESPresense/ESPresense/actions/runs/${run_id}/${bin}.zip`)
     if (artifact.status !== 200) {
-      return c.json({ error: `Artifact not found: ${artifact.status}` }, artifact.status as any)
+      return c.json({ error: `Artifact not found: ${artifact.status}` }, artifact.status === 404 ? 404 : 502)
     }
     const ab = await artifact.arrayBuffer()
     const arr = new Uint8Array(ab)
@@ -194,10 +201,7 @@ app.get('/:run_id_2{[0-9]+.json}',
     )
 
     if (!response.ok) {
-      if (response.status === 403) {
-        throw new Error(`GitHub API returned 403 when fetching artifacts for manifest ${run_id}`)
-      }
-      return c.json({ error: "Failed to fetch artifacts" }, response.status as any)
+      return c.json({ error: "Failed to fetch artifacts" }, response.status === 404 ? 404 : 502)
     }
 
     const data: any = await response.json()
