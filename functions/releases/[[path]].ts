@@ -3,6 +3,7 @@ import type { Context } from 'hono'
 import { handle } from 'hono/cloudflare-pages'
 import { prettyJSON } from 'hono/pretty-json'
 import { cors } from 'hono/cors'
+import { staleIfError } from '../../lib/stale-if-error.ts'
 
 function esp32(path: string) {
   return {
@@ -106,6 +107,7 @@ app.onError((err, c) => {
 app.use("*", cors())
 
 app.use('*', prettyJSON())
+app.use('*', staleIfError())
 
 // Route params can carry encoded separators that decode before interpolation,
 // so anything placed in an upstream URL must be one plain segment.

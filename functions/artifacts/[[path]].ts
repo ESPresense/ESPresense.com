@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import type { Context } from 'hono'
 import { handle } from 'hono/cloudflare-pages'
 import { prettyJSON } from 'hono/pretty-json'
-import { cache } from 'hono/cache'
+import { staleIfError } from '../../lib/stale-if-error.ts'
 import { cors } from 'hono/cors'
 import * as fflate from "fflate"
 
@@ -122,7 +122,7 @@ app.use('*', prettyJSON())
 // Branch names can contain slashes (perf/some-experiment), so match the rest
 // of the path and treat the last segment as the artifact name.
 app.all('/latest/download/:rest{.+/[^/]+}',
-  cache({ cacheName: 'artifacts', cacheControl: 'public, max-age=300' }),
+  staleIfError(300),
   async (c: Context) => {
     const rest = c.req.param('rest')
     const branch = rest.substring(0, rest.lastIndexOf('/'))
@@ -157,7 +157,7 @@ const SAFE_SEGMENT = /^(?!\.+$)[A-Za-z0-9._-]+$/
 
 // Specific run artifacts are immutable, cache for 24 hours
 app.all('/download/runs/:run_id{[0-9]+}/:bin',
-  cache({ cacheName: 'artifacts', cacheControl: 'public, max-age=86400' }),
+  staleIfError(86400),
   async (c: Context) => {
     const run_id = parseInt(c.req.param('run_id'))
     const bin = c.req.param('bin')
@@ -184,7 +184,7 @@ app.all('/download/runs/:run_id{[0-9]+}/:bin',
 
 // Manifests for specific runs are immutable, cache GitHub API responses for 24 hours
 app.get('/:run_id_2{[0-9]+.json}',
-  cache({ cacheName: 'artifacts', cacheControl: 'public, max-age=86400' }),
+  staleIfError(86400),
   async (c: Context) => {
     const flavor = c.req.query('flavor')
     const run_id = parseInt(c.req.param('run_id_2'))
