@@ -95,20 +95,6 @@ function esp32c6(path: string, serialType?: "cdc" | "uart") {
   }
 }
 
-interface Asset {
-  name: string
-  browser_download_url: string
-}
-
-interface Release {
-  name: string
-  assets: Asset[]
-}
-
-function findAsset(rel: Release, name: string): Asset | null {
-  return rel.assets.find(asset => asset.name === name) ?? null
-}
-
 const app = new Hono().basePath('/releases')
 
 // Anything unexpected here is an upstream problem (GitHub, nightly.link), so
@@ -127,59 +113,102 @@ app.use('*', prettyJSON())
 // this character class and be collapsed by URL normalization.
 const SAFE_SEGMENT = /^(?!\.+$)[A-Za-z0-9._-]+$/
 
+const GITHUB = 'https://github.com/ESPresense/ESPresense'
+
+// Release lookups go through github.com's own redirects and the releases feed
+// rather than api.github.com: the unauthenticated API allows 60 requests/hour
+// per IP, which update checks from devices in the field exhaust.
+function lookup(url: string) {
+  return fetch(url, {
+    redirect: 'manual',
+    headers: { "User-Agent": "espresense-release-proxy" },
+    cf: {
+      cacheTtlByStatus: { '200-399': 300, '400-499': 60, '500-599': 0 }
+    }
+  } as any)
+}
+
+// Says which upstream URL failed and how, since a bare 502 cannot be diagnosed
+// from the edge analytics
+function lookupFailed(c: Context, url: string, status: number) {
+  console.error(`lookup failed: ${status} ${url}`)
+  return c.json({ error: "Release lookup failed", upstream: { url, status } }, 502)
+}
+
 // Release manifests: latest = 5 min, specific releases = 1 day
 app.get('/:tag{[^/]+\\.json}',
   async (c: Context) => {
     const fname = c.req.param('tag')
-    const tag = fname.substring(0, fname.lastIndexOf('.'))
-    const flavor = c.req.query('flavor')
-    if (!SAFE_SEGMENT.test(tag)) {
-      return c.json({ error: "Invalid tag" }, 400)
+    const requested = fname.substring(0, fname.lastIndexOf('.'))
+    const flavor = c.req.query('flavor') || ''
+    if (!SAFE_SEGMENT.test(requested) || (flavor && !SAFE_SEGMENT.test(flavor))) {
+      return c.json({ error: "Invalid tag or flavor" }, 400)
     }
 
     // latest changes frequently, specific releases are immutable
-    const maxAge = tag === 'latest' ? 300 : 86400
+    const maxAge = requested === 'latest' ? 300 : 86400
 
-    const response = await fetch(`https://api.github.com/repos/ESPresense/ESPresense/releases/tags/${tag}`, {
-      headers: { "User-Agent": "espresense-release-proxy" },
-      cf: {
-        cacheTtlByStatus: { '200-299': 300, '400-499': 60, '500-599': 0 }
+    // 'latest' is not a real tag; GitHub's alias redirects to the newest stable release
+    let tag = requested
+    if (requested === 'latest') {
+      const alias = await lookup(`${GITHUB}/releases/latest`)
+      tag = alias.headers.get('Location')?.match(/\/releases\/tag\/([^/?#]+)$/)?.[1] ?? ''
+      if (alias.status !== 302 || !SAFE_SEGMENT.test(tag)) {
+        return lookupFailed(c, `${GITHUB}/releases/latest`, alias.status)
       }
-    } as any)
-
-    if (!response.ok) {
-      return c.json({ error: "Release not found" }, response.status === 404 ? 404 : 502)
     }
 
-    const rel: Release = await response.json()
+    // Ask github.com which candidate files the release has, instead of listing
+    // its assets through the API
+    const candidates = (chip: string, suffix = '') => [
+      ...(flavor ? [`${chip}-${flavor}${suffix}.bin`] : []),
+      ...(flavor && chip === 'esp32' ? [`${flavor}.bin`] : []),
+      `${chip}${suffix}.bin`
+    ]
+    const names = [...new Set(['esp32', 'esp32c3', 'esp32s3', 'esp32c6'].flatMap(chip => [...candidates(chip), ...candidates(chip, '-cdc')]))]
+    const found = new Set<string>()
+    const lookups = await Promise.all(names.map(async name => {
+      const url = `${GITHUB}/releases/download/${tag}/${name}`
+      const status = (await lookup(url)).status
+      if (status === 302) found.add(name)
+      return { url, status }
+    }))
+    const failed = lookups.find(l => l.status !== 302 && l.status !== 404)
+    if (failed) {
+      return lookupFailed(c, failed.url, failed.status)
+    }
+    if (!found.size) {
+      return c.json({ error: "Release not found" }, 404)
+    }
+    const pick = (chip: string, suffix = '') => candidates(chip, suffix).find(name => found.has(name))
 
     const manifest = {
-      "name": "ESPresense " + rel.name + (flavor && flavor !== "" ? ` (${flavor})` : ""),
-      "version": rel.name,
+      "name": "ESPresense " + tag + (flavor ? ` (${flavor})` : ""),
+      "version": tag,
       "new_install_prompt_erase": true,
       "builds": [] as any[]
     }
 
-    const a32 = findAsset(rel, `esp32-${flavor}.bin`) || findAsset(rel, `${flavor}.bin`) || findAsset(rel, `esp32.bin`)
-    if (a32) manifest.builds.push(esp32(`download/${tag}/${a32.name}`))
+    const a32 = pick('esp32')
+    if (a32) manifest.builds.push(esp32(`download/${tag}/${a32}`))
 
-    const c3 = findAsset(rel, `esp32c3-${flavor}.bin`) || findAsset(rel, `esp32c3.bin`)
-    if (c3) manifest.builds.push(esp32c3(`download/${tag}/${c3.name}`, "uart"))
+    const c3 = pick('esp32c3')
+    if (c3) manifest.builds.push(esp32c3(`download/${tag}/${c3}`, "uart"))
 
-    const c3_cdc = findAsset(rel, `esp32c3-${flavor}-cdc.bin`) || findAsset(rel, `esp32c3-cdc.bin`)
-    if (c3_cdc) manifest.builds.push(esp32c3(`download/${tag}/${c3_cdc.name}`, "cdc"))
+    const c3_cdc = pick('esp32c3', '-cdc')
+    if (c3_cdc) manifest.builds.push(esp32c3(`download/${tag}/${c3_cdc}`, "cdc"))
 
-    const s3 = findAsset(rel, `esp32s3-${flavor}.bin`) || findAsset(rel, `esp32s3.bin`)
-    if (s3) manifest.builds.push(esp32s3(`download/${tag}/${s3.name}`, "uart"))
+    const s3 = pick('esp32s3')
+    if (s3) manifest.builds.push(esp32s3(`download/${tag}/${s3}`, "uart"))
 
-    const s3_cdc = findAsset(rel, `esp32s3-${flavor}-cdc.bin`) || findAsset(rel, `esp32s3-cdc.bin`)
-    if (s3_cdc) manifest.builds.push(esp32s3(`download/${tag}/${s3_cdc.name}`, "cdc"))
+    const s3_cdc = pick('esp32s3', '-cdc')
+    if (s3_cdc) manifest.builds.push(esp32s3(`download/${tag}/${s3_cdc}`, "cdc"))
 
-    const c6 = findAsset(rel, `esp32c6-${flavor}.bin`) || findAsset(rel, `esp32c6.bin`)
-    if (c6) manifest.builds.push(esp32c6(`download/${tag}/${c6.name}`, "uart"))
+    const c6 = pick('esp32c6')
+    if (c6) manifest.builds.push(esp32c6(`download/${tag}/${c6}`, "uart"))
 
-    const c6_cdc = findAsset(rel, `esp32c6-${flavor}-cdc.bin`) || findAsset(rel, `esp32c6-cdc.bin`)
-    if (c6_cdc) manifest.builds.push(esp32c6(`download/${tag}/${c6_cdc.name}`, "cdc"))
+    const c6_cdc = pick('esp32c6', '-cdc')
+    if (c6_cdc) manifest.builds.push(esp32c6(`download/${tag}/${c6_cdc}`, "cdc"))
 
     c.header('Cache-Control', `public, max-age=${maxAge}`)
     return c.json(manifest)
@@ -223,21 +252,6 @@ app.get('/download/:tag/:filename',
   }
 )
 
-const GITHUB = 'https://github.com/ESPresense/ESPresense'
-
-// Release lookups go through github.com's own redirects and the releases feed
-// rather than api.github.com: the unauthenticated API allows 60 requests/hour
-// per IP, which update checks from devices in the field exhaust.
-function lookup(url: string) {
-  return fetch(url, {
-    redirect: 'manual',
-    headers: { "User-Agent": "espresense-release-proxy" },
-    cf: {
-      cacheTtlByStatus: { '200-399': 300, '400-499': 60, '500-599': 0 }
-    }
-  } as any)
-}
-
 // IMPORTANT: Must redirect, not proxy!
 // ESP32 firmware checks for updates by sending HEAD requests and expects a 3xx redirect.
 // It compares the Location header against a version marker to detect new versions,
@@ -261,7 +275,7 @@ app.get('/latest/download/:filename',
     const response = await lookup(`${GITHUB}/releases/latest/download/${filename}`)
     const location = response.headers.get('Location')
     if (response.status !== 302 || !location?.startsWith(`${GITHUB}/releases/download/`)) {
-      return c.json({ error: "Release lookup failed" }, 502)
+      return lookupFailed(c, `${GITHUB}/releases/latest/download/${filename}`, response.status)
     }
 
     // The alias redirects whether or not the file exists, so check the tagged URL
@@ -270,7 +284,7 @@ app.get('/latest/download/:filename',
       return c.json({ error: "No asset found" }, 404)
     }
     if (asset.status !== 302) {
-      return c.json({ error: "Release lookup failed" }, 502)
+      return lookupFailed(c, location, asset.status)
     }
     return firmwareRedirect(c, location)
   }
@@ -289,7 +303,7 @@ app.get('/latest-any/download/:filename',
 
     const feed = await lookup(`${GITHUB}/releases.atom`)
     if (!feed.ok) {
-      return c.json({ error: "Release lookup failed" }, 502)
+      return lookupFailed(c, `${GITHUB}/releases.atom`, feed.status)
     }
 
     // Feed is newest first and includes prereleases
@@ -305,7 +319,7 @@ app.get('/latest-any/download/:filename',
       const response = await lookup(url)
       if (response.status === 302) return firmwareRedirect(c, url)
       if (response.status !== 404) {
-        return c.json({ error: "Release lookup failed" }, 502)
+        return lookupFailed(c, url, response.status)
       }
     }
     return c.json({ error: "No asset found" }, 404)
