@@ -8,12 +8,14 @@ const GITHUB = 'https://github.com/ESPresense/ESPresense'
 const feed = (...tags) => tags.map(t => `<link rel="alternate" href="${GITHUB}/releases/tag/${t}"/>`).join('\n')
 const redirect = (location) => new Response(null, { status: 302, headers: { Location: location } })
 
-let upstream, fetched
+let upstream, fetched, sent
 beforeEach(() => {
   upstream = {}
   fetched = []
-  globalThis.fetch = async (url) => {
+  sent = []
+  globalThis.fetch = async (url, init) => {
     fetched.push(String(url))
+    sent.push({ url: String(url), headers: new Headers(init?.headers) })
     const reply = upstream[String(url)]
     return reply ? reply() : new Response('not found', { status: 404 })
   }
@@ -503,4 +505,41 @@ test('tagged download serves the cached firmware image intact', async () => {
   const res = await get(releases, '/releases/download/v4.0.6/esp32.bin')
   assert.equal(res.status, 200)
   assert.deepEqual(new Uint8Array(await res.arrayBuffer()), image)
+})
+
+// --- GitHub token ------------------------------------------------------------
+
+const withEnv = (handler, path, env) => handler({
+  request: new Request('https://espresense.com' + path),
+  env, params: {}, waitUntil() {}, passThroughOnException() {},
+  next: () => new Response(null, { status: 404 }),
+})
+
+test('artifacts routes authenticate to the GitHub API when a token is configured', async () => {
+  upstream[runsUrl('main')] = () => json({ workflow_runs: [{ id: 222 }] })
+  upstream[`${API}/actions/runs/123/artifacts`] = () => json(artifactList('esp32.bin'))
+  await withEnv(artifacts, '/artifacts/latest/download/main/esp32.bin', { GITHUB_TOKEN: 'test-token' })
+  await withEnv(artifacts, '/artifacts/123.json', { GITHUB_TOKEN: 'test-token' })
+
+  assert.equal(sent.length, 2)
+  for (const request of sent) assert.equal(request.headers.get('Authorization'), 'Bearer test-token')
+})
+
+test('artifacts routes work unauthenticated when no token is configured', async () => {
+  upstream[`${API}/actions/runs/123/artifacts`] = () => json(artifactList('esp32.bin'))
+  assert.equal((await get(artifacts, '/artifacts/123.json')).status, 200)
+  assert.equal(sent[0].headers.get('Authorization'), null)
+})
+
+test('the token is only ever sent to the GitHub API', async () => {
+  upstream[`${NIGHTLY}/actions/runs/123/esp32.bin.zip`] = () => new Response(fflate.zipSync({ 'esp32.bin': new Uint8Array([1]) }))
+  await withEnv(artifacts, '/artifacts/download/runs/123/esp32.bin', { GITHUB_TOKEN: 'test-token' })
+  assert.equal(sent[0].headers.get('Authorization'), null)
+})
+
+test('artifacts 502 reports what GitHub answered', async () => {
+  upstream[`${API}/actions/runs/123/artifacts`] = () => json({ message: 'rate limit exceeded' }, 403)
+  const res = await get(artifacts, '/artifacts/123.json')
+  assert.equal(res.status, 502)
+  assert.deepEqual((await res.json()).upstream, { status: 403 })
 })

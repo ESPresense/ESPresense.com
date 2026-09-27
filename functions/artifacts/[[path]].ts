@@ -118,6 +118,22 @@ app.use("*", cors())
 
 app.use('*', prettyJSON())
 
+// The unauthenticated GitHub API allows 60 requests/hour per IP, shared with
+// everything else behind Cloudflare's egress. With a GITHUB_TOKEN secret set on
+// the Pages project the limit is 5,000/hour; without one this still works.
+function github(c: Context, path: string, okTtl: number) {
+  const token = c.env?.GITHUB_TOKEN
+  return fetch(`https://api.github.com/repos/ESPresense/ESPresense/${path}`, {
+    headers: {
+      "User-Agent": "espresense-artifact-proxy",
+      ...(token && { "Authorization": `Bearer ${token}` })
+    },
+    cf: {
+      cacheTtlByStatus: { '200-299': okTtl, '400-499': 60, '500-599': 0 }
+    }
+  } as any)
+}
+
 // Latest builds change frequently, cache GitHub API responses for 5 minutes
 // Branch names can contain slashes (perf/some-experiment), so match the rest
 // of the path and treat the last segment as the artifact name.
@@ -129,18 +145,10 @@ app.all('/latest/download/:rest{.+/[^/]+}',
     const bin = rest.substring(rest.lastIndexOf('/') + 1)
     console.log({ branch, bin })
 
-    const response = await fetch(
-      `https://api.github.com/repos/ESPresense/ESPresense/actions/workflows/build.yml/runs?status=success&branch=${encodeURIComponent(branch)}`,
-      {
-        headers: { "User-Agent": "espresense-artifact-proxy" },
-        cf: {
-          cacheTtlByStatus: { '200-299': 300, '400-499': 60, '500-599': 0 }
-        }
-      } as any
-    )
+    const response = await github(c, `actions/workflows/build.yml/runs?status=success&branch=${encodeURIComponent(branch)}`, 300)
 
     if (!response.ok) {
-      return c.json({ error: "Failed to fetch workflow runs" }, response.status === 404 ? 404 : 502)
+      return c.json({ error: "Failed to fetch workflow runs", upstream: { status: response.status } }, response.status === 404 ? 404 : 502)
     }
 
     const data: any = await response.json()
@@ -190,18 +198,10 @@ app.get('/:run_id_2{[0-9]+.json}',
     const run_id = parseInt(c.req.param('run_id_2'))
     console.log({ flavor, run_id })
 
-    const response = await fetch(
-      `https://api.github.com/repos/ESPresense/ESPresense/actions/runs/${run_id}/artifacts`,
-      {
-        headers: { "User-Agent": "espresense-artifact-proxy" },
-        cf: {
-          cacheTtlByStatus: { '200-299': 86400, '400-499': 60, '500-599': 0 }
-        }
-      } as any
-    )
+    const response = await github(c, `actions/runs/${run_id}/artifacts`, 86400)
 
     if (!response.ok) {
-      return c.json({ error: "Failed to fetch artifacts" }, response.status === 404 ? 404 : 502)
+      return c.json({ error: "Failed to fetch artifacts", upstream: { status: response.status } }, response.status === 404 ? 404 : 502)
     }
 
     const data: any = await response.json()
