@@ -353,3 +353,14 @@ for (const handler of [releases, artifacts]) {
     assert.equal((await get(handler, path)).headers.get('Access-Control-Allow-Origin'), '*')
   })
 }
+
+test('latest.json resolves to the newest stable release and its real tag', async () => {
+  upstream[`${API}/releases/latest`] = () => json({ name: 'v4.0.6', tag_name: 'v4.0.6', assets: assets('esp32.bin', 'esp32c3.bin') })
+
+  const res = await get(releases, '/releases/latest.json')
+  assert.equal(res.status, 200)
+  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=300')
+  // 'latest' is not a tag, so download paths must use the resolved one
+  assert.deepEqual(appPaths(await res.json()), ['ESP32 download/v4.0.6/esp32.bin', 'ESP32-C3:uart download/v4.0.6/esp32c3.bin'])
+  assert.ok(fetched.every(url => !url.includes('releases/tags/latest')))
+})
