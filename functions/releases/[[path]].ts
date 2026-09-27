@@ -114,12 +114,21 @@ app.use("*", cors())
 
 app.use('*', prettyJSON())
 
+// Route params can carry encoded separators that decode before interpolation,
+// so anything placed in an upstream URL must be one plain segment.
+// Rejects bare dot segments ("." / "..") too, which would otherwise survive
+// this character class and be collapsed by URL normalization.
+const SAFE_SEGMENT = /^(?!\.+$)[A-Za-z0-9._-]+$/
+
 // Release manifests: latest = 5 min, specific releases = 1 day
 app.get('/:tag{[^/]+\\.json}',
   async (c: Context) => {
     const fname = c.req.param('tag')
     const tag = fname.substring(0, fname.lastIndexOf('.'))
     const flavor = c.req.query('flavor')
+    if (!SAFE_SEGMENT.test(tag)) {
+      return c.json({ error: "Invalid tag" }, 400)
+    }
 
     // latest changes frequently, specific releases are immutable
     const maxAge = tag === 'latest' ? 300 : 86400
@@ -174,10 +183,6 @@ app.get('/:tag{[^/]+\\.json}',
 )
 
 // Release downloads: latest = 5 min, specific releases = 1 day
-// Rejects bare dot segments ("." / "..") too, which would otherwise survive
-// this character class and be collapsed by URL normalization.
-const SAFE_SEGMENT = /^(?!\.+$)[A-Za-z0-9._-]+$/
-
 app.get('/download/:tag/:filename',
   async (c: Context) => {
     const tag = c.req.param('tag')

@@ -120,7 +120,7 @@ app.all('/latest/download/:branch/:bin',
     console.log({ branch, bin })
 
     const response = await fetch(
-      `https://api.github.com/repos/ESPresense/ESPresense/actions/workflows/build.yml/runs?status=success&branch=${branch}`,
+      `https://api.github.com/repos/ESPresense/ESPresense/actions/workflows/build.yml/runs?status=success&branch=${encodeURIComponent(branch)}`,
       {
         headers: { "User-Agent": "espresense-artifact-proxy" },
         cf: {
