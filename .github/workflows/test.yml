@@ -1,0 +1,23 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  functions:
+    name: Functions route tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # Tests import the .ts handlers directly, which needs Node's built-in type stripping (22.18+)
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm test
