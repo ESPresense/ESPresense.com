@@ -120,14 +120,19 @@ const GITHUB = 'https://github.com/ESPresense/ESPresense'
 // Release lookups go through github.com's own redirects and the releases feed
 // rather than api.github.com: the unauthenticated API allows 60 requests/hour
 // per IP, which update checks from devices in the field exhaust.
-function lookup(url: string) {
-  return fetch(url, {
+async function lookup(url: string) {
+  const ask = () => fetch(url, {
     redirect: 'manual',
     headers: { "User-Agent": "espresense-release-proxy" },
     cf: {
-      cacheTtlByStatus: { '200-399': 300, '400-499': 60, '500-599': 0 }
+      // Only answers we act on are cached, so a refusal is never replayed
+      cacheTtlByStatus: { '200-399': 300, '404': 60, '400-403': 0, '405-599': 0 }
     }
   } as any)
+
+  // One retry: a single refused or failed lookup should not fail the request
+  const response = await ask()
+  return response.status < 400 || response.status === 404 ? response : ask()
 }
 
 // Says which upstream URL failed and how, since a bare 502 cannot be diagnosed
