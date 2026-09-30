@@ -1,2 +1,13 @@
 name = "espresense"
 pages_build_output_dir = "dist"
+
+# Last good answers, shared by every edge location; see lib/global-store.ts.
+# Bindings come from this file, not the dashboard. Preview deployments get their
+# own namespace so a branch under test cannot write what production falls back on.
+[[kv_namespaces]]
+binding = "RELEASES"
+id = "b33a230a6c0443c98f0e8c776bebc7a8"
+
+[[env.preview.kv_namespaces]]
+binding = "RELEASES"
+id = "b7db3df4366e474c9de4c6c9cfc61594"
