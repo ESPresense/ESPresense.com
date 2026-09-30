@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import type { Context } from 'hono'
 import { handle } from 'hono/cloudflare-pages'
 import { prettyJSON } from 'hono/pretty-json'
-import { staleIfError } from '../../lib/stale-if-error.ts'
+import { share, staleIfError } from '../../lib/stale-if-error.ts'
 import { cors } from 'hono/cors'
 import * as fflate from "fflate"
 
@@ -172,6 +172,7 @@ app.all('/latest/download/:rest{.+/[^/]+}',
     const firstRun = data.workflow_runs.find((run: any) => run.conclusion === 'success')
     if (!firstRun) return c.notFound()
     const run_id = firstRun.id
+    share(c)
     return c.redirect(`/artifacts/download/runs/${run_id}/${bin}`)
   }
 )

@@ -17,7 +17,26 @@ const CACHE_STATUS = 'X-Release-Cache'
 // are worth sharing globally
 const GLOBAL_MAX_BYTES = 64 * 1024
 
-const BOOKKEEPING = [STORED_AT, ORIGINAL_CACHE_CONTROL, GLOBAL_AT]
+// Set by a handler, through share(), on an answer worth keeping for every
+// location. Only answers whose number is bounded by what really exists
+// (releases, their files, branches) are shared: the shared store allows 1,000
+// writes a day, and anything a caller can vary freely would exhaust it.
+const SHARE = 'X-Share'
+
+// The only query parameter that changes an answer. Anything else in the query
+// string is ignored when naming a shared record.
+const SIGNIFICANT = ['flavor']
+
+const BOOKKEEPING = [STORED_AT, ORIGINAL_CACHE_CONTROL, GLOBAL_AT, SHARE]
+
+export function share(c: Context) {
+  c.header(SHARE, '1')
+}
+
+function sharedKey(url: URL) {
+  const query = SIGNIFICANT.filter(name => url.searchParams.get(name)).map(name => `${name}=${url.searchParams.get(name)}`).join('&')
+  return `response:${url.pathname}${query ? `?${query}` : ''}`
+}
 
 function restore(stored: Response, status: 'HIT' | 'STALE' | 'STALE-GLOBAL') {
   const response = new Response(stored.body, stored)
@@ -83,6 +102,7 @@ export function staleIfError(defaultMaxAge?: number, options: Options = {}) {
     const cache = (globalThis as any).caches?.default
     if (!cache || !['GET', 'HEAD'].includes(c.req.method)) {
       await next()
+      c.res.headers.delete(SHARE)
       if (c.res.ok || c.res.status === 302) {
         if (defaultMaxAge !== undefined && !c.res.headers.has('Cache-Control')) {
           c.res.headers.set('Cache-Control', `public, max-age=${defaultMaxAge}`)
@@ -95,7 +115,7 @@ export function staleIfError(defaultMaxAge?: number, options: Options = {}) {
     // HEAD and GET share an entry; firmware update checks are HEAD requests
     const url = new URL(c.req.url)
     const key = new Request(url, { method: 'GET' })
-    const globalKey = `response:${url.pathname}${url.search}`
+    const globalKey = sharedKey(url)
     const stored: Response | undefined = await cache.match(key)
     if (stored) {
       const age = (Date.now() - Number(stored.headers.get(STORED_AT))) / 1000
@@ -104,6 +124,9 @@ export function staleIfError(defaultMaxAge?: number, options: Options = {}) {
     }
 
     await next()
+
+    const shareable = c.res.headers.has(SHARE)
+    c.res.headers.delete(SHARE)
 
     const replace = (response: Response) => {
       // Hono copies the headers of the response being replaced onto the new
@@ -137,7 +160,7 @@ export function staleIfError(defaultMaxAge?: number, options: Options = {}) {
 
       // Skip the shared store entirely while this location's own copy says the
       // answer is unchanged and was confirmed there recently
-      const answer = await answerOf(c.res)
+      const answer = shareable ? await answerOf(c.res) : null
       if (answer) {
         const confirmedAt = Number(stored?.headers.get(GLOBAL_AT) ?? 0)
         const unchanged = stored && same(await answerOf(stored), answer)

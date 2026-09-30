@@ -3,7 +3,7 @@ import type { Context } from 'hono'
 import { handle } from 'hono/cloudflare-pages'
 import { prettyJSON } from 'hono/pretty-json'
 import { cors } from 'hono/cors'
-import { staleIfError } from '../../lib/stale-if-error.ts'
+import { share, staleIfError } from '../../lib/stale-if-error.ts'
 import { recall, remember } from '../../lib/global-store.ts'
 
 function esp32(path: string) {
@@ -230,6 +230,10 @@ app.get('/:tag{[^/]+\\.json}',
     const c6_cdc = pick('esp32c6', '-cdc')
     if (c6_cdc) manifest.builds.push(esp32c6(`download/${tag}/${c6_cdc}`, "cdc"))
 
+    // A flavor no file is named for gives the plain manifest under a name
+    // anyone can invent, so only real flavors are shared
+    if (!flavor || names.some(name => name.includes(flavor) && found.has(name))) share(c)
+
     c.header('Cache-Control', `public, max-age=${maxAge}`)
     return c.json(manifest)
   }
@@ -278,6 +282,7 @@ app.get('/download/:tag/:filename',
 // so Location must be the tagged releases/download URL, never a "latest" alias
 // or a signed asset URL. See Updater::checkForUpdates() in the ESPresense firmware.
 function firmwareRedirect(c: Context, location: string) {
+  share(c)
   const redirectResponse = c.redirect(location)
   redirectResponse.headers.set('Cache-Control', 'public, max-age=300')
   return redirectResponse
