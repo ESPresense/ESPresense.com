@@ -933,3 +933,50 @@ test('a manifest is not built from partial answers', async () => {
   assert.equal((await newark(releases, '/releases/v4.0.6.json')).status, 502)
   assert.equal(store.entries.has('response:/releases/v4.0.6.json'), false)
 })
+
+test('a query string nobody uses cannot create shared records', async () => {
+  const store = sharedStore()
+  const newark = location(store)
+  githubHas('v4.1.0b0', 'esp32.bin')
+  for (const junk of ['a=1', 'a=2', 'b=3', 'utm_source=x']) {
+    assert.equal((await newark(releases, `/releases/latest-any/download/esp32.bin?${junk}`)).status, 302)
+  }
+  assert.deepEqual([...store.entries.keys()], ['response:/releases/latest-any/download/esp32.bin'])
+  assert.equal(store.calls.put, 1)
+})
+
+test('an invented flavor cannot create shared records', async () => {
+  const store = sharedStore()
+  const newark = location(store)
+  release('v4.0.6', 'esp32.bin', 'esp32-verbose.bin')
+  for (const flavor of ['nope1', 'nope2', 'nope3']) {
+    const res = await newark(releases, `/releases/v4.0.6.json?flavor=${flavor}`)
+    assert.equal(res.status, 200)
+  }
+  assert.deepEqual([...store.entries.keys()], ['assets:v4.0.6'])
+
+  await newark(releases, '/releases/v4.0.6.json?flavor=verbose')
+  assert.ok(store.entries.has('response:/releases/v4.0.6.json?flavor=verbose'))
+})
+
+test('run manifests and downloads are not shared', async () => {
+  const store = sharedStore()
+  const newark = location(store)
+  upstream[`${API}/actions/runs/123/artifacts`] = () => json(artifactList('esp32.bin'))
+  upstream[`${NIGHTLY}/actions/runs/123/esp32.bin.zip`] = () => new Response(fflate.zipSync({ 'esp32.bin': new Uint8Array([1]) }))
+  assert.equal((await newark(artifacts, '/artifacts/123.json')).status, 200)
+  assert.equal((await newark(artifacts, '/artifacts/download/runs/123/esp32.bin')).status, 200)
+  assert.equal(store.calls.put, 0)
+})
+
+test('the marker for sharing never reaches the client', async () => {
+  const newark = location(sharedStore())
+  githubHas('v4.1.0b0', 'esp32.bin')
+  const first = await newark(releases, '/releases/latest-any/download/esp32.bin')
+  const hit = await newark(releases, '/releases/latest-any/download/esp32.bin')
+  delete globalThis.caches
+  const uncached = await get(releases, '/releases/latest-any/download/esp32.bin')
+  for (const res of [first, hit, uncached]) {
+    for (const header of ['X-Share', 'X-Stored-At', 'X-Global-At', 'X-Original-Cache-Control']) assert.equal(res.headers.get(header), null, header)
+  }
+})
