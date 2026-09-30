@@ -4,6 +4,7 @@ import { handle } from 'hono/cloudflare-pages'
 import { prettyJSON } from 'hono/pretty-json'
 import { cors } from 'hono/cors'
 import { staleIfError } from '../../lib/stale-if-error.ts'
+import { recall, remember } from '../../lib/global-store.ts'
 
 function esp32(path: string) {
   return {
@@ -172,14 +173,26 @@ app.get('/:tag{[^/]+\\.json}',
       ...(flavor && chip === 'esp32' ? [`${flavor}.bin`] : []),
       `${chip}${suffix}.bin`
     ]
-    const names = [...new Set(['esp32', 'esp32c3', 'esp32s3', 'esp32c6'].flatMap(chip => [...candidates(chip), ...candidates(chip, '-cdc')]))]
-    const found = new Set<string>()
-    const lookups = await Promise.all(names.map(async name => {
+    const names = [...new Set([
+      ...candidates('esp32'),
+      ...['esp32c3', 'esp32s3', 'esp32c6'].flatMap(chip => [...candidates(chip), ...candidates(chip, '-cdc')])
+    ])]
+    // Files a release is known to have are remembered for every location and
+    // every flavor, so only the candidates not yet seen are asked about
+    const known = await recall<string[]>(c, `assets:${tag}`)
+    const found = new Set<string>(known?.value ?? [])
+    const lookups = await Promise.all(names.filter(name => !found.has(name)).map(async name => {
       const url = `${GITHUB}/releases/download/${tag}/${name}`
       const status = (await lookup(url)).status
       if (status === 302) found.add(name)
       return { url, status }
     }))
+    if (found.size) {
+      await remember(c, `assets:${tag}`, [...found].sort(), known)
+    }
+    // A manifest built while some answers are missing could leave out a chip
+    // the release does have, and would then be cached; fail instead and let
+    // the last good manifest be served
     const failed = lookups.find(l => l.status !== 302 && l.status !== 404)
     if (failed) {
       return lookupFailed(c, failed.url, failed.status)
