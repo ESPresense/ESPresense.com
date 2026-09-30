@@ -738,3 +738,198 @@ test('errors and missing files do not invite the CDN to serve them stale', async
     assert.ok(!(await get(releases, path)).headers.get('Cache-Control')?.includes('stale-'), path)
   }
 })
+
+// --- answers shared between edge locations ------------------------------------
+
+// Minimal stand-in for a Workers KV namespace
+const sharedStore = () => {
+  const entries = new Map()
+  const calls = { get: 0, put: 0 }
+  return {
+    entries, calls,
+    get: async (key) => { calls.get++; const v = entries.get(key); return v === undefined ? null : JSON.parse(v) },
+    put: async (key, value) => { calls.put++; entries.set(key, value) },
+  }
+}
+// Each edge location has its own cache; all of them share one store
+const location = (store) => {
+  const cache = edgeCache()
+  return (handler, path, method = 'GET') => {
+    globalThis.caches = { default: cache }
+    return handler({
+      request: new Request('https://espresense.com' + path, { method }),
+      env: { RELEASES: store }, params: {}, waitUntil() {}, passThroughOnException() {},
+      next: () => new Response(null, { status: 404 }),
+    })
+  }
+}
+const githubHas = (tag, ...names) => {
+  upstream[`${GITHUB}/releases.atom`] = () => new Response(feed(tag))
+  release(tag, ...names)
+}
+const githubRefuses = () => {
+  for (const url of Object.keys(upstream)) upstream[url] = () => new Response('slow down', { status: 429 })
+  upstream[`${GITHUB}/releases.atom`] = () => new Response('slow down', { status: 429 })
+}
+
+test('a location with no answer of its own uses the one another location found', async () => {
+  const store = sharedStore()
+  const newark = location(store), atlanta = location(store)
+  githubHas('v4.1.0b0', 'esp32c6-cdc.bin')
+  assert.equal((await newark(releases, '/releases/latest-any/download/esp32c6-cdc.bin', 'HEAD')).status, 302)
+
+  githubRefuses()
+  const res = await atlanta(releases, '/releases/latest-any/download/esp32c6-cdc.bin', 'HEAD')
+  assert.equal(res.status, 302)
+  assert.equal(res.headers.get('Location'), `${GITHUB}/releases/download/v4.1.0b0/esp32c6-cdc.bin`)
+  assert.equal(res.headers.get('X-Release-Cache'), 'STALE-GLOBAL')
+  assert.equal(res.headers.get('Cache-Control'), 'no-store')
+  assert.equal(res.headers.get('Access-Control-Allow-Origin'), '*')
+})
+
+test('a manifest is shared between locations too', async () => {
+  const store = sharedStore()
+  const newark = location(store), atlanta = location(store)
+  upstream[`${GITHUB}/releases/latest`] = () => redirect(`${GITHUB}/releases/tag/v4.0.6`)
+  release('v4.0.6', 'esp32.bin', 'esp32c3.bin')
+  const good = await (await newark(releases, '/releases/latest.json')).json()
+
+  githubRefuses()
+  upstream[`${GITHUB}/releases/latest`] = () => new Response('slow down', { status: 429 })
+  const res = await atlanta(releases, '/releases/latest.json')
+  assert.equal(res.status, 200)
+  assert.match(res.headers.get('Content-Type'), /json/)
+  assert.deepEqual(await res.json(), good)
+})
+
+test('a location prefers its own stored answer and leaves the shared store alone', async () => {
+  const store = sharedStore()
+  const newark = location(store)
+  githubHas('v4.1.0b0', 'esp32.bin')
+  await newark(releases, '/releases/latest-any/download/esp32.bin')
+  const reads = store.calls.get
+
+  minutesLater(10)
+  githubRefuses()
+  const res = await newark(releases, '/releases/latest-any/download/esp32.bin')
+  assert.equal(res.headers.get('X-Release-Cache'), 'STALE')
+  assert.equal(store.calls.get, reads)
+})
+
+test('an unchanged answer is not written again until the heartbeat is due', async () => {
+  const store = sharedStore()
+  const newark = location(store)
+  githubHas('v4.1.0b0', 'esp32.bin')
+  await newark(releases, '/releases/latest-any/download/esp32.bin')
+  assert.equal(store.calls.put, 1)
+  const reads = store.calls.get
+
+  for (const minutes of [6, 12, 18, 60, 300]) {
+    minutesLater(minutes)
+    await newark(releases, '/releases/latest-any/download/esp32.bin')
+  }
+  assert.equal(store.calls.put, 1)
+  assert.equal(store.calls.get, reads)
+
+  minutesLater(6 * 60 + 5)
+  await newark(releases, '/releases/latest-any/download/esp32.bin')
+  assert.equal(store.calls.put, 2)
+})
+
+test('a second location finding the same answer does not write it again', async () => {
+  const store = sharedStore()
+  const newark = location(store), atlanta = location(store)
+  githubHas('v4.1.0b0', 'esp32.bin')
+  await newark(releases, '/releases/latest-any/download/esp32.bin')
+  await atlanta(releases, '/releases/latest-any/download/esp32.bin')
+  assert.equal(store.calls.put, 1)
+})
+
+test('a new release is written to the shared store', async () => {
+  const store = sharedStore()
+  const newark = location(store)
+  githubHas('v4.1.0b0', 'esp32.bin')
+  await newark(releases, '/releases/latest-any/download/esp32.bin')
+
+  minutesLater(10)
+  githubHas('v4.2.0', 'esp32.bin')
+  await newark(releases, '/releases/latest-any/download/esp32.bin')
+  assert.equal(store.calls.put, 2)
+  assert.equal(JSON.parse(store.entries.get('response:/releases/latest-any/download/esp32.bin')).value.location, `${GITHUB}/releases/download/v4.2.0/esp32.bin`)
+})
+
+test('failures, missing files and firmware images are never written to the shared store', async () => {
+  const store = sharedStore()
+  const newark = location(store)
+  upstream[`${GITHUB}/releases.atom`] = () => new Response('slow down', { status: 429 })
+  assert.equal((await newark(releases, '/releases/latest-any/download/esp32.bin')).status, 502)
+  assert.equal((await newark(releases, '/releases/download/v4.0.6/nope.bin')).status, 404)
+
+  upstream[`${GITHUB}/releases/download/v4.0.6/esp32.bin`] = () => new Response(new Uint8Array([0xe9, 1, 2, 3]), { headers: { 'Content-Type': 'application/octet-stream' } })
+  assert.equal((await newark(releases, '/releases/download/v4.0.6/esp32.bin')).status, 200)
+  assert.equal(store.calls.put, 0)
+})
+
+test('a failing shared store never fails the request', async () => {
+  const broken = { get: async () => { throw new Error('KV over quota') }, put: async () => { throw new Error('KV over quota') } }
+  const newark = location(broken)
+  githubHas('v4.1.0b0', 'esp32.bin')
+  assert.equal((await newark(releases, '/releases/latest-any/download/esp32.bin')).status, 302)
+
+  const atlanta = location(broken)
+  githubRefuses()
+  assert.equal((await atlanta(releases, '/releases/latest-any/download/esp32.bin')).status, 502)
+})
+
+test('a location new to a branch does not go back to an older run than another location served', async () => {
+  const store = sharedStore()
+  const newark = location(store), hongKong = location(store)
+  upstream[runsUrl('main')] = () => json({ workflow_runs: [ok(35720887909)] })
+  await newark(artifacts, '/artifacts/latest/download/main/esp32.bin')
+
+  upstream[runsUrl('main')] = () => json({ workflow_runs: [ok(34567205085)] })
+  const res = await hongKong(artifacts, '/artifacts/latest/download/main/esp32.bin')
+  assert.equal(res.headers.get('Location'), '/artifacts/download/runs/35720887909/esp32.bin')
+  assert.equal(res.headers.get('X-Release-Cache'), 'STALE-GLOBAL')
+})
+
+test('a location new to a branch keeps the shared answer when the branch comes back empty', async () => {
+  const store = sharedStore()
+  const newark = location(store), hongKong = location(store)
+  upstream[runsUrl('perf%2Fmedian-iqr-scratch')] = () => json({ workflow_runs: [ok(35387360096)] })
+  await newark(artifacts, '/artifacts/latest/download/perf/median-iqr-scratch/esp32.bin')
+
+  upstream[runsUrl('perf%2Fmedian-iqr-scratch')] = () => json({ workflow_runs: [] })
+  const res = await hongKong(artifacts, '/artifacts/latest/download/perf/median-iqr-scratch/esp32.bin')
+  assert.equal(res.status, 302)
+  assert.equal(res.headers.get('Location'), '/artifacts/download/runs/35387360096/esp32.bin')
+})
+
+test('a manifest only asks GitHub about files not already known for the release', async () => {
+  const store = sharedStore()
+  const newark = location(store), atlanta = location(store)
+  release('v4.1.0b0', 'esp32.bin', 'esp32-verbose.bin', 'esp32c3.bin', 'esp32c3-cdc.bin', 'esp32s3.bin', 'esp32s3-cdc.bin', 'esp32c6.bin', 'esp32c6-cdc.bin')
+  await newark(releases, '/releases/v4.1.0b0.json')
+  assert.equal(fetched.length, 7)
+
+  // Another location, another flavor: only the flavored candidates are new
+  fetched.length = 0
+  const manifest = await (await atlanta(releases, '/releases/v4.1.0b0.json?flavor=verbose')).json()
+  assert.deepEqual(fetched.map(url => url.split('/').pop()).sort(), ['esp32-verbose.bin', 'esp32c3-verbose-cdc.bin', 'esp32c3-verbose.bin', 'esp32c6-verbose-cdc.bin', 'esp32c6-verbose.bin', 'esp32s3-verbose-cdc.bin', 'esp32s3-verbose.bin', 'verbose.bin'])
+  assert.equal(appPaths(manifest)[0], 'ESP32 download/v4.1.0b0/esp32-verbose.bin')
+  assert.equal(manifest.builds.length, 7)
+
+  // Asked again somewhere new, nothing the release has needs asking about
+  fetched.length = 0
+  await location(store)(releases, '/releases/v4.1.0b0.json')
+  assert.deepEqual(fetched, [])
+})
+
+test('a manifest is not built from partial answers', async () => {
+  const store = sharedStore()
+  const newark = location(store)
+  release('v4.0.6', 'esp32.bin')
+  upstream[`${GITHUB}/releases/download/v4.0.6/esp32c3.bin`] = () => new Response('slow down', { status: 429 })
+  assert.equal((await newark(releases, '/releases/v4.0.6.json')).status, 502)
+  assert.equal(store.entries.has('response:/releases/v4.0.6.json'), false)
+})
