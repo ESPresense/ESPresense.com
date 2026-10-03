@@ -557,6 +557,63 @@ test('latest artifact returns 404 when no run on the branch succeeded', async ()
   assert.equal((await get(artifacts, '/artifacts/latest/download/broken/esp32.bin')).status, 404)
 })
 
+const runPage = (runs, next) => {
+  const response = json({ workflow_runs: runs })
+  if (next) response.headers.set('Link', `<${next}>; rel="next"`)
+  return response
+}
+
+test('latest artifact searches later pages and stops at the newest successful run', async () => {
+  const url = runsUrl('perf%2Fscratch')
+  const unsuccessful = Array.from({ length: 30 }, (_, i) => ({
+    id: 999 - i, conclusion: ['failure', 'cancelled', null][i % 3],
+  }))
+  upstream[url] = () => runPage(unsuccessful, `${url}&page=2`)
+  upstream[`${url}&page=2`] = () => runPage([ok(777), ok(666)], `${url}&page=3`)
+
+  const res = await get(artifacts, '/artifacts/latest/download/perf/scratch/esp32.bin')
+  assert.equal(res.status, 302)
+  assert.equal(res.headers.get('Location'), '/artifacts/download/runs/777/esp32.bin')
+  assert.deepEqual(fetched, [url, `${url}&page=2`])
+})
+
+test('latest artifact returns 404 only after exhausting the run pages', async () => {
+  const url = runsUrl('main')
+  upstream[url] = () => runPage([{ id: 999, conclusion: 'failure' }], `${url}&page=2`)
+  upstream[`${url}&page=2`] = () => runPage([{ id: 888, conclusion: 'cancelled' }], `${url}&page=3`)
+  upstream[`${url}&page=3`] = () => runPage([{ id: 777, conclusion: null }])
+
+  assert.equal((await get(artifacts, '/artifacts/latest/download/main/esp32.bin')).status, 404)
+  assert.deepEqual(fetched, [url, `${url}&page=2`, `${url}&page=3`])
+})
+
+test('a later run page failure is retried and reported as an upstream error', async () => {
+  const url = runsUrl('main')
+  upstream[url] = () => runPage([{ id: 999, conclusion: 'failure' }], `${url}&page=2`)
+  upstream[`${url}&page=2`] = () => json({ message: 'slow down' }, 429)
+
+  const res = await get(artifacts, '/artifacts/latest/download/main/esp32.bin')
+  assert.equal(res.status, 502)
+  assert.deepEqual((await res.json()).upstream, { status: 429 })
+  assert.deepEqual(fetched, [url, `${url}&page=2`, `${url}&page=2`])
+})
+
+test('a later run page failure preserves the last good redirect', async () => {
+  globalThis.caches = { default: edgeCache() }
+  const url = runsUrl('main')
+  upstream[url] = () => runPage([ok(777)])
+  await get(artifacts, '/artifacts/latest/download/main/esp32.bin')
+
+  minutesLater(10)
+  upstream[url] = () => runPage([{ id: 999, conclusion: 'failure' }], `${url}&page=2`)
+  upstream[`${url}&page=2`] = () => json({ message: 'slow down' }, 429)
+
+  const res = await get(artifacts, '/artifacts/latest/download/main/esp32.bin')
+  assert.equal(res.status, 302)
+  assert.equal(res.headers.get('Location'), '/artifacts/download/runs/777/esp32.bin')
+  assert.equal(res.headers.get('X-Release-Cache'), 'STALE')
+})
+
 test('latest artifact never goes back to an older run', async () => {
   globalThis.caches = { default: edgeCache() }
   upstream[runsUrl('main')] = () => json({ workflow_runs: [ok(35720887909), ok(35396273785)] })

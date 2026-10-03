@@ -162,17 +162,22 @@ app.all('/latest/download/:rest{.+/[^/]+}',
 
     // Not filtered by status: the filtered listing is the one that has been
     // seen returning incomplete results
-    const response = await github(c, `actions/workflows/build.yml/runs?branch=${encodeURIComponent(branch)}&per_page=30`, 300)
+    const path = `actions/workflows/build.yml/runs?branch=${encodeURIComponent(branch)}&per_page=30`
+    for (let page = 1; ; page++) {
+      const response = await github(c, path + (page === 1 ? '' : `&page=${page}`), 300)
 
-    if (!response.ok) {
-      return c.json({ error: "Failed to fetch workflow runs", upstream: { status: response.status } }, response.status === 404 ? 404 : 502)
+      if (!response.ok) {
+        return c.json({ error: "Failed to fetch workflow runs", upstream: { status: response.status } }, response.status === 404 ? 404 : 502)
+      }
+
+      const data: any = await response.json()
+      const firstRun = data.workflow_runs.find((run: any) => run.conclusion === 'success')
+      if (firstRun) return c.redirect(`/artifacts/download/runs/${firstRun.id}/${bin}`)
+
+      // Failed, cancelled and pending runs can fill a whole page. Only give
+      // up once GitHub has no next page; keep requests on our fixed API path.
+      if (!response.headers.get('Link')?.match(/;\s*rel="next"/)) return c.notFound()
     }
-
-    const data: any = await response.json()
-    const firstRun = data.workflow_runs.find((run: any) => run.conclusion === 'success')
-    if (!firstRun) return c.notFound()
-    const run_id = firstRun.id
-    return c.redirect(`/artifacts/download/runs/${run_id}/${bin}`)
   }
 )
 
