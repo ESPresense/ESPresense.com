@@ -3,6 +3,7 @@ import type { Context } from 'hono'
 import { handle } from 'hono/cloudflare-pages'
 import { prettyJSON } from 'hono/pretty-json'
 import { staleIfError } from '../../lib/stale-if-error.ts'
+import { retryOnce } from '../../lib/retry-once.ts'
 import { cors } from 'hono/cors'
 import * as fflate from "fflate"
 
@@ -121,41 +122,61 @@ app.use('*', prettyJSON())
 // The unauthenticated GitHub API allows 60 requests/hour per IP, shared with
 // everything else behind Cloudflare's egress. With a GITHUB_TOKEN secret set on
 // the Pages project the limit is 5,000/hour; without one this still works.
-function github(c: Context, path: string, okTtl: number) {
+async function github(c: Context, path: string, okTtl: number) {
   const token = c.env?.GITHUB_TOKEN
-  return fetch(`https://api.github.com/repos/ESPresense/ESPresense/${path}`, {
+  const ask = () => fetch(`https://api.github.com/repos/ESPresense/ESPresense/${path}`, {
     headers: {
       "User-Agent": "espresense-artifact-proxy",
       ...(token && { "Authorization": `Bearer ${token}` })
     },
     cf: {
-      cacheTtlByStatus: { '200-299': okTtl, '400-499': 60, '500-599': 0 }
+      // Only answers we act on are cached, so a refusal is never replayed
+      cacheTtlByStatus: { '200-299': okTtl, '404': 60, '400-403': 0, '405-599': 0 }
     }
   } as any)
+
+  return retryOnce(ask)
+}
+
+const runOf = (response: Response) => Number(response.headers.get('Location')?.match(/\/runs\/(\d+)\//)?.[1])
+
+// GitHub's run listing occasionally answers with incomplete results: a branch
+// with builds comes back empty, or an old run comes back as the newest. Run ids
+// only grow, so an answer that is missing or older than the last one is wrong,
+// and following it would send devices back to old firmware.
+function isStaleListing(stored: Response, fresh: Response) {
+  return fresh.status === 404 || runOf(fresh) < runOf(stored)
 }
 
 // Latest builds change frequently, cache GitHub API responses for 5 minutes
 // Branch names can contain slashes (perf/some-experiment), so match the rest
 // of the path and treat the last segment as the artifact name.
 app.all('/latest/download/:rest{.+/[^/]+}',
-  staleIfError(300),
+  staleIfError(300, { keepStored: isStaleListing }),
   async (c: Context) => {
     const rest = c.req.param('rest')
     const branch = rest.substring(0, rest.lastIndexOf('/'))
     const bin = rest.substring(rest.lastIndexOf('/') + 1)
     console.log({ branch, bin })
 
-    const response = await github(c, `actions/workflows/build.yml/runs?status=success&branch=${encodeURIComponent(branch)}`, 300)
+    // Not filtered by status: the filtered listing is the one that has been
+    // seen returning incomplete results
+    const path = `actions/workflows/build.yml/runs?branch=${encodeURIComponent(branch)}&per_page=30`
+    for (let page = 1; ; page++) {
+      const response = await github(c, path + (page === 1 ? '' : `&page=${page}`), 300)
 
-    if (!response.ok) {
-      return c.json({ error: "Failed to fetch workflow runs", upstream: { status: response.status } }, response.status === 404 ? 404 : 502)
+      if (!response.ok) {
+        return c.json({ error: "Failed to fetch workflow runs", upstream: { status: response.status } }, response.status === 404 ? 404 : 502)
+      }
+
+      const data: any = await response.json()
+      const firstRun = data.workflow_runs.find((run: any) => run.conclusion === 'success')
+      if (firstRun) return c.redirect(`/artifacts/download/runs/${firstRun.id}/${bin}`)
+
+      // Failed, cancelled and pending runs can fill a whole page. Only give
+      // up once GitHub has no next page; keep requests on our fixed API path.
+      if (!response.headers.get('Link')?.match(/;\s*rel="next"/)) return c.notFound()
     }
-
-    const data: any = await response.json()
-    const firstRun = data.workflow_runs[0]
-    if (!firstRun) return c.notFound()
-    const run_id = firstRun.id
-    return c.redirect(`/artifacts/download/runs/${run_id}/${bin}`)
   }
 )
 

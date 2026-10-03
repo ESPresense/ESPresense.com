@@ -17,14 +17,42 @@ function restore(stored: Response, stale: boolean) {
   return response
 }
 
+// How long Cloudflare's CDN may keep serving an expired copy: immediately while
+// it refreshes in the background, and when the refresh fails. Without this,
+// every request that finds an expired copy waits on GitHub, and devices with
+// short timeouts hang up.
+const SERVE_STALE = 'stale-while-revalidate=86400, stale-if-error=86400'
+
+function allowStale(response: Response) {
+  const cacheControl = response.headers.get('Cache-Control')
+  if (cacheControl?.includes('max-age=') && !cacheControl.includes('stale-while-revalidate')) {
+    response.headers.set('Cache-Control', `${cacheControl}, ${SERVE_STALE}`)
+  }
+}
+
+interface Options {
+  // Return true to keep serving the stored answer instead of a fresh one that
+  // succeeded but should not be trusted over it
+  keepStored?: (stored: Response, fresh: Response) => boolean
+}
+
 // Serves the last good response while it is fresh, and falls back to it when
 // the handler fails. Freshness comes from the response's own max-age, so
 // GitHub is asked at most once per max-age per edge location, and an upstream
 // failure only reaches the client if there has never been a good answer.
-export function staleIfError(defaultMaxAge?: number) {
+export function staleIfError(defaultMaxAge?: number, options: Options = {}) {
   return async (c: Context, next: Next) => {
     const cache = (globalThis as any).caches?.default
-    if (!cache || !['GET', 'HEAD'].includes(c.req.method)) return next()
+    if (!cache || !['GET', 'HEAD'].includes(c.req.method)) {
+      await next()
+      if (c.res.ok || c.res.status === 302) {
+        if (defaultMaxAge !== undefined && !c.res.headers.has('Cache-Control')) {
+          c.res.headers.set('Cache-Control', `public, max-age=${defaultMaxAge}`)
+        }
+        allowStale(c.res)
+      }
+      return
+    }
 
     // HEAD and GET share an entry; firmware update checks are HEAD requests
     const key = new Request(c.req.url, { method: 'GET' })
@@ -37,14 +65,20 @@ export function staleIfError(defaultMaxAge?: number) {
 
     await next()
 
-    if (c.res.status >= 500) {
-      if (stored) c.res = restore(stored, true)
+    if (c.res.status >= 500 || (stored && options.keepStored?.(stored, c.res))) {
+      if (stored) {
+        // Hono copies the headers of the response being replaced onto the new
+        // one, which would carry the rejected Location over; clear it first
+        c.res = undefined
+        c.res = restore(stored, true)
+      }
       return
     }
     if (defaultMaxAge !== undefined && !c.res.headers.has('Cache-Control')) {
       c.res.headers.set('Cache-Control', `public, max-age=${defaultMaxAge}`)
     }
     if (c.res.status === 200 || c.res.status === 302) {
+      allowStale(c.res)
       const copy = new Response(c.res.clone().body, c.res)
       copy.headers.set(ORIGINAL_CACHE_CONTROL, c.res.headers.get('Cache-Control') ?? '')
       copy.headers.set('Cache-Control', `public, max-age=${KEEP_SECONDS}`)

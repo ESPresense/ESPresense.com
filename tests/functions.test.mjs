@@ -35,7 +35,7 @@ test('latest redirects to the tagged release URL', async () => {
   const res = await get(releases, '/releases/latest/download/esp32.bin')
   assert.equal(res.status, 302)
   assert.equal(res.headers.get('Location'), tagged)
-  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=300')
+  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=300, stale-while-revalidate=86400, stale-if-error=86400')
 })
 
 test('latest returns 404 when the release lacks the file', async () => {
@@ -124,7 +124,7 @@ test('release manifest lists a build per chip family', async () => {
 
   const res = await get(releases, '/releases/v4.0.6.json')
   assert.equal(res.status, 200)
-  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=86400')
+  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=86400, stale-while-revalidate=86400, stale-if-error=86400')
   const manifest = await res.json()
   assert.equal(manifest.name, 'ESPresense v4.0.6')
   assert.equal(manifest.version, 'v4.0.6')
@@ -165,7 +165,7 @@ test('latest.json resolves to the newest stable release and its real tag', async
 
   const res = await get(releases, '/releases/latest.json')
   assert.equal(res.status, 200)
-  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=300')
+  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=300, stale-while-revalidate=86400, stale-if-error=86400')
   const manifest = await res.json()
   assert.equal(manifest.version, 'v4.0.6')
   // 'latest' is not a tag, so download paths must use the resolved one
@@ -217,14 +217,14 @@ test('tagged download proxies the asset body', async () => {
   const res = await get(releases, '/releases/download/v4.0.6/esp32.bin')
   assert.equal(res.status, 200)
   assert.equal(res.headers.get('Content-Type'), 'application/octet-stream')
-  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=86400')
+  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=86400, stale-while-revalidate=86400, stale-if-error=86400')
   assert.equal(res.headers.get('Access-Control-Allow-Origin'), '*')
   assert.deepEqual(new Uint8Array(await res.arrayBuffer()), new Uint8Array([0xe9, 1, 2, 3]))
 })
 
 test('tagged download caches the latest tag for 5 minutes', async () => {
   upstream[`${GITHUB}/releases/download/latest/esp32.bin`] = () => new Response('x')
-  assert.equal((await get(releases, '/releases/download/latest/esp32.bin')).headers.get('Cache-Control'), 'public, max-age=300')
+  assert.equal((await get(releases, '/releases/download/latest/esp32.bin')).headers.get('Cache-Control'), 'public, max-age=300, stale-while-revalidate=86400, stale-if-error=86400')
 })
 
 test('tagged download returns 502 when GitHub fails', async () => {
@@ -251,13 +251,14 @@ test('releases returns 404 for an unknown route', async () => {
 import * as fflate from 'fflate'
 
 const NIGHTLY = 'https://nightly.link/ESPresense/ESPresense'
-const runsUrl = (branch) => `${API}/actions/workflows/build.yml/runs?status=success&branch=${branch}`
+const runsUrl = (branch) => `${API}/actions/workflows/build.yml/runs?branch=${branch}&per_page=30`
+const ok = (id) => ({ id, conclusion: 'success' })
 const artifactList = (...names) => ({
   artifacts: names.map((name, id) => ({ id, name, workflow_run: { head_branch: 'main', head_sha: 'abcdef1234567890' } })),
 })
 
 test('latest artifact redirects to the newest successful run', async () => {
-  upstream[runsUrl('main')] = () => json({ workflow_runs: [{ id: 222 }, { id: 111 }] })
+  upstream[runsUrl('main')] = () => json({ workflow_runs: [ok(222), ok(111)] })
 
   const res = await get(artifacts, '/artifacts/latest/download/main/esp32.bin')
   assert.equal(res.status, 302)
@@ -265,7 +266,7 @@ test('latest artifact redirects to the newest successful run', async () => {
 })
 
 test('latest artifact accepts branch names with slashes', async () => {
-  upstream[runsUrl('perf%2Fmedian-iqr-scratch')] = () => json({ workflow_runs: [{ id: 444 }] })
+  upstream[runsUrl('perf%2Fmedian-iqr-scratch')] = () => json({ workflow_runs: [ok(444)] })
 
   const res = await get(artifacts, '/artifacts/latest/download/perf/median-iqr-scratch/esp32.bin')
   assert.equal(res.status, 302)
@@ -273,7 +274,7 @@ test('latest artifact accepts branch names with slashes', async () => {
 })
 
 test('latest artifact accepts deeply nested branch names', async () => {
-  upstream[runsUrl('a%2Fb%2Fc')] = () => json({ workflow_runs: [{ id: 555 }] })
+  upstream[runsUrl('a%2Fb%2Fc')] = () => json({ workflow_runs: [ok(555)] })
   assert.equal((await get(artifacts, '/artifacts/latest/download/a/b/c/esp32c3-cdc.bin')).headers.get('Location'), '/artifacts/download/runs/555/esp32c3-cdc.bin')
 })
 
@@ -283,7 +284,7 @@ test('latest artifact needs both a branch and a file', async () => {
 })
 
 test('latest artifact encodes the branch into the query string', async () => {
-  upstream[runsUrl('perf%2Fscratch%26status%3Dfailure')] = () => json({ workflow_runs: [{ id: 333 }] })
+  upstream[runsUrl('perf%2Fscratch%26status%3Dfailure')] = () => json({ workflow_runs: [ok(333)] })
 
   const res = await get(artifacts, '/artifacts/latest/download/perf%2Fscratch%26status%3Dfailure/esp32.bin')
   assert.equal(res.headers.get('Location'), '/artifacts/download/runs/333/esp32.bin')
@@ -438,7 +439,7 @@ test('fresh answers are served without asking GitHub again', async () => {
   minutesLater(4)
   const res = await send(releases, '/releases/latest-any/download/esp32.bin', 'HEAD')
   assert.equal(res.status, 302)
-  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=300')
+  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=300, stale-while-revalidate=86400, stale-if-error=86400')
   assert.equal(res.headers.get('X-Release-Cache'), 'HIT')
   assert.equal(res.headers.get('X-Stored-At'), null)
   assert.equal(fetched.length, asked)
@@ -516,7 +517,7 @@ const withEnv = (handler, path, env) => handler({
 })
 
 test('artifacts routes authenticate to the GitHub API when a token is configured', async () => {
-  upstream[runsUrl('main')] = () => json({ workflow_runs: [{ id: 222 }] })
+  upstream[runsUrl('main')] = () => json({ workflow_runs: [ok(222)] })
   upstream[`${API}/actions/runs/123/artifacts`] = () => json(artifactList('esp32.bin'))
   await withEnv(artifacts, '/artifacts/latest/download/main/esp32.bin', { GITHUB_TOKEN: 'test-token' })
   await withEnv(artifacts, '/artifacts/123.json', { GITHUB_TOKEN: 'test-token' })
@@ -542,4 +543,198 @@ test('artifacts 502 reports what GitHub answered', async () => {
   const res = await get(artifacts, '/artifacts/123.json')
   assert.equal(res.status, 502)
   assert.deepEqual((await res.json()).upstream, { status: 403 })
+})
+
+// --- GitHub answering wrongly or slowly -------------------------------------
+
+test('latest artifact skips runs that did not succeed', async () => {
+  upstream[runsUrl('main')] = () => json({ workflow_runs: [{ id: 999, conclusion: null }, { id: 888, conclusion: 'failure' }, ok(777), ok(666)] })
+  assert.equal((await get(artifacts, '/artifacts/latest/download/main/esp32.bin')).headers.get('Location'), '/artifacts/download/runs/777/esp32.bin')
+})
+
+test('latest artifact returns 404 when no run on the branch succeeded', async () => {
+  upstream[runsUrl('broken')] = () => json({ workflow_runs: [{ id: 999, conclusion: 'failure' }] })
+  assert.equal((await get(artifacts, '/artifacts/latest/download/broken/esp32.bin')).status, 404)
+})
+
+const runPage = (runs, next) => {
+  const response = json({ workflow_runs: runs })
+  if (next) response.headers.set('Link', `<${next}>; rel="next"`)
+  return response
+}
+
+test('latest artifact searches later pages and stops at the newest successful run', async () => {
+  const url = runsUrl('perf%2Fscratch')
+  const unsuccessful = Array.from({ length: 30 }, (_, i) => ({
+    id: 999 - i, conclusion: ['failure', 'cancelled', null][i % 3],
+  }))
+  upstream[url] = () => runPage(unsuccessful, `${url}&page=2`)
+  upstream[`${url}&page=2`] = () => runPage([ok(777), ok(666)], `${url}&page=3`)
+
+  const res = await get(artifacts, '/artifacts/latest/download/perf/scratch/esp32.bin')
+  assert.equal(res.status, 302)
+  assert.equal(res.headers.get('Location'), '/artifacts/download/runs/777/esp32.bin')
+  assert.deepEqual(fetched, [url, `${url}&page=2`])
+})
+
+test('latest artifact returns 404 only after exhausting the run pages', async () => {
+  const url = runsUrl('main')
+  upstream[url] = () => runPage([{ id: 999, conclusion: 'failure' }], `${url}&page=2`)
+  upstream[`${url}&page=2`] = () => runPage([{ id: 888, conclusion: 'cancelled' }], `${url}&page=3`)
+  upstream[`${url}&page=3`] = () => runPage([{ id: 777, conclusion: null }])
+
+  assert.equal((await get(artifacts, '/artifacts/latest/download/main/esp32.bin')).status, 404)
+  assert.deepEqual(fetched, [url, `${url}&page=2`, `${url}&page=3`])
+})
+
+test('a later run page failure is retried and reported as an upstream error', async () => {
+  const url = runsUrl('main')
+  upstream[url] = () => runPage([{ id: 999, conclusion: 'failure' }], `${url}&page=2`)
+  upstream[`${url}&page=2`] = () => json({ message: 'slow down' }, 429)
+
+  const res = await get(artifacts, '/artifacts/latest/download/main/esp32.bin')
+  assert.equal(res.status, 502)
+  assert.deepEqual((await res.json()).upstream, { status: 429 })
+  assert.deepEqual(fetched, [url, `${url}&page=2`, `${url}&page=2`])
+})
+
+test('a later run page failure preserves the last good redirect', async () => {
+  globalThis.caches = { default: edgeCache() }
+  const url = runsUrl('main')
+  upstream[url] = () => runPage([ok(777)])
+  await get(artifacts, '/artifacts/latest/download/main/esp32.bin')
+
+  minutesLater(10)
+  upstream[url] = () => runPage([{ id: 999, conclusion: 'failure' }], `${url}&page=2`)
+  upstream[`${url}&page=2`] = () => json({ message: 'slow down' }, 429)
+
+  const res = await get(artifacts, '/artifacts/latest/download/main/esp32.bin')
+  assert.equal(res.status, 302)
+  assert.equal(res.headers.get('Location'), '/artifacts/download/runs/777/esp32.bin')
+  assert.equal(res.headers.get('X-Release-Cache'), 'STALE')
+})
+
+test('latest artifact never goes back to an older run', async () => {
+  globalThis.caches = { default: edgeCache() }
+  upstream[runsUrl('main')] = () => json({ workflow_runs: [ok(35720887909), ok(35396273785)] })
+  await get(artifacts, '/artifacts/latest/download/main/esp32.bin')
+
+  minutesLater(10)
+  // What GitHub was seen returning: an incomplete listing led by an old run
+  upstream[runsUrl('main')] = () => json({ workflow_runs: [ok(34567205085), ok(31925656733)] })
+
+  const res = await get(artifacts, '/artifacts/latest/download/main/esp32.bin')
+  assert.equal(res.status, 302)
+  assert.equal(res.headers.get('Location'), '/artifacts/download/runs/35720887909/esp32.bin')
+  assert.equal(res.headers.get('X-Release-Cache'), 'STALE')
+})
+
+test('latest artifact keeps its answer when a branch with builds comes back empty', async () => {
+  globalThis.caches = { default: edgeCache() }
+  upstream[runsUrl('perf%2Fmedian-iqr-scratch')] = () => json({ workflow_runs: [ok(35387360096)] })
+  await get(artifacts, '/artifacts/latest/download/perf/median-iqr-scratch/esp32.bin')
+
+  minutesLater(10)
+  upstream[runsUrl('perf%2Fmedian-iqr-scratch')] = () => json({ workflow_runs: [] })
+
+  const res = await get(artifacts, '/artifacts/latest/download/perf/median-iqr-scratch/esp32.bin')
+  assert.equal(res.status, 302)
+  assert.equal(res.headers.get('Location'), '/artifacts/download/runs/35387360096/esp32.bin')
+})
+
+test('latest artifact moves forward to a newer run', async () => {
+  globalThis.caches = { default: edgeCache() }
+  upstream[runsUrl('main')] = () => json({ workflow_runs: [ok(100)] })
+  await get(artifacts, '/artifacts/latest/download/main/esp32.bin')
+
+  minutesLater(10)
+  upstream[runsUrl('main')] = () => json({ workflow_runs: [ok(200), ok(100)] })
+  assert.equal((await get(artifacts, '/artifacts/latest/download/main/esp32.bin')).headers.get('Location'), '/artifacts/download/runs/200/esp32.bin')
+})
+
+test('a refused lookup is retried once before failing', async () => {
+  let calls = 0
+  upstream[`${GITHUB}/releases.atom`] = () => (++calls === 1 ? new Response('slow down', { status: 429 }) : new Response(feed('v4.1.0b0')))
+  upstream[`${GITHUB}/releases/download/v4.1.0b0/macchina-a0.bin`] = () => redirect('https://release-assets.example/signed')
+
+  const res = await get(releases, '/releases/latest-any/download/macchina-a0.bin')
+  assert.equal(res.status, 302)
+  assert.equal(calls, 2)
+})
+
+test('a refused GitHub API call is retried once before failing', async () => {
+  let calls = 0
+  upstream[`${API}/actions/runs/123/artifacts`] = () => {
+    calls++
+    if (calls > 1) return json(artifactList('esp32.bin'))
+    const response = json({ message: 'slow down' }, 403)
+    response.headers.set('X-RateLimit-Remaining', '0')
+    return response
+  }
+  assert.equal((await get(artifacts, '/artifacts/123.json')).status, 200)
+  assert.equal(calls, 2)
+})
+
+test('a lookup that keeps failing is not retried forever', async () => {
+  let calls = 0
+  upstream[`${GITHUB}/releases.atom`] = () => { calls++; return new Response('boom', { status: 503 }) }
+  assert.equal((await get(releases, '/releases/latest-any/download/esp32.bin')).status, 502)
+  assert.equal(calls, 2)
+})
+
+for (const [name, handler, path, url, good] of [
+  ['release', releases, '/releases/latest-any/download/esp32.bin', `${GITHUB}/releases.atom`, () => new Response(feed('v4.0.6'))],
+  ['artifact', artifacts, '/artifacts/latest/download/main/esp32.bin', runsUrl('main'), () => json({ workflow_runs: [ok(777)] })],
+]) {
+  test(`${name} lookup recovers from a rejected first fetch`, async () => {
+    upstream[`${GITHUB}/releases/download/v4.0.6/esp32.bin`] = () => redirect('https://release-assets.example/signed')
+    let calls = 0
+    upstream[url] = () => {
+      if (++calls === 1) throw new TypeError('network failure')
+      return good()
+    }
+    assert.equal((await get(handler, path)).status, 302)
+    assert.equal(calls, 2)
+  })
+
+  test(`${name} lookup never attempts a third fetch`, async () => {
+    for (const first of ['network', 503]) {
+      let calls = 0
+      upstream[url] = () => {
+        calls++
+        if (calls === 1 && first === 503) return new Response(null, { status: 503 })
+        throw new TypeError('network failure')
+      }
+      assert.equal((await get(handler, path)).status, 502)
+      assert.equal(calls, 2)
+    }
+  })
+
+  test(`${name} lookup does not retry permanent client errors`, async () => {
+    for (const status of [400, 401, 403, 404, 422]) {
+      let calls = 0
+      upstream[url] = () => { calls++; return new Response(null, { status }) }
+      await get(handler, path)
+      assert.equal(calls, 1, `HTTP ${status}`)
+    }
+  })
+
+  test(`${name} lookup retries transient statuses and explicit rate limits once`, async () => {
+    for (const [status, headers] of [
+      [408, {}], [429, {}], [500, {}], [503, {}],
+      [403, { 'X-RateLimit-Remaining': '0' }], [403, { 'Retry-After': '1' }],
+    ]) {
+      let calls = 0
+      upstream[url] = () => { calls++; return new Response(null, { status, headers }) }
+      assert.equal((await get(handler, path)).status, 502)
+      assert.equal(calls, 2, `HTTP ${status} ${JSON.stringify(headers)}`)
+    }
+  })
+}
+
+test('errors and missing files do not invite the CDN to serve them stale', async () => {
+  upstream[`${GITHUB}/releases.atom`] = () => new Response('boom', { status: 503 })
+  for (const path of ['/releases/latest-any/download/esp32.bin', '/releases/download/v4.0.6/nope.bin', '/releases/v0.0.0.json']) {
+    assert.ok(!(await get(releases, path)).headers.get('Cache-Control')?.includes('stale-'), path)
+  }
 })
