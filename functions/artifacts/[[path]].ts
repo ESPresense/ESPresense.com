@@ -3,6 +3,7 @@ import type { Context } from 'hono'
 import { handle } from 'hono/cloudflare-pages'
 import { prettyJSON } from 'hono/pretty-json'
 import { staleIfError } from '../../lib/stale-if-error.ts'
+import { retryOnce } from '../../lib/retry-once.ts'
 import { cors } from 'hono/cors'
 import * as fflate from "fflate"
 
@@ -134,9 +135,7 @@ async function github(c: Context, path: string, okTtl: number) {
     }
   } as any)
 
-  // One retry: a single refused or failed call should not fail the request
-  const response = await ask()
-  return response.ok || response.status === 404 ? response : ask()
+  return retryOnce(ask)
 }
 
 const runOf = (response: Response) => Number(response.headers.get('Location')?.match(/\/runs\/(\d+)\//)?.[1])

@@ -664,7 +664,13 @@ test('a refused lookup is retried once before failing', async () => {
 
 test('a refused GitHub API call is retried once before failing', async () => {
   let calls = 0
-  upstream[`${API}/actions/runs/123/artifacts`] = () => (++calls === 1 ? json({ message: 'slow down' }, 403) : json(artifactList('esp32.bin')))
+  upstream[`${API}/actions/runs/123/artifacts`] = () => {
+    calls++
+    if (calls > 1) return json(artifactList('esp32.bin'))
+    const response = json({ message: 'slow down' }, 403)
+    response.headers.set('X-RateLimit-Remaining', '0')
+    return response
+  }
   assert.equal((await get(artifacts, '/artifacts/123.json')).status, 200)
   assert.equal(calls, 2)
 })
@@ -675,6 +681,56 @@ test('a lookup that keeps failing is not retried forever', async () => {
   assert.equal((await get(releases, '/releases/latest-any/download/esp32.bin')).status, 502)
   assert.equal(calls, 2)
 })
+
+for (const [name, handler, path, url, good] of [
+  ['release', releases, '/releases/latest-any/download/esp32.bin', `${GITHUB}/releases.atom`, () => new Response(feed('v4.0.6'))],
+  ['artifact', artifacts, '/artifacts/latest/download/main/esp32.bin', runsUrl('main'), () => json({ workflow_runs: [ok(777)] })],
+]) {
+  test(`${name} lookup recovers from a rejected first fetch`, async () => {
+    upstream[`${GITHUB}/releases/download/v4.0.6/esp32.bin`] = () => redirect('https://release-assets.example/signed')
+    let calls = 0
+    upstream[url] = () => {
+      if (++calls === 1) throw new TypeError('network failure')
+      return good()
+    }
+    assert.equal((await get(handler, path)).status, 302)
+    assert.equal(calls, 2)
+  })
+
+  test(`${name} lookup never attempts a third fetch`, async () => {
+    for (const first of ['network', 503]) {
+      let calls = 0
+      upstream[url] = () => {
+        calls++
+        if (calls === 1 && first === 503) return new Response(null, { status: 503 })
+        throw new TypeError('network failure')
+      }
+      assert.equal((await get(handler, path)).status, 502)
+      assert.equal(calls, 2)
+    }
+  })
+
+  test(`${name} lookup does not retry permanent client errors`, async () => {
+    for (const status of [400, 401, 403, 404, 422]) {
+      let calls = 0
+      upstream[url] = () => { calls++; return new Response(null, { status }) }
+      await get(handler, path)
+      assert.equal(calls, 1, `HTTP ${status}`)
+    }
+  })
+
+  test(`${name} lookup retries transient statuses and explicit rate limits once`, async () => {
+    for (const [status, headers] of [
+      [408, {}], [429, {}], [500, {}], [503, {}],
+      [403, { 'X-RateLimit-Remaining': '0' }], [403, { 'Retry-After': '1' }],
+    ]) {
+      let calls = 0
+      upstream[url] = () => { calls++; return new Response(null, { status, headers }) }
+      assert.equal((await get(handler, path)).status, 502)
+      assert.equal(calls, 2, `HTTP ${status} ${JSON.stringify(headers)}`)
+    }
+  })
+}
 
 test('errors and missing files do not invite the CDN to serve them stale', async () => {
   upstream[`${GITHUB}/releases.atom`] = () => new Response('boom', { status: 503 })

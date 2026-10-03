@@ -4,6 +4,7 @@ import { handle } from 'hono/cloudflare-pages'
 import { prettyJSON } from 'hono/pretty-json'
 import { cors } from 'hono/cors'
 import { staleIfError } from '../../lib/stale-if-error.ts'
+import { retryOnce } from '../../lib/retry-once.ts'
 
 function esp32(path: string) {
   return {
@@ -130,9 +131,7 @@ async function lookup(url: string) {
     }
   } as any)
 
-  // One retry: a single refused or failed lookup should not fail the request
-  const response = await ask()
-  return response.status < 400 || response.status === 404 ? response : ask()
+  return retryOnce(ask)
 }
 
 // Says which upstream URL failed and how, since a bare 502 cannot be diagnosed
