@@ -74,6 +74,8 @@ mqtt:
   username: your_username
   password: your_password
   ssl: false
+  insecure: false # true to accept self-signed cert; false -> configure path to CA
+  ca_cert_path: "/path_to_CA-Cert.crt"
 
 # For external MQTT, also include:
   host: your_host
