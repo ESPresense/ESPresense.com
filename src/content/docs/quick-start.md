@@ -25,7 +25,7 @@ That's the "wow moment." Once you have it working for one room with one phone, t
 
 | Item | Notes | Approximate cost |
 |---|---|---|
-| **M5 Atom S3 Lite** | The board we recommend for first-time users. Better Bluetooth range than the cheaper alternatives, and ships in a small enclosure (you don't see the bare PCB). Buy on [Amazon](https://amzn.to/4v3qPFm) or AliExpress ([1](https://s.click.aliexpress.com/e/_c3SezL2p), [2](https://s.click.aliexpress.com/e/_oFSxCND)); [manufacturer specs](https://docs.m5stack.com/en/core/AtomS3%20Lite). | ~$15 |
+| **M5 Atom S3 Lite** | The board we recommend for first-time users. Better Bluetooth range than the cheaper alternatives, and ships in a small enclosure (you don't see the bare PCB). Buy on [Amazon](https://amzn.to/47b6xzW) or AliExpress ([1](https://s.click.aliexpress.com/e/_c3SezL2p), [2](https://s.click.aliexpress.com/e/_oFSxCND)); [manufacturer specs](https://docs.m5stack.com/en/core/AtomS3%20Lite). | ~$15 |
 | **USB-C cable, data-capable** | The cable that ships in some chargers is power-only and will not work for flashing. A short cable from a phone or laptop accessory is the safe bet. See the [USB-C cables list in Nodes](/nodes#usb-c-to-c-cables). | (already have one) |
 | **USB-C wall charger, 5V** | After flashing, the node lives on a wall outlet. Any phone charger is fine. See [USB-C chargers](/nodes#usb-c-chargers). | ~$8 |
 | **A computer running Edge or Chrome** | The browser installer needs WebSerial, which means Edge or a Chromium-based browser (Chrome, Brave, Arc). Firefox and Safari will not work. | (already have one) |
