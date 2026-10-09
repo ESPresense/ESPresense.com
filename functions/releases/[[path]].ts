@@ -5,6 +5,7 @@ import { prettyJSON } from 'hono/pretty-json'
 import { cors } from 'hono/cors'
 import { staleIfError } from '../../lib/stale-if-error.ts'
 import { retryOnce } from '../../lib/retry-once.ts'
+import { github } from '../../lib/github.ts'
 
 function esp32(path: string) {
   return {
@@ -140,6 +141,31 @@ function lookupFailed(c: Context, url: string, status: number) {
   console.error(`lookup failed: ${status} ${url}`)
   return c.json({ error: "Release lookup failed", upstream: { url, status } }, 502)
 }
+
+// Release listing for the firmware pickers (ESPresense-companion, the install
+// page). Unlike the routes devices hit, this needs the API: the feed carries
+// neither the prerelease flag nor the assets. Cached here so browsers stop
+// spending their own 60/hour allowance. Same shape as GitHub's listing,
+// trimmed to the fields the pickers read.
+app.get('/list',
+  async (c: Context) => {
+    const response = await github(c, 'releases?per_page=100', 900)
+    if (!response.ok) {
+      return c.json({ error: "Failed to fetch releases", upstream: { status: response.status } }, 502)
+    }
+
+    const data: any[] = await response.json()
+    c.header('Cache-Control', 'public, max-age=900')
+    return c.json(data.filter(r => !r.draft).map(r => ({
+      tag_name: r.tag_name,
+      name: r.name,
+      prerelease: r.prerelease,
+      published_at: r.published_at,
+      html_url: r.html_url,
+      assets: (r.assets ?? []).map((a: any) => ({ name: a.name, size: a.size }))
+    })))
+  }
+)
 
 // Release manifests: latest = 5 min, specific releases = 1 day
 app.get('/:tag{[^/]+\\.json}',

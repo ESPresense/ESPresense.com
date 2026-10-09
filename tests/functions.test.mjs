@@ -738,3 +738,71 @@ test('errors and missing files do not invite the CDN to serve them stale', async
     assert.ok(!(await get(releases, path)).headers.get('Cache-Control')?.includes('stale-'), path)
   }
 })
+
+// --- listings for the firmware pickers ----------------------------------------
+
+test('release listing trims GitHub releases and drops drafts', async () => {
+  upstream[`${API}/releases?per_page=100`] = () => json([
+    { tag_name: 'v4.1.0b0', name: 'v4.1.0 beta', prerelease: true, draft: false, published_at: '2026-01-02T00:00:00Z', html_url: 'u', body: 'notes', assets: [{ name: 'esp32.bin', size: 1, url: 'x' }] },
+    { tag_name: 'v9', name: 'draft', prerelease: false, draft: true, assets: [] },
+  ])
+
+  const res = await get(releases, '/releases/list')
+  assert.equal(res.status, 200)
+  assert.equal(res.headers.get('Access-Control-Allow-Origin'), '*')
+  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=900, stale-while-revalidate=86400, stale-if-error=86400')
+  assert.deepEqual(await res.json(), [
+    { tag_name: 'v4.1.0b0', name: 'v4.1.0 beta', prerelease: true, published_at: '2026-01-02T00:00:00Z', html_url: 'u', assets: [{ name: 'esp32.bin', size: 1 }] },
+  ])
+})
+
+test('release listing keeps answering from the last good copy when GitHub rate limits', async () => {
+  globalThis.caches = { default: edgeCache() }
+  upstream[`${API}/releases?per_page=100`] = () => json([{ tag_name: 'v4.0.6', name: 'v4.0.6', prerelease: false, draft: false, assets: [] }])
+  const good = await (await get(releases, '/releases/list')).json()
+
+  minutesLater(20)
+  upstream[`${API}/releases?per_page=100`] = () => new Response('rate limited', { status: 403, headers: { 'X-RateLimit-Remaining': '0' } })
+
+  const res = await get(releases, '/releases/list')
+  assert.equal(res.status, 200)
+  assert.equal(res.headers.get('X-Release-Cache'), 'STALE')
+  assert.deepEqual(await res.json(), good)
+})
+
+test('release listing returns 502 when GitHub fails and nothing is stored', async () => {
+  upstream[`${API}/releases?per_page=100`] = () => new Response('rate limited', { status: 403, headers: { 'X-RateLimit-Remaining': '0' } })
+  assert.equal((await get(releases, '/releases/list')).status, 502)
+})
+
+test('run listing trims GitHub workflow runs', async () => {
+  upstream[`${API}/actions/workflows/build.yml/runs?status=success&per_page=100`] = () => json({
+    total_count: 1,
+    workflow_runs: [{
+      id: 42, name: 'Build', head_branch: 'main', head_sha: 'abcdef1234', status: 'completed', conclusion: 'success',
+      created_at: 'c', updated_at: 'u', html_url: 'h', jobs_url: 'drop me',
+      head_commit: { message: 'Fix thing\n\nbody', author: { email: 'drop@me' } },
+      head_repository: { full_name: 'ESPresense/ESPresense', owner: {} },
+      pull_requests: [{ number: 7, url: 'drop me' }],
+    }],
+  })
+
+  const res = await get(artifacts, '/artifacts/runs')
+  assert.equal(res.status, 200)
+  assert.equal(res.headers.get('Access-Control-Allow-Origin'), '*')
+  assert.equal(res.headers.get('Cache-Control'), 'public, max-age=300, stale-while-revalidate=86400, stale-if-error=86400')
+  assert.deepEqual(await res.json(), {
+    workflow_runs: [{
+      id: 42, name: 'Build', head_branch: 'main', head_sha: 'abcdef1234', status: 'completed', conclusion: 'success',
+      created_at: 'c', updated_at: 'u', html_url: 'h',
+      head_commit: { message: 'Fix thing\n\nbody' },
+      head_repository: { full_name: 'ESPresense/ESPresense' },
+      pull_requests: [{ number: 7 }],
+    }],
+  })
+})
+
+test('run listing returns 502 when GitHub fails and nothing is stored', async () => {
+  upstream[`${API}/actions/workflows/build.yml/runs?status=success&per_page=100`] = () => new Response('boom', { status: 503 })
+  assert.equal((await get(artifacts, '/artifacts/runs')).status, 502)
+})
