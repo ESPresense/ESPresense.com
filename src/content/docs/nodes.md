@@ -56,7 +56,7 @@ C6 support is bleeding edge — expect rougher edges than S3/C3.
 | Board | Stores | Notes |
 |:------|:-------|:------|
 | Seeed XIAO ESP32-C6 | [ali](https://s.click.aliexpress.com/e/_c364MTzR) [amz/us](https://amzn.to/4jNi9R6) | Tiny module, USB-C. 4 MB flash, onboard ceramic antenna + U.FL connector. Amazon sells a 3-pack |
-| M5Stack NanoC6 | [m5stack](https://docs.m5stack.com/en/core/M5NanoC6) [amz/us](https://amzn.to/3VVBUfq) | Enclosed, USB-C. 4 MB flash, ceramic antenna, IR emitter, RGB LED, button, GROVE |
+| M5Stack NanoC6 | [m5stack](https://docs.m5stack.com/en/core/M5NanoC6) [ali](https://s.click.aliexpress.com/e/_c36Zc6y1) [amz/us](https://amzn.to/3VVBUfq) | Enclosed, USB-C. 4 MB flash, ceramic antenna, IR emitter, RGB LED, button, GROVE |
 
 ### Original ESP32
 
