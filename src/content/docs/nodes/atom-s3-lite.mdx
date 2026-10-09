@@ -1,0 +1,64 @@
+---
+title: M5 Atom S3 Lite
+description: M5Stack Atom S3 Lite (ESP32-S3) — pins, settings template and notes for running ESPresense.
+sidebar:
+  order: 1
+board:
+  name: M5 Atom S3 Lite
+  chip: ESP32-S3
+  formFactor: Enclosed cube, 24 × 24 mm
+  flash: 8 MB
+  antenna: 3D antenna
+  usb: USB-C (native USB-CDC)
+  install: <a href="/firmware">Browser installer</a>
+  rating: recommended
+  ratingNote: The default pick for a new node.
+  stores:
+    - { label: m5stack, url: "https://shop.m5stack.com/products/atoms3-lite-esp32s3-dev-kit?ref=ESPresense" }
+    - { label: ali, url: "https://s.click.aliexpress.com/e/_c3SezL2p" }
+    - { label: amz/us, url: "https://amzn.to/47b6xzW" }
+  gpio:
+    - { pin: 35, use: SK6812 RGB LED, setting: led_1_pin }
+    - { pin: 41, use: Button (active low), setting: button_1_pin }
+    - { pin: 4, use: IR emitter }
+    - { pin: 2, use: GROVE SDA (yellow) }
+    - { pin: 1, use: GROVE SCL (white) }
+  template:
+    led_1_type: 2
+    led_1_pin: 35
+    led_1_cnt: 1
+    led_1_cntrl: 1
+    led_2_pin: -1
+    led_3_pin: -1
+    button_1_type: 1
+    button_1_pin: 41
+    button_2_pin: -1
+    switch_1_pin: -1
+    switch_2_pin: -1
+    pir_pin: -1
+    radar_pin: -1
+    I2C_Bus_1_SDA: -1
+    I2C_Bus_1_SCL: -1
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[Mockup]
+Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and **Hardware → Import template** doesn't exist in the firmware yet ([ESPresense#2529](https://github.com/ESPresense/ESPresense/issues/2529)). Until it does, copy the values into the Hardware page by hand.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- The generic `esp32s3` build defaults LED 1 to a PWM LED on GPIO 2, which this board doesn't have. Without the template the status LED stays dark.
+- Plugging an I2C sensor into the GROVE port? Set `I2C_Bus_1_SDA` to 2 and `I2C_Bus_1_SCL` to 1 before importing.
+- The IR emitter isn't used by ESPresense.

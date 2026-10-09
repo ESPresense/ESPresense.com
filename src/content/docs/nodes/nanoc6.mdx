@@ -1,0 +1,66 @@
+---
+title: M5Stack NanoC6
+description: M5Stack NanoC6 (ESP32-C6) — pins, settings template and notes for running ESPresense.
+sidebar:
+  order: 2
+board:
+  name: M5Stack NanoC6
+  chip: ESP32-C6
+  formFactor: Enclosed stick, 24 × 12 mm
+  flash: 4 MB
+  antenna: Ceramic chip antenna
+  usb: USB-C (native USB-CDC)
+  install: <a href="/firmware">Browser installer</a>
+  rating: recommended
+  ratingNote: Tiny and about $6 — the pick for kitting out a whole house. C6 support is still bleeding edge.
+  price: ~$6
+  stores:
+    - { label: m5stack, url: "https://shop.m5stack.com/products/m5stack-nanoc6-dev-kit?ref=ESPresense" }
+    - { label: ali, url: "https://s.click.aliexpress.com/e/_c36Zc6y1" }
+    - { label: amz/us, url: "https://amzn.to/3VVBUfq" }
+  gpio:
+    - { pin: 7, use: Blue LED, setting: led_1_pin }
+    - { pin: 9, use: Button (active low), setting: button_1_pin }
+    - { pin: 20, use: WS2812 RGB LED (needs GPIO 19 high to power it) }
+    - { pin: 19, use: RGB LED power enable }
+    - { pin: 3, use: IR emitter }
+    - { pin: 2, use: GROVE SDA (yellow) }
+    - { pin: 1, use: GROVE SCL (white) }
+  template:
+    led_1_type: 0
+    led_1_pin: 7
+    led_1_cnt: 1
+    led_1_cntrl: 1
+    led_2_pin: -1
+    led_3_pin: -1
+    button_1_type: 1
+    button_1_pin: 9
+    button_2_pin: -1
+    switch_1_pin: -1
+    switch_2_pin: -1
+    pir_pin: -1
+    radar_pin: -1
+    I2C_Bus_1_SDA: -1
+    I2C_Bus_1_SCL: -1
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[Mockup]
+Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and **Hardware → Import template** doesn't exist in the firmware yet ([ESPresense#2529](https://github.com/ESPresense/ESPresense/issues/2529)). Until it does, copy the values into the Hardware page by hand.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- The template uses the blue LED for status. The RGB LED is only powered when GPIO 19 is driven high, and the firmware has no setting for a power-enable pin, so it stays dark.
+- GPIO 9 is also the boot strapping pin: holding the button while plugging in enters download mode.

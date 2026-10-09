@@ -59,6 +59,7 @@ export default defineConfig({
           label: 'Nodes',
           items: [
             { slug: 'nodes', label: 'Overview' },
+            { label: 'Boards', collapsed: true, items: [{ autogenerate: { directory: 'nodes' } }] },
             { slug: 'firmware' },
             { slug: 'enclosures' },
           ],

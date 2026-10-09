@@ -36,7 +36,7 @@ Some store links on this page (Amazon, AliExpress, M5Stack) are affiliate links.
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| **M5 Atom S3 Lite** | [m5stack](https://shop.m5stack.com/products/atoms3-lite-esp32s3-dev-kit?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_c3SezL2p) [ali2](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/47b6xzW) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
+| **[M5 Atom S3 Lite](/nodes/atom-s3-lite)** | [m5stack](https://shop.m5stack.com/products/atoms3-lite-esp32s3-dev-kit?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_c3SezL2p) [ali2](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/47b6xzW) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
 | M5 Atom S3U | [m5stack](https://shop.m5stack.com/products/atoms3u?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) [amz/us](https://amzn.to/4uZJFgE) | Enclosed, USB-A. 8 MB flash, 3D antenna, IR emitter, PDM mic, RGB LED, button, GROVE [^cdc] |
 | M5 Stamp S3 | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) [amz/us](https://amzn.to/4dv6anp) | Stamp form. 8 MB flash, 3D antenna, RGB LED [^cdc] |
 | Seeed XIAO ESP32-S3 | [ali](https://s.click.aliexpress.com/e/_c4thPCrX) [amz/us](https://amzn.to/4dpWw5E) | Tiny module, USB-C. 8 MB flash + 8 MB PSRAM, U.FL connector with external antenna. Listing also sells the C3 and S3 Sense — pick the S3 option. Amazon sells a 3-pack [^cdc] |
@@ -55,7 +55,7 @@ C6 support is bleeding edge — expect rougher edges than S3/C3.
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| **M5Stack NanoC6** | [m5stack](https://shop.m5stack.com/products/m5stack-nanoc6-dev-kit?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_c36Zc6y1) [amz/us](https://amzn.to/3VVBUfq) | Very small and enclosed, USB-C. 4 MB flash, ceramic antenna, IR emitter, RGB LED, button, GROVE |
+| **[M5Stack NanoC6](/nodes/nanoc6)** | [m5stack](https://shop.m5stack.com/products/m5stack-nanoc6-dev-kit?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_c36Zc6y1) [amz/us](https://amzn.to/3VVBUfq) | Very small and enclosed, USB-C. 4 MB flash, ceramic antenna, IR emitter, RGB LED, button, GROVE |
 | Seeed XIAO ESP32-C6 | [ali](https://s.click.aliexpress.com/e/_c364MTzR) [amz/us](https://amzn.to/4jNi9R6) | Tiny module, USB-C. 4 MB flash, onboard ceramic antenna + U.FL connector. Amazon sells a 3-pack |
 
 ### Original ESP32
@@ -79,6 +79,15 @@ These boards run ESPresense, but antenna and module QC vary — RSSI from one of
 | LOLIN D32 ESP32 | Works; unbranded RF caveat | [#2334][p] |
 | M5StickC Plus | Built-in battery is a liability for a fixed-in-place node | [#2334][p] |
 | SEEEDSTUDIO XIAO ESP32-C3 ([amz/us](https://amzn.to/4e4zCRp), 3-pack) | Runs on the `esp32C3` flavour. One report of a board overheating ([#1364][1364]); use a known-good USB-C cable and a real power supply | [#2334][p] / [#1364][1364] |
+
+## Smart plugs
+
+An ESP32 smart plug flashed with ESPresense is a node that's also a working outlet, and it never needs a USB charger. The relay is driven as an MQTT-controlled LED until the firmware gets a relay output ([#1316](https://github.com/ESPresense/ESPresense/issues/1316)).
+
+| Plug | Chip | Notes |
+|:-----|:-----|:------|
+| **[SwitchBot Plug Mini (W1901400)](/nodes/switchbot-plug-mini)** | ESP32-C3 | Excellent. Flashes over the air with SwitchbOTA if you haven't taken the v2.x update |
+| [Athom Plug V3 (PG03V3-US16A)](/nodes/athom-pg03v3) | ESP32-C3 | Works, but the antenna is weak |
 
 ## Steer away
 

@@ -1,0 +1,71 @@
+---
+title: SwitchBot Plug Mini (W1901400)
+description: SwitchBot Plug Mini W1901400 (ESP32-C3) smart plug — flashing over the air, pins and settings template for ESPresense.
+sidebar:
+  order: 10
+board:
+  name: SwitchBot Plug Mini (W1901400)
+  chip: ESP32-C3
+  formFactor: US smart plug (15 A)
+  flash: 4 MB
+  antenna: PCB antenna
+  install: OTA with <a href="https://github.com/kendallgoto/switchbota">SwitchbOTA</a> (see notes), otherwise serial — the case is ultrasonically welded
+  rating: recommended
+  ratingNote: Excellent node that's also a working smart plug. Mains powered, so it never needs a USB charger.
+  gpio:
+    - { pin: 6, use: Relay, setting: led_1_pin }
+    - { pin: 7, use: LED, setting: led_2_pin }
+    - { pin: 8, use: LED, setting: led_3_pin }
+    - { pin: 2, use: Button (active low), setting: button_1_pin }
+    - { pin: 18, use: BL0937 SEL }
+    - { pin: 19, use: BL0937 CF1 }
+    - { pin: 20, use: BL0937 CF }
+  template:
+    led_1_type: 0
+    led_1_pin: 6
+    led_1_cnt: 1
+    led_1_cntrl: 0
+    led_2_type: 0
+    led_2_pin: 7
+    led_2_cnt: 1
+    led_2_cntrl: 1
+    led_3_type: 0
+    led_3_pin: 8
+    led_3_cnt: 1
+    led_3_cntrl: 0
+    button_1_type: 1
+    button_1_pin: 2
+    button_2_pin: -1
+    switch_1_pin: -1
+    switch_2_pin: -1
+    pir_pin: -1
+    radar_pin: -1
+    I2C_Bus_1_SDA: -1
+    I2C_Bus_1_SCL: -1
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[Mockup]
+Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and **Hardware → Import template** doesn't exist in the firmware yet ([ESPresense#2529](https://github.com/ESPresense/ESPresense/issues/2529)). Until it does, copy the values into the Hardware page by hand.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Flashing
+
+[SwitchbOTA](https://github.com/kendallgoto/switchbota) replaces the stock firmware over WiFi, no disassembly needed. It works on stock firmware up to 1.4, and on 2025–2026 units that ship with v1.8 **as long as you don't accept the v2.x update in the SwitchBot app first**. It's unknown whether it works after v2.7. If the OTA route is closed, you'll need serial, and the case is welded shut.
+
+## Notes
+
+- **The relay is driven as LED 1.** ESPresense has no relay output ([ESPresense#1316](https://github.com/ESPresense/ESPresense/issues/1316)), so the template sets the relay pin up as a PWM "LED" with MQTT control. Switch the outlet by publishing `{"state":"ON"}` or `{"state":"OFF"}` to `espresense/rooms/<room>/led_1/set` — see [MQTT LED control](/configuration/hardware#mqtt-led-control-v40).
+- The button publishes to `espresense/rooms/<room>/button_1`; it doesn't toggle the relay on its own. Use a Home Assistant automation if you want that.
+- The BL0937 power meter isn't supported, so there's no power reading.

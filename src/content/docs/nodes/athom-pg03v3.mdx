@@ -1,0 +1,61 @@
+---
+title: Athom Plug V3 (PG03V3-US16A)
+description: Athom Smart Plug V3 PG03V3-US16A (ESP32-C3) — pins, settings template and why it isn't recommended for ESPresense.
+sidebar:
+  order: 11
+board:
+  name: Athom Plug V3 (PG03V3-US16A)
+  chip: ESP32-C3
+  formFactor: US smart plug (16 A)
+  flash: 4 MB
+  antenna: PCB antenna
+  install: Serial
+  rating: caveats
+  ratingNote: Works, but the antenna is weak. Use one you already own; buy the SwitchBot Plug Mini instead.
+  gpio:
+    - { pin: 5, use: Relay, setting: led_1_pin }
+    - { pin: 6, use: LED, setting: led_2_pin }
+    - { pin: 3, use: Button (active low), setting: button_1_pin }
+    - { pin: 20, use: CSE7766 power meter (RX) }
+  template:
+    led_1_type: 0
+    led_1_pin: 5
+    led_1_cnt: 1
+    led_1_cntrl: 0
+    led_2_type: 1
+    led_2_pin: 6
+    led_2_cnt: 1
+    led_2_cntrl: 1
+    led_3_pin: -1
+    button_1_type: 1
+    button_1_pin: 3
+    button_2_pin: -1
+    switch_1_pin: -1
+    switch_2_pin: -1
+    pir_pin: -1
+    radar_pin: -1
+    I2C_Bus_1_SDA: -1
+    I2C_Bus_1_SCL: -1
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[Mockup]
+Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and **Hardware → Import template** doesn't exist in the firmware yet ([ESPresense#2529](https://github.com/ESPresense/ESPresense/issues/2529)). Until it does, copy the values into the Hardware page by hand.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- **The antenna is weak.** RSSI reads low next to a branded board at the same distance, which throws off fleet calibration. That's why it's listed with caveats.
+- **The relay is driven as LED 1.** ESPresense has no relay output ([ESPresense#1316](https://github.com/ESPresense/ESPresense/issues/1316)), so the template sets the relay pin up as a PWM "LED" with MQTT control. Switch the outlet by publishing `{"state":"ON"}` or `{"state":"OFF"}` to `espresense/rooms/<room>/led_1/set`.
+- The CSE7766 power meter isn't supported, so there's no power reading.
