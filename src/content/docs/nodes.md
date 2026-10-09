@@ -24,7 +24,7 @@ Pick a chip first, then a board within it.
 
 ## Recommended boards
 
-**The boards in bold are the picks if you don't want to think about it** — M5 Atom S3 Lite as the default, M5Stack NanoC6 for kitting out a whole house (tiny, enclosed, very capable), M5 Stamp C3 Mate as a cost-conscious alternative.
+**The boards in bold are the picks if you don't want to think about it** — M5 Atom S3 Lite as the default, M5Stack NanoC6 for kitting out a whole house (tiny, enclosed, very capable, ~$6), M5 Stamp C3 Mate as a cost-conscious alternative.
 
 All branded boards listed here flash with the [browser installer](/firmware), which picks the right firmware flavour automatically.
 
@@ -55,7 +55,7 @@ C6 support is bleeding edge — expect rougher edges than S3/C3.
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| **M5Stack NanoC6** | [m5stack](https://docs.m5stack.com/en/core/M5NanoC6) [ali](https://s.click.aliexpress.com/e/_c36Zc6y1) [amz/us](https://amzn.to/3VVBUfq) | Very small and enclosed, USB-C. 4 MB flash, ceramic antenna, IR emitter, RGB LED, button, GROVE |
+| **M5Stack NanoC6** | [m5stack](https://shop.m5stack.com/products/m5stack-nanoc6-dev-kit) [ali](https://s.click.aliexpress.com/e/_c36Zc6y1) [amz/us](https://amzn.to/3VVBUfq) | Very small and enclosed, USB-C. 4 MB flash, ceramic antenna, IR emitter, RGB LED, button, GROVE |
 | Seeed XIAO ESP32-C6 | [ali](https://s.click.aliexpress.com/e/_c364MTzR) [amz/us](https://amzn.to/4jNi9R6) | Tiny module, USB-C. 4 MB flash, onboard ceramic antenna + U.FL connector. Amazon sells a 3-pack |
 
 ### Original ESP32
