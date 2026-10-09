@@ -49,6 +49,14 @@ Some store links on this page (Amazon, AliExpress) are affiliate links. As an Am
 | M5 Stamp C3U Mate | [ali](https://s.click.aliexpress.com/e/_onkgbFp) | Stamp form, USB-A. 4 MB flash, 3D antenna, RGB LED, button [^cdc] |
 | ESP32-C3-DevKitM-1U | [ali](https://s.click.aliexpress.com/e/_c3bVwFQb) [amz/us](https://amzn.to/41WQXFa) | Espressif's dev board with ESP32-C3-MINI-1U module and U.FL connector. 4 MB flash, 160 MHz |
 
+### ESP32-C6
+
+C6 support is bleeding edge — expect rougher edges than S3/C3.
+
+| Board | Stores | Notes |
+|:------|:-------|:------|
+| Seeed XIAO ESP32-C6 | [ali](https://s.click.aliexpress.com/e/_c364MTzR) | Tiny module, USB-C. 4 MB flash, onboard ceramic antenna + U.FL connector |
+
 ### Original ESP32
 
 | Board | Stores | Notes |
