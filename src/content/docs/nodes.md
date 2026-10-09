@@ -60,11 +60,13 @@ C6 support is bleeding edge — expect rougher edges than S3/C3.
 
 ### Original ESP32
 
-| Board | Stores | Notes |
-|:------|:-------|:------|
-| M5 Atom (Lite / Echo / Matrix) | [ali](https://s.click.aliexpress.com/e/_oDWoyd1) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/atom-lite-esp32-development-kit) [digi](https://www.digikey.com/en/products/detail/m5stack-technology-co-ltd/C008/12088545) | Enclosed. The 3D antenna is much better than generic clones |
-| M5 Stamp Pico | [ali](https://s.click.aliexpress.com/e/_olAPbYT) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/m5stamp-pico-diy-kit) | Stamp form. Small, still has a 3D antenna |
-| Adafruit Huzzah32 | [amz/us](https://amzn.to/4kWlmw4) | Dev board. Branded, quality control unlike generic ESP32 dev boards |
+Still supported, but don't buy one new — the silicon is old and the newer S3/C3/C6 boards above are better and cost about the same. These are listed for people who already own one.
+
+| Board | Notes |
+|:------|:------|
+| M5 Atom (Lite / Echo / Matrix) | Enclosed. The 3D antenna is much better than generic clones |
+| M5 Stamp Pico | Stamp form. Small, still has a 3D antenna |
+| Adafruit Huzzah32 | Dev board. Branded, quality control unlike generic ESP32 dev boards |
 
 ## Works, with caveats
 
