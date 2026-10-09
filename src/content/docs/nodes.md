@@ -100,6 +100,7 @@ Each of these comes up often enough that it's worth saying plainly:
 ### USB-C to C cables
 
 * [0.5 ft USB-C to C](https://amzn.to/4j02B9f)
+* [15 cm USB-C to C, right angle (AliExpress)](https://s.click.aliexpress.com/e/_c32QumGp)
 
 ### USB-A chargers
 
