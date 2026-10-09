@@ -26,7 +26,7 @@ Pick a chip first, then a board within it.
 
 **The boards in bold are the picks if you don't want to think about it** — M5 Atom S3 Lite as the default, M5 Stamp C3 Mate as a cost-conscious alternative.
 
-All branded boards listed here flash with the [browser installer](/firmware). [^cdc]
+All branded boards listed here flash with the [browser installer](/firmware), which picks the right firmware flavour automatically.
 
 :::note[Affiliate disclosure]
 Some store links on this page (Amazon, AliExpress) are affiliate links. As an Amazon Associate, ESPresense earns from qualifying purchases, at no extra cost to you. Affiliate revenue helps fund the project — see [Credits](/credits) for other ways to support.
@@ -120,7 +120,7 @@ Each of these comes up often enough that it's worth saying plainly:
 
 ## Footnotes
 
-[^cdc]: USB-CDC firmware flavour. Pick the `cdc` variant from the [browser installer](/firmware) flavour dropdown (or when flashing manually).
+[^cdc]: Native USB (USB-CDC): the chip talks USB directly, with no separate USB-to-serial chip, so the board is a little cheaper. Nothing to choose when flashing — the browser installer picks the right firmware automatically.
 
 [p]: https://github.com/ESPresense/ESPresense/discussions/2334
 [162]: https://github.com/ESPresense/ESPresense/discussions/162
