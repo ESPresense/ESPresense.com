@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import type { Context } from 'hono'
 import { handle } from 'hono/cloudflare-pages'
 import { prettyJSON } from 'hono/pretty-json'
-import { staleIfError } from '../../lib/stale-if-error.ts'
+import { share, staleIfError } from '../../lib/stale-if-error.ts'
 import { retryOnce } from '../../lib/retry-once.ts'
 import { cors } from 'hono/cors'
 import * as fflate from "fflate"
@@ -171,7 +171,10 @@ app.all('/latest/download/:rest{.+/[^/]+}',
 
       const data: any = await response.json()
       const firstRun = data.workflow_runs.find((run: any) => run.conclusion === 'success')
-      if (firstRun) return c.redirect(`/artifacts/download/runs/${firstRun.id}/${bin}`)
+      if (firstRun) {
+        share(c)
+        return c.redirect(`/artifacts/download/runs/${firstRun.id}/${bin}`)
+      }
 
       // Failed, cancelled and pending runs can fill a whole page. Only give
       // up once GitHub has no next page; keep requests on our fixed API path.
