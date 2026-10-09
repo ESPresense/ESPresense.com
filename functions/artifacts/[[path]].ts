@@ -145,6 +145,7 @@ app.get('/runs',
       workflow_runs: data.workflow_runs.map((run: any) => ({
         id: run.id,
         name: run.name,
+        display_title: run.display_title,
         head_branch: run.head_branch,
         head_sha: run.head_sha,
         status: run.status,

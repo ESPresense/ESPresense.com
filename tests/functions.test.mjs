@@ -779,7 +779,7 @@ test('run listing trims GitHub workflow runs', async () => {
   upstream[`${API}/actions/workflows/build.yml/runs?status=success&per_page=100`] = () => json({
     total_count: 1,
     workflow_runs: [{
-      id: 42, name: 'Build', head_branch: 'main', head_sha: 'abcdef1234', status: 'completed', conclusion: 'success',
+      id: 42, name: 'Build', display_title: 'Fix thing', head_branch: 'main', head_sha: 'abcdef1234', status: 'completed', conclusion: 'success',
       created_at: 'c', updated_at: 'u', html_url: 'h', jobs_url: 'drop me',
       head_commit: { message: 'Fix thing\n\nbody', author: { email: 'drop@me' } },
       head_repository: { full_name: 'ESPresense/ESPresense', owner: {} },
@@ -793,7 +793,7 @@ test('run listing trims GitHub workflow runs', async () => {
   assert.equal(res.headers.get('Cache-Control'), 'public, max-age=300, stale-while-revalidate=86400, stale-if-error=86400')
   assert.deepEqual(await res.json(), {
     workflow_runs: [{
-      id: 42, name: 'Build', head_branch: 'main', head_sha: 'abcdef1234', status: 'completed', conclusion: 'success',
+      id: 42, name: 'Build', display_title: 'Fix thing', head_branch: 'main', head_sha: 'abcdef1234', status: 'completed', conclusion: 'success',
       created_at: 'c', updated_at: 'u', html_url: 'h',
       head_commit: { message: 'Fix thing\n\nbody' },
       head_repository: { full_name: 'ESPresense/ESPresense' },
