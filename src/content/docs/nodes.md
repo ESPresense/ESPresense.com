@@ -107,6 +107,7 @@ Each of these comes up often enough that it's worth saying plainly:
 
 ### USB-A to C cables
 
+* [10 ft flat, 2-pack](https://amzn.to/4hQ0shc)
 * [Straight adapter 4-pack](https://amzn.to/4hNrh3O)
 * [Right-angle adapter 4-pack](https://amzn.to/4bWWH6o)
 
