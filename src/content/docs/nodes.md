@@ -96,6 +96,7 @@ Each of these comes up often enough that it's worth saying plainly:
 
 * [20W USB-C Wall Charger](https://amzn.to/4kXGphK) — small fast charger with foldable plug
 * [20W USB-C Wall Charger (3-pack)](https://amzn.to/4hFLcBz)
+* [USB-C Charger (AliExpress)](https://s.click.aliexpress.com/e/_c3xfg629) — listed as 40W; a node only draws a watt or two, so any working charger is plenty
 
 ### USB-C to C cables
 
