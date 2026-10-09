@@ -39,8 +39,7 @@ Some store links on this page (Amazon, AliExpress) are affiliate links. As an Am
 | **M5 Atom S3 Lite** | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_c3SezL2p) [ali2](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/4v3qPFm) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
 | M5 Atom S3U | [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) [amz/us](https://amzn.to/4uZJFgE) | Enclosed, USB-A. 8 MB flash, 3D antenna, IR emitter, PDM mic, RGB LED, button, GROVE [^cdc] |
 | M5 Stamp S3 | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) | Stamp form. 8 MB flash, 3D antenna, RGB LED [^cdc] |
-| Teyleten Robot S3 | [amz/us](https://amzn.to/4jXMRUl) | Dev board. 8 MB flash + 2 MB PSRAM. Sold as a 3-pack [^cdc] |
-| Seeed XIAO ESP32-S3 | [ali](https://s.click.aliexpress.com/e/_c4thPCrX) | Tiny module, USB-C. 8 MB flash + 8 MB PSRAM, U.FL connector with external antenna. Listing also sells the C3 and S3 Sense — pick the S3 option [^cdc] |
+| Seeed XIAO ESP32-S3 | [ali](https://s.click.aliexpress.com/e/_c4thPCrX) [amz/us](https://amzn.to/3Uc9KMN) | Tiny module, USB-C. 8 MB flash + 8 MB PSRAM, U.FL connector with external antenna. Listing also sells the C3 and S3 Sense — pick the S3 option. Amazon sells a 3-pack [^cdc] |
 
 ### ESP32-C3
 
@@ -48,7 +47,7 @@ Some store links on this page (Amazon, AliExpress) are affiliate links. As an Am
 |:------|:-------|:------|
 | **M5 Stamp C3 Mate** | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-5pcs) [ali](https://s.click.aliexpress.com/e/_omweFp9) [amz/us](https://amzn.to/4tVkzP4) | Stamp form. 4 MB flash, 3D antenna, RGB LED, button |
 | M5 Stamp C3U Mate | [ali](https://s.click.aliexpress.com/e/_onkgbFp) | Stamp form, USB-A. 4 MB flash, 3D antenna, RGB LED, button [^cdc] |
-| ESP32-C3-DevKitM-1U | [ali](https://s.click.aliexpress.com/e/_c3bVwFQb) [amz/us](https://amzn.to/41WQXFa) | Espressif's dev board with ESP32-C3-MINI-1U module and U.FL connector. 4 MB flash, 160 MHz |
+| ESP32-C3-DevKitM-1U | [ali](https://s.click.aliexpress.com/e/_c3bVwFQb) | Espressif's dev board with ESP32-C3-MINI-1U module and U.FL connector. 4 MB flash, 160 MHz |
 
 ### ESP32-C6
 
@@ -56,7 +55,7 @@ C6 support is bleeding edge — expect rougher edges than S3/C3.
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| Seeed XIAO ESP32-C6 | [ali](https://s.click.aliexpress.com/e/_c364MTzR) | Tiny module, USB-C. 4 MB flash, onboard ceramic antenna + U.FL connector |
+| Seeed XIAO ESP32-C6 | [ali](https://s.click.aliexpress.com/e/_c364MTzR) [amz/us](https://amzn.to/4yIv63s) | Tiny module, USB-C. 4 MB flash, onboard ceramic antenna + U.FL connector. Amazon sells a 3-pack |
 
 ### Original ESP32
 
@@ -76,7 +75,7 @@ These boards run ESPresense, but antenna and module QC vary — RSSI from one of
 | Generic D1 Mini ESP32 (Micro-B and USB-C) | Multiple users report working in practice; same no-brand → no-QC caveat on the RF front-end | [#2334][p] / [#162][162] |
 | LOLIN D32 ESP32 | Works; unbranded RF caveat | [#2334][p] |
 | M5StickC Plus | Built-in battery is a liability for a fixed-in-place node | [#2334][p] |
-| SEEEDSTUDIO XIAO ESP32-C3 | Runs on the `esp32C3` flavour. One report of a board overheating ([#1364][1364]); use a known-good USB-C cable and a real power supply | [#2334][p] / [#1364][1364] |
+| SEEEDSTUDIO XIAO ESP32-C3 ([amz/us](https://amzn.to/4znPK8X), 3-pack) | Runs on the `esp32C3` flavour. One report of a board overheating ([#1364][1364]); use a known-good USB-C cable and a real power supply | [#2334][p] / [#1364][1364] |
 
 ## Steer away
 
@@ -94,12 +93,10 @@ Each of these comes up often enough that it's worth saying plainly:
 
 * [20W USB-C Wall Charger](https://amzn.to/4kXGphK) — small fast charger with foldable plug
 * [20W USB-C Wall Charger (3-pack)](https://amzn.to/4hFLcBz)
-* [20W USB-C Charger (AliExpress)](https://s.click.aliexpress.com/e/_c4Myg1Bl) — PD/QC 3.0
 
 ### USB-C to C cables
 
 * [0.5 ft USB-C to C](https://amzn.to/4j02B9f)
-* [15 cm USB-C to C, right angle (AliExpress)](https://s.click.aliexpress.com/e/_c2vxVV1D)
 
 ### USB-A chargers
 
@@ -107,8 +104,6 @@ Each of these comes up often enough that it's worth saying plainly:
 
 ### USB-A to C cables
 
-* [16 ft, 2-pack](https://amzn.to/3zzTTXW)
-* [1 ft, 6-pack](https://amzn.to/3kyD8Is)
 * [Straight adapter 4-pack](https://amzn.to/4hNrh3O)
 * [Right-angle adapter 4-pack](https://amzn.to/4bWWH6o)
 
