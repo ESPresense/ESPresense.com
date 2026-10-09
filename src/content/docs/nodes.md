@@ -38,7 +38,7 @@ Some store links on this page (Amazon, AliExpress) are affiliate links. As an Am
 |:------|:-------|:------|
 | **M5 Atom S3 Lite** | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_c3SezL2p) [ali2](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/47b6xzW) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
 | M5 Atom S3U | [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) [amz/us](https://amzn.to/4uZJFgE) | Enclosed, USB-A. 8 MB flash, 3D antenna, IR emitter, PDM mic, RGB LED, button, GROVE [^cdc] |
-| M5 Stamp S3 | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) | Stamp form. 8 MB flash, 3D antenna, RGB LED [^cdc] |
+| M5 Stamp S3 | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) [amz/us](https://amzn.to/4dv6anp) | Stamp form. 8 MB flash, 3D antenna, RGB LED [^cdc] |
 | Seeed XIAO ESP32-S3 | [ali](https://s.click.aliexpress.com/e/_c4thPCrX) [amz/us](https://amzn.to/4dpWw5E) | Tiny module, USB-C. 8 MB flash + 8 MB PSRAM, U.FL connector with external antenna. Listing also sells the C3 and S3 Sense — pick the S3 option. Amazon sells a 3-pack [^cdc] |
 
 ### ESP32-C3
