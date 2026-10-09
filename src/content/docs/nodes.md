@@ -24,9 +24,9 @@ Pick a chip first, then a board within it.
 
 ## Recommended boards
 
-**The boards in bold are the picks if you don't want to think about it** — M5 Atom S3 Lite as the default, M5 Stamp C3 Mate as a cost-conscious alternative.
+**The boards in bold are the picks if you don't want to think about it** — M5 Atom S3 Lite as the default, M5Stack NanoC6 for kitting out a whole house (tiny, enclosed, very capable, ~$6), M5 Stamp C3 Mate as a cost-conscious alternative.
 
-All branded boards listed here flash with the [browser installer](/firmware). [^cdc]
+All branded boards listed here flash with the [browser installer](/firmware), which picks the right firmware flavour automatically.
 
 :::note[Affiliate disclosure]
 Some store links on this page (Amazon, AliExpress) are affiliate links. As an Amazon Associate, ESPresense earns from qualifying purchases, at no extra cost to you. Affiliate revenue helps fund the project — see [Credits](/credits) for other ways to support.
@@ -36,26 +36,37 @@ Some store links on this page (Amazon, AliExpress) are affiliate links. As an Am
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| **M5 Atom S3 Lite** | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/4v3qPFm) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
+| **M5 Atom S3 Lite** | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_c3SezL2p) [ali2](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/47b6xzW) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
 | M5 Atom S3U | [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) [amz/us](https://amzn.to/4uZJFgE) | Enclosed, USB-A. 8 MB flash, 3D antenna, IR emitter, PDM mic, RGB LED, button, GROVE [^cdc] |
-| M5 Stamp S3 | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) | Stamp form. 8 MB flash, 3D antenna, RGB LED [^cdc] |
-| Teyleten Robot S3 | [ali](https://s.click.aliexpress.com/e/_c3JEwtzv) [amz/us](https://amzn.to/4jXMRUl) | Dev board. 8 MB flash + 2 MB PSRAM. Sold as a 3-pack [^cdc] |
+| M5 Stamp S3 | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) [amz/us](https://amzn.to/4dv6anp) | Stamp form. 8 MB flash, 3D antenna, RGB LED [^cdc] |
+| Seeed XIAO ESP32-S3 | [ali](https://s.click.aliexpress.com/e/_c4thPCrX) [amz/us](https://amzn.to/4dpWw5E) | Tiny module, USB-C. 8 MB flash + 8 MB PSRAM, U.FL connector with external antenna. Listing also sells the C3 and S3 Sense — pick the S3 option. Amazon sells a 3-pack [^cdc] |
 
 ### ESP32-C3
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
 | **M5 Stamp C3 Mate** | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-5pcs) [ali](https://s.click.aliexpress.com/e/_omweFp9) [amz/us](https://amzn.to/4tVkzP4) | Stamp form. 4 MB flash, 3D antenna, RGB LED, button |
-| M5 Stamp C3U Mate | [ali](https://s.click.aliexpress.com/e/_onkgbFp) | Stamp form, USB-A. 4 MB flash, 3D antenna, RGB LED, button [^cdc] |
-| ESP32-C3-DevKitM-1U | [ali](https://s.click.aliexpress.com/e/_c3bVwFQb) [amz/us](https://amzn.to/41WQXFa) | Espressif's dev board with ESP32-C3-MINI-1U module and U.FL connector. 4 MB flash, 160 MHz |
+| M5 Stamp C3U Mate | [ali](https://s.click.aliexpress.com/e/_onkgbFp) [amz/us](https://amzn.to/479m4QW) | Stamp form, USB-A. 4 MB flash, 3D antenna, RGB LED, button [^cdc] |
+| ESP32-C3-DevKitM-1U | [ali](https://s.click.aliexpress.com/e/_c3bVwFQb) | Espressif's dev board with ESP32-C3-MINI-1U module and U.FL connector. 4 MB flash, 160 MHz |
 
-### Original ESP32
+### ESP32-C6
+
+C6 support is bleeding edge — expect rougher edges than S3/C3.
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| M5 Atom (Lite / Echo / Matrix) | [ali](https://s.click.aliexpress.com/e/_oDWoyd1) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/atom-lite-esp32-development-kit) [digi](https://www.digikey.com/en/products/detail/m5stack-technology-co-ltd/C008/12088545) | Enclosed. The 3D antenna is much better than generic clones |
-| M5 Stamp Pico | [ali](https://s.click.aliexpress.com/e/_olAPbYT) [m5stack](https://shop.m5stack.com/collections/m5-controllers/products/m5stamp-pico-diy-kit) | Stamp form. Small, still has a 3D antenna |
-| Adafruit Huzzah32 | [amz/us](https://amzn.to/4kWlmw4) | Dev board. Branded, quality control unlike generic ESP32 dev boards |
+| **M5Stack NanoC6** | [m5stack](https://shop.m5stack.com/products/m5stack-nanoc6-dev-kit) [ali](https://s.click.aliexpress.com/e/_c36Zc6y1) [amz/us](https://amzn.to/3VVBUfq) | Very small and enclosed, USB-C. 4 MB flash, ceramic antenna, IR emitter, RGB LED, button, GROVE |
+| Seeed XIAO ESP32-C6 | [ali](https://s.click.aliexpress.com/e/_c364MTzR) [amz/us](https://amzn.to/4jNi9R6) | Tiny module, USB-C. 4 MB flash, onboard ceramic antenna + U.FL connector. Amazon sells a 3-pack |
+
+### Original ESP32
+
+Still supported, but don't buy one new — the silicon is old and the newer S3/C3/C6 boards above are better and cost about the same. These are listed for people who already own one.
+
+| Board | Notes |
+|:------|:------|
+| M5 Atom (Lite / Echo / Matrix) | Enclosed. The 3D antenna is much better than generic clones |
+| M5 Stamp Pico | Stamp form. Small, still has a 3D antenna |
+| Adafruit Huzzah32 | Dev board. Branded, quality control unlike generic ESP32 dev boards |
 
 ## Works, with caveats
 
@@ -67,7 +78,7 @@ These boards run ESPresense, but antenna and module QC vary — RSSI from one of
 | Generic D1 Mini ESP32 (Micro-B and USB-C) | Multiple users report working in practice; same no-brand → no-QC caveat on the RF front-end | [#2334][p] / [#162][162] |
 | LOLIN D32 ESP32 | Works; unbranded RF caveat | [#2334][p] |
 | M5StickC Plus | Built-in battery is a liability for a fixed-in-place node | [#2334][p] |
-| SEEEDSTUDIO XIAO ESP32-C3 | Runs on the `esp32C3` flavour. One report of a board overheating ([#1364][1364]); use a known-good USB-C cable and a real power supply | [#2334][p] / [#1364][1364] |
+| SEEEDSTUDIO XIAO ESP32-C3 ([amz/us](https://amzn.to/4e4zCRp), 3-pack) | Runs on the `esp32C3` flavour. One report of a board overheating ([#1364][1364]); use a known-good USB-C cable and a real power supply | [#2334][p] / [#1364][1364] |
 
 ## Steer away
 
@@ -85,12 +96,12 @@ Each of these comes up often enough that it's worth saying plainly:
 
 * [20W USB-C Wall Charger](https://amzn.to/4kXGphK) — small fast charger with foldable plug
 * [20W USB-C Wall Charger (3-pack)](https://amzn.to/4hFLcBz)
-* [20W USB-C Charger (AliExpress)](https://s.click.aliexpress.com/e/_c4Myg1Bl) — PD/QC 3.0
+* [USB-C Charger (AliExpress)](https://s.click.aliexpress.com/e/_c3xfg629) — listed as 40W; a node only draws a watt or two, so any working charger is plenty
 
 ### USB-C to C cables
 
 * [0.5 ft USB-C to C](https://amzn.to/4j02B9f)
-* [15 cm USB-C to C, right angle (AliExpress)](https://s.click.aliexpress.com/e/_c2vxVV1D)
+* [15 cm USB-C to C, right angle (AliExpress)](https://s.click.aliexpress.com/e/_c32QumGp)
 
 ### USB-A chargers
 
@@ -98,8 +109,9 @@ Each of these comes up often enough that it's worth saying plainly:
 
 ### USB-A to C cables
 
-* [16 ft, 2-pack](https://amzn.to/3zzTTXW)
-* [1 ft, 6-pack](https://amzn.to/3kyD8Is)
+* [10 ft flat, 2-pack](https://amzn.to/4hQ0shc)
+* [1 ft braided, 3-pack](https://amzn.to/4emtPqm)
+* [6 inch, 5-pack](https://amzn.to/4ia1nu9)
 * [Straight adapter 4-pack](https://amzn.to/4hNrh3O)
 * [Right-angle adapter 4-pack](https://amzn.to/4bWWH6o)
 
@@ -115,7 +127,7 @@ Each of these comes up often enough that it's worth saying plainly:
 
 ## Footnotes
 
-[^cdc]: USB-CDC firmware flavour. Pick the `cdc` variant from the [browser installer](/firmware) flavour dropdown (or when flashing manually).
+[^cdc]: Native USB (USB-CDC): the chip talks USB directly, with no separate USB-to-serial chip, so the board is a little cheaper. Nothing to choose when flashing — the browser installer picks the right firmware automatically.
 
 [p]: https://github.com/ESPresense/ESPresense/discussions/2334
 [162]: https://github.com/ESPresense/ESPresense/discussions/162
