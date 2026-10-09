@@ -3,7 +3,7 @@ import type { Context } from 'hono'
 import { handle } from 'hono/cloudflare-pages'
 import { prettyJSON } from 'hono/pretty-json'
 import { staleIfError } from '../../lib/stale-if-error.ts'
-import { retryOnce } from '../../lib/retry-once.ts'
+import { github } from '../../lib/github.ts'
 import { cors } from 'hono/cors'
 import * as fflate from "fflate"
 
@@ -119,25 +119,6 @@ app.use("*", cors())
 
 app.use('*', prettyJSON())
 
-// The unauthenticated GitHub API allows 60 requests/hour per IP, shared with
-// everything else behind Cloudflare's egress. With a GITHUB_TOKEN secret set on
-// the Pages project the limit is 5,000/hour; without one this still works.
-async function github(c: Context, path: string, okTtl: number) {
-  const token = c.env?.GITHUB_TOKEN
-  const ask = () => fetch(`https://api.github.com/repos/ESPresense/ESPresense/${path}`, {
-    headers: {
-      "User-Agent": "espresense-artifact-proxy",
-      ...(token && { "Authorization": `Bearer ${token}` })
-    },
-    cf: {
-      // Only answers we act on are cached, so a refusal is never replayed
-      cacheTtlByStatus: { '200-299': okTtl, '404': 60, '400-403': 0, '405-599': 0 }
-    }
-  } as any)
-
-  return retryOnce(ask)
-}
-
 const runOf = (response: Response) => Number(response.headers.get('Location')?.match(/\/runs\/(\d+)\//)?.[1])
 
 // GitHub's run listing occasionally answers with incomplete results: a branch
@@ -147,6 +128,37 @@ const runOf = (response: Response) => Number(response.headers.get('Location')?.m
 function isStaleListing(stored: Response, fresh: Response) {
   return fresh.status === 404 || runOf(fresh) < runOf(stored)
 }
+
+// Successful build runs for the firmware pickers (ESPresense-companion, the
+// install page), so browsers stop spending their own 60/hour GitHub allowance.
+// Same shape as GitHub's listing, trimmed to the fields the pickers read.
+app.get('/runs',
+  staleIfError(300),
+  async (c: Context) => {
+    const response = await github(c, 'actions/workflows/build.yml/runs?status=success&per_page=100', 300)
+    if (!response.ok) {
+      return c.json({ error: "Failed to fetch workflow runs", upstream: { status: response.status } }, 502)
+    }
+
+    const data: any = await response.json()
+    return c.json({
+      workflow_runs: data.workflow_runs.map((run: any) => ({
+        id: run.id,
+        name: run.name,
+        head_branch: run.head_branch,
+        head_sha: run.head_sha,
+        status: run.status,
+        conclusion: run.conclusion,
+        created_at: run.created_at,
+        updated_at: run.updated_at,
+        html_url: run.html_url,
+        head_commit: run.head_commit && { message: run.head_commit.message },
+        head_repository: run.head_repository && { full_name: run.head_repository.full_name },
+        pull_requests: (run.pull_requests ?? []).map((pr: any) => ({ number: pr.number }))
+      }))
+    })
+  }
+)
 
 // Latest builds change frequently, cache GitHub API responses for 5 minutes
 // Branch names can contain slashes (perf/some-experiment), so match the rest
