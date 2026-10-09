@@ -29,15 +29,15 @@ Pick a chip first, then a board within it.
 All branded boards listed here flash with the [browser installer](/firmware), which picks the right firmware flavour automatically.
 
 :::note[Affiliate disclosure]
-Some store links on this page (Amazon, AliExpress) are affiliate links. As an Amazon Associate, ESPresense earns from qualifying purchases, at no extra cost to you. Affiliate revenue helps fund the project — see [Credits](/credits) for other ways to support.
+Some store links on this page (Amazon, AliExpress, M5Stack) are affiliate links. As an Amazon Associate, ESPresense earns from qualifying purchases, at no extra cost to you. Affiliate revenue helps fund the project — see [Credits](/credits) for other ways to support.
 :::
 
 ### ESP32-S3
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| **M5 Atom S3 Lite** | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_c3SezL2p) [ali2](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/47b6xzW) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
-| M5 Atom S3U | [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) [amz/us](https://amzn.to/4uZJFgE) | Enclosed, USB-A. 8 MB flash, 3D antenna, IR emitter, PDM mic, RGB LED, button, GROVE [^cdc] |
+| **M5 Atom S3 Lite** | [m5stack](https://shop.m5stack.com/products/atoms3-lite-esp32s3-dev-kit?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_c3SezL2p) [ali2](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/47b6xzW) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
+| M5 Atom S3U | [m5stack](https://shop.m5stack.com/products/atoms3u?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) [amz/us](https://amzn.to/4uZJFgE) | Enclosed, USB-A. 8 MB flash, 3D antenna, IR emitter, PDM mic, RGB LED, button, GROVE [^cdc] |
 | M5 Stamp S3 | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) [amz/us](https://amzn.to/4dv6anp) | Stamp form. 8 MB flash, 3D antenna, RGB LED [^cdc] |
 | Seeed XIAO ESP32-S3 | [ali](https://s.click.aliexpress.com/e/_c4thPCrX) [amz/us](https://amzn.to/4dpWw5E) | Tiny module, USB-C. 8 MB flash + 8 MB PSRAM, U.FL connector with external antenna. Listing also sells the C3 and S3 Sense — pick the S3 option. Amazon sells a 3-pack [^cdc] |
 
@@ -45,8 +45,8 @@ Some store links on this page (Amazon, AliExpress) are affiliate links. As an Am
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| **M5 Stamp C3 Mate** | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-5pcs) [ali](https://s.click.aliexpress.com/e/_omweFp9) [amz/us](https://amzn.to/4tVkzP4) | Stamp form. 4 MB flash, 3D antenna, RGB LED, button |
-| M5 Stamp C3U Mate | [ali](https://s.click.aliexpress.com/e/_onkgbFp) [amz/us](https://amzn.to/479m4QW) | Stamp form, USB-A. 4 MB flash, 3D antenna, RGB LED, button [^cdc] |
+| **M5 Stamp C3 Mate** | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_omweFp9) [amz/us](https://amzn.to/4tVkzP4) | Stamp form. 4 MB flash, 3D antenna, RGB LED, button |
+| M5 Stamp C3U Mate | [m5stack](https://shop.m5stack.com/products/m5stamp-c3u-mate-with-pin-headers?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_onkgbFp) [amz/us](https://amzn.to/479m4QW) | Stamp form, USB-A. 4 MB flash, 3D antenna, RGB LED, button [^cdc] |
 | ESP32-C3-DevKitM-1U | [ali](https://s.click.aliexpress.com/e/_c3bVwFQb) | Espressif's dev board with ESP32-C3-MINI-1U module and U.FL connector. 4 MB flash, 160 MHz |
 
 ### ESP32-C6
@@ -55,7 +55,7 @@ C6 support is bleeding edge — expect rougher edges than S3/C3.
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| **M5Stack NanoC6** | [m5stack](https://shop.m5stack.com/products/m5stack-nanoc6-dev-kit) [ali](https://s.click.aliexpress.com/e/_c36Zc6y1) [amz/us](https://amzn.to/3VVBUfq) | Very small and enclosed, USB-C. 4 MB flash, ceramic antenna, IR emitter, RGB LED, button, GROVE |
+| **M5Stack NanoC6** | [m5stack](https://shop.m5stack.com/products/m5stack-nanoc6-dev-kit?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_c36Zc6y1) [amz/us](https://amzn.to/3VVBUfq) | Very small and enclosed, USB-C. 4 MB flash, ceramic antenna, IR emitter, RGB LED, button, GROVE |
 | Seeed XIAO ESP32-C6 | [ali](https://s.click.aliexpress.com/e/_c364MTzR) [amz/us](https://amzn.to/4jNi9R6) | Tiny module, USB-C. 4 MB flash, onboard ceramic antenna + U.FL connector. Amazon sells a 3-pack |
 
 ### Original ESP32
