@@ -39,7 +39,7 @@ Some store links on this page (Amazon, AliExpress) are affiliate links. As an Am
 | **M5 Atom S3 Lite** | [m5stack](https://docs.m5stack.com/en/core/AtomS3%20Lite) [ali](https://s.click.aliexpress.com/e/_c3SezL2p) [ali2](https://s.click.aliexpress.com/e/_oFSxCND) [amz/us](https://amzn.to/4v3qPFm) | Enclosed, USB-C. 8 MB flash, 3D antenna, IR emitter, RGB LED, button, GROVE [^cdc] |
 | M5 Atom S3U | [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) [amz/us](https://amzn.to/4uZJFgE) | Enclosed, USB-A. 8 MB flash, 3D antenna, IR emitter, PDM mic, RGB LED, button, GROVE [^cdc] |
 | M5 Stamp S3 | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) | Stamp form. 8 MB flash, 3D antenna, RGB LED [^cdc] |
-| Seeed XIAO ESP32-S3 | [ali](https://s.click.aliexpress.com/e/_c4thPCrX) [amz/us](https://amzn.to/3Uc9KMN) | Tiny module, USB-C. 8 MB flash + 8 MB PSRAM, U.FL connector with external antenna. Listing also sells the C3 and S3 Sense — pick the S3 option. Amazon sells a 3-pack [^cdc] |
+| Seeed XIAO ESP32-S3 | [ali](https://s.click.aliexpress.com/e/_c4thPCrX) [amz/us](https://amzn.to/4dpWw5E) | Tiny module, USB-C. 8 MB flash + 8 MB PSRAM, U.FL connector with external antenna. Listing also sells the C3 and S3 Sense — pick the S3 option. Amazon sells a 3-pack [^cdc] |
 
 ### ESP32-C3
 
@@ -75,7 +75,7 @@ These boards run ESPresense, but antenna and module QC vary — RSSI from one of
 | Generic D1 Mini ESP32 (Micro-B and USB-C) | Multiple users report working in practice; same no-brand → no-QC caveat on the RF front-end | [#2334][p] / [#162][162] |
 | LOLIN D32 ESP32 | Works; unbranded RF caveat | [#2334][p] |
 | M5StickC Plus | Built-in battery is a liability for a fixed-in-place node | [#2334][p] |
-| SEEEDSTUDIO XIAO ESP32-C3 ([amz/us](https://amzn.to/4znPK8X), 3-pack) | Runs on the `esp32C3` flavour. One report of a board overheating ([#1364][1364]); use a known-good USB-C cable and a real power supply | [#2334][p] / [#1364][1364] |
+| SEEEDSTUDIO XIAO ESP32-C3 ([amz/us](https://amzn.to/4e4zCRp), 3-pack) | Runs on the `esp32C3` flavour. One report of a board overheating ([#1364][1364]); use a known-good USB-C cable and a real power supply | [#2334][p] / [#1364][1364] |
 
 ## Steer away
 
