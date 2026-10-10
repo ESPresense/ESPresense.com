@@ -22,6 +22,8 @@ For each LED (LED 1, LED 2, LED 3), you can configure:
 * **Count (only applies to Addressable LEDs)** - Number of LEDs in the strip
 * **LED Control** - Control mode for the LED behavior
 
+**LED power pin (-1 to disable)** is held high from boot, for boards that only power their LED while a GPIO is high, such as the [M5Stack NanoC6](/nodes/nanoc6) (GPIO 19). Needs firmware with [ESPresense#2536](https://github.com/ESPresense/ESPresense/pull/2536).
+
 ### MQTT LED control (v4.0)
 
 When an LED is set to **LED Control = MQTT**, you can control it by publishing JSON to:

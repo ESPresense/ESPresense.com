@@ -19,19 +19,23 @@ board:
     - { label: ali, url: "https://s.click.aliexpress.com/e/_c36Zc6y1" }
     - { label: amz/us, url: "https://amzn.to/3VVBUfq" }
   gpio:
-    - { pin: 7, use: Blue LED, setting: led_1_pin }
+    - { pin: 20, use: WS2812 RGB LED, setting: led_1_pin }
+    - { pin: 19, use: RGB LED power enable, setting: led_pwr_pin }
+    - { pin: 7, use: Blue LED, setting: led_2_pin }
     - { pin: 9, use: Button (active low), setting: button_1_pin }
-    - { pin: 20, use: WS2812 RGB LED (needs GPIO 19 high to power it) }
-    - { pin: 19, use: RGB LED power enable }
     - { pin: 3, use: IR emitter }
     - { pin: 2, use: GROVE SDA (yellow) }
     - { pin: 1, use: GROVE SCL (white) }
   template:
-    led_1_type: 0
-    led_1_pin: 7
+    led_1_type: 2
+    led_1_pin: 20
     led_1_cnt: 1
     led_1_cntrl: 1
-    led_2_pin: -1
+    led_2_type: 0
+    led_2_pin: 7
+    led_2_cnt: 1
+    led_2_cntrl: 0
+    led_pwr_pin: 19
     led_3_pin: -1
     button_1_type: 1
     button_1_pin: 9
@@ -47,7 +51,7 @@ board:
 import BoardPage from '../../../components/BoardPage.astro';
 
 :::caution[Mockup]
-Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and the Hardware page's **Board Template** box needs firmware with [ESPresense#2531](https://github.com/ESPresense/ESPresense/pull/2531). On older firmware, copy the values into the Hardware page by hand.
+Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and the Hardware page's **Board Template** box needs firmware with [ESPresense#2531](https://github.com/ESPresense/ESPresense/pull/2531). On older firmware, copy the values into the Hardware page by hand. The RGB LED also needs the LED power pin setting from [ESPresense#2536](https://github.com/ESPresense/ESPresense/pull/2536); until that's merged the node rejects this template.
 :::
 
 <BoardPage part="summary" />
@@ -62,5 +66,5 @@ Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on
 
 ## Notes
 
-- The template uses the blue LED for status. The RGB LED is only powered when GPIO 19 is driven high, and the firmware has no setting for a power-enable pin, so it stays dark.
+- The RGB LED (LED 1, Addressable GRB) shows status in colour. It's only powered while GPIO 19 is high, so the template sets **LED power pin** to 19. The blue LED is LED 2, controlled over MQTT.
 - GPIO 9 is also the boot strapping pin: holding the button while plugging in enters download mode.
