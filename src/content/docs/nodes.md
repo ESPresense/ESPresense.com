@@ -84,7 +84,7 @@ These boards run ESPresense, but antenna and module QC vary — RSSI from one of
 
 ## Ethernet and PoE boards
 
-A wired node keeps WiFi out of the way, and a PoE board needs only one cable. Ethernet works on the `esp32` and `esp32s3` builds. Pick the board under **Ethernet Type** on the Network page, or apply the board's [template](/configuration/templates), which also moves I2C off the Ethernet pins ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)). Most of these are original-ESP32 boards, because that's where the Ethernet MAC is.
+A wired node keeps WiFi out of the way, and a PoE board needs only one cable. Ethernet works on the `esp32` and `esp32s3` builds. Pick the board under **Ethernet Type** on the Network page, or apply the board's [template](/configuration/templates). On v4, also set both I2C pins to -1: the default 21/22 are the ESP32's fixed RMII Ethernet pins ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)). Most of these are original-ESP32 boards, because that's where the Ethernet MAC is.
 
 | Board | Ethernet Type | PoE | Notes |
 |:------|:--------------|:----|:------|

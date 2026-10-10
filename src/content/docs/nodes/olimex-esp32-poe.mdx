@@ -57,7 +57,7 @@ Pin data comes from the vendor's docs and schematics and hasn't been checked on 
 - Buy the WROOM version. The WROVER (PSRAM) versions move the Ethernet clock to GPIO 0, which ESPresense doesn't have an entry for.
 - All four LEDs (power, charge, link, activity) are wired in hardware, so there's no status LED to configure.
 - BUT1 is on GPI 34, an input-only pin with an external pull-up, so the template uses pin type *Floating Inverted*.
-- I2C is set to the UEXT connector (SDA 13, SCL 16), which has 2.2 kΩ pull-ups on board. The plain `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)).
+- I2C is set to the UEXT connector (SDA 13, SCL 16), which has 2.2 kΩ pull-ups on board. On v4 the `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)); the template's explicit pins avoid that.
 - GPIO 18, 19, 21, 22, 23, 25, 26 and 27 belong to Ethernet (RMII and MDIO/MDC). Don't put sensors on them. GPIO 12 (PHY power) and 17 (clock) too.
 - PoE is IEEE 802.3af. The ISO can supply about 2 W to add-ons, the non-ISO about 4 W.
 

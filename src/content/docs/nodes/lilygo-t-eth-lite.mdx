@@ -31,8 +31,6 @@ board:
     leds: []
     inputs: []
     outputs: []
-    I2C_Bus_1_SDA: -1
-    I2C_Bus_1_SCL: -1
     eth: 11
 ---
 
@@ -58,7 +56,7 @@ Pin data comes from the vendor's docs and schematics and hasn't been checked on 
 - Flash it with a 3.3 V USB-TTL adapter on the P3 header (TXD, RXD, RST, IO0, 5V, GND), holding BOOT. **Disconnect the adapter's DTR→IO0 wire afterwards:** GPIO 0 carries the Ethernet clock, and a DTR line holding it high stops Ethernet from starting.
 - The PoE shield (IEEE 802.3af, isolated) plugs onto the 2×4 header.
 - There's no user LED (only power and PHY LEDs). Because the PHY is at address 0, the jack's yellow link LED never lights. That's normal.
-- I2C is off in the template. For a sensor, SDA 32 / SCL 33 are free. The plain `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)).
+- I2C is off by default on v5. For a sensor, SDA 32 / SCL 33 are free. On v4 the `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)); set both I2C pins to -1 there.
 - GPIO 18, 19, 21, 22, 23, 25, 26 and 27 belong to Ethernet (RMII and MDIO/MDC). Don't put sensors on them. GPIO 0 and 12 too. Don't add a pull-up to GPIO 12 (strapping pin).
 
 ## Sources

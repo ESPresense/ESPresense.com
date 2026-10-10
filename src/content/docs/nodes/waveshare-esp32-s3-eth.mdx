@@ -35,8 +35,6 @@ board:
       - { type: "grb", pin: 21, count: 1, control: "status" }
     inputs: []
     outputs: []
-    I2C_Bus_1_SDA: -1
-    I2C_Bus_1_SCL: -1
     eth: 14
 ---
 
@@ -59,7 +57,7 @@ Pin data comes from the vendor's docs and schematics and hasn't been checked on 
 ## Notes
 
 - Install the **`esp32s3-cdc`** flavor. The board's USB-C goes straight to the S3's native USB, and the standard `esp32s3` build talks on the UART pins instead, so the installer flashes it but then can't connect ([#1646](https://github.com/ESPresense/ESPresense/issues/1646)). If flashing fails, hold BOOT, tap RESET, release BOOT.
-- The template uses the RGB LED (GPIO 21) for status. The `esp32s3` build's default I2C pins are 21/22, which collide with the LED, so the template turns I2C off. For a sensor, SDA 16 / SCL 17 are free.
+- The template uses the RGB LED (GPIO 21) for status. I2C is off by default on v5. For a sensor, SDA 16 / SCL 17 are free; not 21, which is the LED.
 - PoE needs Waveshare's add-on module (IEEE 802.3af), sold as the ESP32-S3-POE-ETH.
 - GPIO 33–37 are used by the octal PSRAM even though they're on the header. The camera variants use 1–3, 15, 18, 38–42 and 45–48.
 - LilyGO's T-ETH-Lite **ESP32-S3** and T-ETH-ELite also use a W5500 but on different pins, so they don't work with this Ethernet Type.

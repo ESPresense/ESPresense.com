@@ -29,8 +29,6 @@ board:
     inputs:
       - { name: "Button", role: "button", pin: 41, type: "pullup_inverted" }
     outputs: []
-    I2C_Bus_1_SDA: -1
-    I2C_Bus_1_SCL: -1
 ---
 
 import BoardPage from '../../../components/BoardPage.astro';
@@ -52,5 +50,5 @@ Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on
 ## Notes
 
 - The generic `esp32s3` build defaults to a PWM LED on GPIO 2, which this board doesn't have. Without the template the status LED stays dark.
-- Plugging an I2C sensor into the GROVE port? Set `I2C_Bus_1_SDA` to 2 and `I2C_Bus_1_SCL` to 1 before importing.
+- Plugging an I2C sensor into the GROVE port? Set `I2C_Bus_1_SDA` to 2 and `I2C_Bus_1_SCL` to 1 on the Hardware page (I2C is off by default on v5).
 - The IR emitter isn't used by ESPresense.

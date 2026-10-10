@@ -31,8 +31,6 @@ board:
     outputs:
       - { name: "Relay", pin: 6, type: "output", power_on: "restore", input: 1 }
     power: { model: "bl0937", cf: 18, cf1: 19, sel: 20, sel_inverted: true, voltage_divider: 1450, current_resistor: 0.0011 }
-    I2C_Bus_1_SDA: -1
-    I2C_Bus_1_SCL: -1
 ---
 
 import BoardPage from '../../../components/BoardPage.astro';

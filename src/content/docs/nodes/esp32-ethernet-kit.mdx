@@ -25,8 +25,6 @@ board:
     leds: []
     inputs: []
     outputs: []
-    I2C_Bus_1_SDA: -1
-    I2C_Bus_1_SCL: -1
     eth: 7
 ---
 
@@ -52,7 +50,7 @@ Pin data comes from the vendor's docs and schematics and hasn't been checked on 
 - The FT2232H shows up as two serial ports: the first is JTAG, the second is the ESP32's serial port. Pick the second one in the browser installer.
 - The PoE board is IEEE 802.3at. USB power is cut off automatically when PoE is present.
 - There's no user LED; the link and activity LEDs are driven by the PHY.
-- I2C is off in the template. For a sensor, any two of 32, 33, 4 and 2 work. GPIO 12–15 are free only with DIP switches 1–4 off (on routes them to JTAG). GPIO 16/17 are used by PSRAM. The plain `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)).
+- I2C is off by default on v5. For a sensor, any two of 32, 33, 4 and 2 work. GPIO 12–15 are free only with DIP switches 1–4 off (on routes them to JTAG). GPIO 16/17 are used by PSRAM. On v4 the `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)); set both I2C pins to -1 there.
 - GPIO 18, 19, 21, 22, 23, 25, 26 and 27 belong to Ethernet (RMII and MDIO/MDC). Don't put sensors on them. GPIO 0 and 5 too.
 
 ## Sources

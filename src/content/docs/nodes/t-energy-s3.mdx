@@ -28,8 +28,6 @@ board:
     leds: []
     inputs: []
     outputs: []
-    I2C_Bus_1_SDA: -1
-    I2C_Bus_1_SCL: -1
     batt_pin: 3
     batt_mult: 2
 ---
@@ -57,7 +55,7 @@ Pin data comes from LILYGO's schematic and hasn't been checked on hardware yet. 
 - Use an 18650 cell. LILYGO's board has its own charge (HX6610S) and protection (IP3005A) chips.
 - **Charge reminder:** the template sets **Battery voltage pin** to GPIO 3 with a ×2 divider, so the node reports a Battery (%) and a Battery Voltage sensor to Home Assistant. Add an automation that notifies you when Battery drops below, say, 20 %.
 - Install the **`esp32s3-cdc`** flavor. USB-C goes to the S3's native USB, and the standard `esp32s3` build talks on the UART pins instead. If flashing fails, hold BOOT and press reset.
-- There's no user LED: the red LED shows power and the other two show charging. The `esp32s3` build defaults to an LED on GPIO 2 and I2C on GPIO 21/22, so the template clears the LED list and turns I2C off.
+- There's no user LED: the red LED shows power and the other two show charging. The `esp32s3` build defaults to an LED on GPIO 2, so the template clears the LED list.
 - The 4-pin connector is UART (RX, TX, 3V3, GND), not Qwiic. For an I2C sensor, use two free header pins, for example 17/18.
 - GPIO 15/16 drive the 32 kHz crystal. GPIO 35–37 are used by the octal PSRAM.
 

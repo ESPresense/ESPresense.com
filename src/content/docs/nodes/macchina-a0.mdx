@@ -25,8 +25,6 @@ board:
     inputs: []
     outputs:
       - { name: "CAN standby", pin: 21, type: "high" }
-    I2C_Bus_1_SDA: -1
-    I2C_Bus_1_SCL: -1
     batt_pin: 35
     batt_type: 1
     batt_mult: 5.8
@@ -53,7 +51,7 @@ This template uses the v5 settings from [ESPresense#2530](https://github.com/ESP
 - **Battery multiplier is an estimate.** The old flavor converted the raw ADC reading with a fixed formula. 5.8 is that formula translated to the generic code's calibrated millivolts, not a measured value. Compare the node's **Battery Voltage** with a multimeter on the OBD-II port's 12 V and scale `batt_mult` by (multimeter ÷ reported). It accepts 1–20.
 - **Battery type 1 is 12 V lead-acid.** It uses the A0 flavor's old charge curve and adds a **Charging** binary sensor, on above 13.2 V (engine running).
 - **CAN standby:** GPIO 21 held high keeps the CAN transceiver in standby, as the old flavor did at boot. It's an Always High output, so it gets no MQTT or Home Assistant entity.
-- **I2C is off.** The plain `esp32` build puts I2C bus 1 on GPIO 21/22, and GPIO 21 is the CAN standby pin, so the template disables I2C.
+- I2C is off by default on v5. Don't put it on GPIO 21: that's the CAN standby pin.
 - **The LED is brighter than before.** The old flavor capped LED brightness at 20 %, and templates can't set that.
 - On many cars the OBD-II port stays powered with the ignition off, so a node left plugged in slowly drains the car battery.
 
