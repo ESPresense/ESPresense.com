@@ -150,6 +150,7 @@ A board template sets a board's hardware pins in one go. Each [board page](/node
 
 * **`chip`** is required. The node rejects a template made for a different chip, because the wrong pin numbers can land on flash GPIOs.
 * **`hardware`** uses the same setting names as the Hardware page. Only the keys listed are changed. Board pages list unused pins as -1, so applying one gives the same result whatever was set before.
+* **Export as template** on the Hardware page saves a node's current pins as `espresense-template.json`. It leaves out `name`, so add the board's name before sharing it.
 * The node rejects the whole template if a key isn't a hardware setting, or a value is the wrong type or out of range. Dropdowns are option numbers, pins are -1 to 48, and I2C addresses are strings (`"0x38"`).
 
 ## Tips
