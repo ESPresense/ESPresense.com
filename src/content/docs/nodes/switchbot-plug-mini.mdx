@@ -30,7 +30,7 @@ board:
       - { name: "Button", role: "button", pin: 2, type: "pullup_inverted" }
     outputs:
       - { name: "Relay", pin: 6, type: "output", power_on: "restore", input: 1 }
-    power: { model: "bl0937", cf: 18, cf1: 19, sel: 20, voltage_divider: 1450, current_resistor: 0.0011 }
+    power: { model: "bl0937", cf: 18, cf1: 19, sel: 20, sel_inverted: true, voltage_divider: 1450, current_resistor: 0.0011 }
     I2C_Bus_1_SDA: -1
     I2C_Bus_1_SCL: -1
 ---
@@ -58,4 +58,4 @@ Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on
 ## Notes
 
 - **The relay is output 1.** It shows up in Home Assistant as a switch named Relay, and MQTT `espresense/rooms/<room>/output_1/set` takes `ON`, `OFF` or `TOGGLE`. The button is linked to it, so a press toggles the outlet, and after a power cut it comes back in its last state. The white LED follows the relay; the other LED shows status.
-- **Power monitoring** uses the BL0937 with the calibration from [digiblur's ESPHome config](https://digiblur.com/wiki/devices/plugs/switchbot_15_amp_w1901400/) (`voltage_divider` 1450, `current_resistor` 0.0011). The node reports power, voltage, current and energy every 10 s. Check them against a plug-in meter. That config inverts SEL, and v5 has no SEL inversion setting, so if voltage and current come out swapped, that's why.
+- **Power monitoring** uses the BL0937 with the calibration from [digiblur's ESPHome config](https://digiblur.com/wiki/devices/plugs/switchbot_15_amp_w1901400/) (`voltage_divider` 1450, `current_resistor` 0.0011). The node reports power, voltage, current and energy every 10 s. Check them against a plug-in meter. SEL is inverted on this plug (`sel_inverted: true`, as in that config); if voltage and current come out swapped, flip it.

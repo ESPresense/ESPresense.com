@@ -82,7 +82,7 @@ const pretty = JSON.stringify({ name: board.name, chip: chipTarget, settings: bo
     <code>output</code>). Input <code>type</code>: pullup, pulldown or floating, with
     <code>_inverted</code> for active-low. Output <code>type</code>: output, output_inverted, or
     high/low for a pin that's just held at that level. An output's <code>input</code> is the
-    1-based input that controls it. <code>eth</code> is the Ethernet Type's option number.
+    1-based input that controls it. <code>power</code> takes ESPHome's hlw8012 values; <code>sel_inverted</code> matches ESPHome's <code>inverted</code> on <code>sel_pin</code>. <code>eth</code> is the Ethernet Type's option number.
   </p>
 </details>
 {board.verified && <p class="verified"><em>{board.verified}</em></p>}
