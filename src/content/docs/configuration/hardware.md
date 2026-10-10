@@ -142,6 +142,15 @@ Configure a load cell amplifier.
 * **HX711 SCK (Clock) pin** - GPIO pin for the clock line.
 * **HX711 DOUT (Data) pin** - GPIO pin for the data line.
 
+## Battery
+
+For a battery-powered node with a single Li-ion cell, such as the [LILYGO T-Energy-S3](/nodes/t-energy-s3). Needs firmware with [ESPresense#2538](https://github.com/ESPresense/ESPresense/pull/2538).
+
+* **Battery voltage pin (-1 to disable)** - the GPIO the cell's voltage divider feeds. Must be an ADC1 pin (GPIO 32–39 on the ESP32, GPIO 1–10 on the S3), because WiFi uses ADC2.
+* **Battery voltage divider (multiplier)** - how much the divider scales the voltage down, e.g. 2 for two equal resistors.
+
+When the pin is set, the node adds `batt` (%) and `mV` to its telemetry and creates **Battery** and **Battery Voltage** sensors in Home Assistant. The percentage comes from a resting Li-ion curve (4.2 V full, 3.3 V empty), so it reads high while charging.
+
 ## Tips
 
 * Set pin values to -1 to disable any unused sensors or LEDs

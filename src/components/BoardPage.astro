@@ -18,7 +18,7 @@ const settingLabels: Record<string, string> = {
   switch_1_pin: 'Switch One', switch_2_pin: 'Switch Two',
   pir_pin: 'PIR', radar_pin: 'Radar',
   I2C_Bus_1_SDA: 'I2C bus 1 SDA', I2C_Bus_1_SCL: 'I2C bus 1 SCL',
-  eth: 'Ethernet Type',
+  eth: 'Ethernet Type', batt_pin: 'Battery voltage pin',
 };
 // The firmware matches "chip" exactly against its IDF target name: ESP32-C6 -> esp32c6.
 const chipTarget = board.chip.toLowerCase().replace(/[^a-z0-9]/g, '');

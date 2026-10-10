@@ -19,7 +19,7 @@ board:
     - { label: "lilygo", url: "https://lilygo.cc/products/t-energy-s3" }
   gpio:
     - { pin: 0, use: "BOOT button" }
-    - { pin: 3, use: "Battery voltage (through a divider)" }
+    - { pin: 3, use: "Battery voltage (1:2 divider)", setting: batt_pin }
     - { pin: 15, use: "32 kHz crystal" }
     - { pin: 16, use: "32 kHz crystal" }
     - { pin: 43, use: "TXD (4-pin UART connector)" }
@@ -36,12 +36,14 @@ board:
     radar_pin: -1
     I2C_Bus_1_SDA: -1
     I2C_Bus_1_SCL: -1
+    batt_pin: 3
+    batt_mult: 2
 ---
 
 import BoardPage from '../../../components/BoardPage.astro';
 
 :::caution[New page]
-Pin data comes from LILYGO's schematic and hasn't been checked on hardware yet. The **Templates** page needs firmware with [ESPresense#2531](https://github.com/ESPresense/ESPresense/pull/2531). On older firmware, copy the values into the Hardware page by hand.
+Pin data comes from LILYGO's schematic and hasn't been checked on hardware yet. The **Templates** page needs firmware with [ESPresense#2531](https://github.com/ESPresense/ESPresense/pull/2531). On older firmware, copy the values into the Hardware page by hand. Battery reporting needs [ESPresense#2538](https://github.com/ESPresense/ESPresense/pull/2538); until that's merged the node rejects this template.
 :::
 
 <BoardPage part="summary" />
@@ -59,7 +61,7 @@ Pin data comes from LILYGO's schematic and hasn't been checked on hardware yet. 
 - **Why this board:** it's a battery-powered node you can carry around, for example to stand at known spots during [calibration](/configuration/settings#calibration). Charge it over USB-C and use the power switch between sessions.
 - **Battery life:** ESPresense keeps WiFi and BLE scanning on all the time, so expect roughly 90–150 mA. A 2,500–3,500 mAh 18650 gives about 17–39 hours. That's an estimate, not a measurement.
 - Use an 18650 cell. LILYGO's board has its own charge (HX6610S) and protection (IP3005A) chips.
-- ESPresense doesn't report this board's battery level. The voltage is on GPIO 3, but the firmware only reads batteries on M5Stack and Macchina boards.
+- **Charge reminder:** the template sets **Battery voltage pin** to GPIO 3 with a ×2 divider, so the node reports a Battery (%) and a Battery Voltage sensor to Home Assistant. Add an automation that notifies you when Battery drops below, say, 20 %.
 - Install the **`esp32s3-cdc`** flavor. USB-C goes to the S3's native USB, and the standard `esp32s3` build talks on the UART pins instead. If flashing fails, hold BOOT and press reset.
 - There's no user LED: the red LED shows power and the other two show charging. The `esp32s3` build defaults LED 1 to GPIO 2 and I2C to GPIO 21/22, so the template turns both off.
 - The 4-pin connector is UART (RX, TX, 3V3, GND), not Qwiic. For an I2C sensor, use two free header pins, for example 17/18.
