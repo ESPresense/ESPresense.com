@@ -19,8 +19,8 @@ const settingLabels: Record<string, string> = {
   pir_pin: 'PIR', radar_pin: 'Radar',
   I2C_Bus_1_SDA: 'I2C bus 1 SDA', I2C_Bus_1_SCL: 'I2C bus 1 SCL',
 };
-const template = JSON.stringify({ name: board.name, chip: board.chip, hardware: board.template });
-const pretty = JSON.stringify({ name: board.name, chip: board.chip, hardware: board.template }, null, 2);
+const template = JSON.stringify({ name: board.name, chip: board.chip, settings: board.template });
+const pretty = JSON.stringify({ name: board.name, chip: board.chip, settings: board.template }, null, 2);
 ---
 {part === 'summary' && (
 <div class="board not-content">
