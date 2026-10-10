@@ -19,8 +19,8 @@ const settingLabels: Record<string, string> = {
   pir_pin: 'PIR', radar_pin: 'Radar',
   I2C_Bus_1_SDA: 'I2C bus 1 SDA', I2C_Bus_1_SCL: 'I2C bus 1 SCL',
 };
-const template = JSON.stringify({ name: board.name, hardware: board.template });
-const pretty = JSON.stringify({ name: board.name, hardware: board.template }, null, 2);
+const template = JSON.stringify({ name: board.name, chip: board.chip, hardware: board.template });
+const pretty = JSON.stringify({ name: board.name, chip: board.chip, hardware: board.template }, null, 2);
 ---
 {part === 'summary' && (
 <div class="board not-content">
@@ -63,8 +63,9 @@ const pretty = JSON.stringify({ name: board.name, hardware: board.template }, nu
 {part === 'template' && (
 <Fragment>
 <p>
-  Paste this into <strong>Hardware → Import template</strong> on the node's web UI. It sets every
-  LED, button and sensor pin in one go; anything not listed is reset to disabled.
+  Paste this into the <strong>Board Template</strong> box on the node's Hardware page, then Preview and
+  Apply. It sets every LED, button and sensor pin in one go. Unused pins are set to -1 (disabled) so
+  the result is the same whatever was configured before. See <a href="/configuration/hardware#board-templates">Board templates</a>.
 </p>
 <div class="template not-content">
   <pre><code>{template}</code></pre>
