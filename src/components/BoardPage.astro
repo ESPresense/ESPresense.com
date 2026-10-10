@@ -18,6 +18,7 @@ const settingLabels: Record<string, string> = {
   switch_1_pin: 'Switch One', switch_2_pin: 'Switch Two',
   pir_pin: 'PIR', radar_pin: 'Radar',
   I2C_Bus_1_SDA: 'I2C bus 1 SDA', I2C_Bus_1_SCL: 'I2C bus 1 SCL',
+  eth: 'Ethernet Type',
 };
 // The firmware matches "chip" exactly against its IDF target name: ESP32-C6 -> esp32c6.
 const chipTarget = board.chip.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -65,9 +66,10 @@ const pretty = JSON.stringify({ name: board.name, chip: chipTarget, settings: bo
 {part === 'template' && (
 <Fragment>
 <p>
-  Paste this into the <strong>Board Template</strong> box on the node's Hardware page, then Preview and
-  Apply. It sets every LED, button and sensor pin in one go. Unused pins are set to -1 (disabled) so
-  the result is the same whatever was configured before. See <a href="/configuration/hardware#board-templates">Board templates</a>.
+  Paste this into the <strong>Board Template</strong> box on the node's <strong>Templates</strong> page,
+  then Preview and Apply. It sets the board's pins (and Ethernet type, if it has one) in one go. Unused
+  pins are set to -1 (disabled) so the result is the same whatever was configured before. See
+  <a href="/configuration/templates">Templates</a>.
 </p>
 <div class="template not-content">
   <pre><code>{template}</code></pre>

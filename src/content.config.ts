@@ -18,8 +18,8 @@ const board = z.object({
   price: z.string().optional(),
   stores: z.array(z.object({ label: z.string(), url: z.string().url() })).default([]),
   gpio: z.array(z.object({ pin: z.number(), use: z.string(), setting: z.string().optional() })),
-  // Values for the firmware's "hardware" settings endpoint. Dropdowns are option indexes,
-  // exactly as POST /wifi/hardware stores them.
+  // Firmware setting values, emitted as the template's "settings". Any endpoint's keys work
+  // (e.g. `eth` from the main page). Dropdowns are option indexes, as the firmware stores them.
   template: z.record(z.string(), z.union([z.number(), z.string(), z.boolean()])),
   verified: z.string().optional(),
 });

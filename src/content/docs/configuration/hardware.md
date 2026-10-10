@@ -7,7 +7,7 @@ sidebar:
 
 <img src="/images/hardware_screen.png" alt="Sensors section of the ESPresense settings UI" style="float:right;margin-left:20px;width:340px" />
 
-ESPresense supports various LED and GPIO sensor configurations for enhanced functionality and visual feedback. These settings are accessible from the **Hardware** page in the device web UI.
+ESPresense supports various LED and GPIO sensor configurations for enhanced functionality and visual feedback. These settings are accessible from the **Hardware** page in the device web UI. To set a known board up in one go, use a [board template](/configuration/templates).
 
 ## LEDs
 
@@ -141,19 +141,6 @@ Configure a load cell amplifier.
 
 * **HX711 SCK (Clock) pin** - GPIO pin for the clock line.
 * **HX711 DOUT (Data) pin** - GPIO pin for the data line.
-
-## Board templates
-
-A board template sets a board's hardware pins in one go. Each [board page](/nodes/) has one to copy. On the node's Hardware page, paste it into the **Board Template** box, click **Preview** to see what will change, then **Apply**. This needs firmware with [ESPresense#2531](https://github.com/ESPresense/ESPresense/pull/2531).
-
-```json
-{"name": "M5Stack NanoC6", "chip": "esp32c6", "settings": {"led_1_pin": 7, "...": "..."}}
-```
-
-* **`chip`** is required, written as the lowercase chip target: `esp32`, `esp32c3`, `esp32c6` or `esp32s3` (not `ESP32-C6`, and not a firmware flavor like `esp32c3-cdc`). The node rejects a template made for a different chip, because the wrong pin numbers can land on flash GPIOs.
-* **`settings`** uses the same setting names as the Hardware page. Only the keys listed are changed. Board pages list unused pins as -1, so applying one gives the same result whatever was set before.
-* **Export as template** on the Hardware page saves a node's current pins as `espresense-template.json`. It leaves out `name`, so add the board's name before sharing it.
-* The node rejects the whole template if a key isn't a hardware setting, or a value is the wrong type or out of range. Dropdowns are option numbers, pins are -1 to 48, and I2C addresses are strings (`"0x38"`).
 
 ## Tips
 
