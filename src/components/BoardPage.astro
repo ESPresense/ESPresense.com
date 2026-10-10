@@ -19,7 +19,11 @@ const settingLabels: Record<string, string> = {
   pir_pin: 'PIR', radar_pin: 'Radar',
   I2C_Bus_1_SDA: 'I2C bus 1 SDA', I2C_Bus_1_SCL: 'I2C bus 1 SCL',
   eth: 'Ethernet Type', batt_pin: 'Battery voltage pin',
+  leds: 'LEDs', inputs: 'Inputs', outputs: 'Outputs', power: 'Power monitor',
 };
+// v5 templates (ESPresense#2530) carry JSON-list settings and leave unused slots out, so the
+// v4 notes about -1 pins and dropdown option numbers don't apply to them.
+const v5 = ['leds', 'inputs', 'outputs', 'power'].some((k) => k in board.template);
 // The firmware matches "chip" exactly against its IDF target name: ESP32-C6 -> esp32c6.
 const chipTarget = board.chip.toLowerCase().replace(/[^a-z0-9]/g, '');
 const template = JSON.stringify({ name: board.name, chip: chipTarget, settings: board.template });
@@ -67,9 +71,11 @@ const pretty = JSON.stringify({ name: board.name, chip: chipTarget, settings: bo
 <Fragment>
 <p>
   Paste this into the <strong>Board Template</strong> box on the node's <strong>Templates</strong> page,
-  then Preview and Apply. It sets the board's pins (and Ethernet type, if it has one) in one go. Unused
-  pins are set to -1 (disabled) so the result is the same whatever was configured before. See
-  <a href="/configuration/templates">Templates</a>.
+  then Preview and Apply. It sets the board's pins (and Ethernet type, if it has one) in one go.
+  {v5
+    ? 'The LED and output lists replace whatever was configured before.'
+    : 'Unused pins are set to -1 (disabled) so the result is the same whatever was configured before.'}
+  See <a href="/configuration/templates">Templates</a>.
 </p>
 <div class="template not-content">
   <pre><code>{template}</code></pre>
@@ -78,12 +84,12 @@ const pretty = JSON.stringify({ name: board.name, chip: chipTarget, settings: bo
 <details>
   <summary>Formatted, with what each value means</summary>
   <pre><code>{pretty}</code></pre>
-  <p>
+  {!v5 && <p>
     Dropdowns are stored as option numbers. LED type: 0 PWM, 1 PWM Inverted, 2 Addressable GRB,
     3 Addressable GRBW, 4 Addressable RGB, 5 Addressable RGBW. LED control: 0 MQTT, 1 Status,
     2 Motion, 3 Count. Pin type: 0 Pullup, 1 Pullup Inverted (active low), 2 Pulldown,
     3 Pulldown Inverted, 4 Floating, 5 Floating Inverted.
-  </p>
+  </p>}
 </details>
 {board.verified && <p class="verified"><em>{board.verified}</em></p>}
 </Fragment>

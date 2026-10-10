@@ -1,0 +1,60 @@
+---
+title: "Macchina A0"
+description: "Macchina A0 (ESP32 OBD-II dongle) on ESPresense v5: the generic esp32 build plus a template for its LED, CAN standby pin and 12 V battery reading."
+sidebar:
+  order: 12
+board:
+  name: "Macchina A0"
+  chip: "ESP32"
+  formFactor: "OBD-II dongle, powered from the car's 12 V"
+  flash: "Not documented"
+  antenna: "PCB antenna"
+  install: "<a href=\"/firmware\">Browser installer</a>, <code>esp32</code> flavor (v5 and later)"
+  rating: "caveats"
+  ratingNote: "A car OBD-II dongle that ESPresense used to build a flavor for. Only worth it if you already own one."
+  price: "~$89"
+  stores:
+    - { label: "macchina", url: "https://www.macchina.cc/catalog/a0-boards/a0-under-dash" }
+  gpio:
+    - { pin: 2, use: "RGB status LED (addressable)", setting: leds }
+    - { pin: 21, use: "CAN transceiver standby (held high)", setting: outputs }
+    - { pin: 35, use: "12 V supply voltage (divider)", setting: batt_pin }
+  template:
+    leds:
+      - { type: "grb", pin: 2, count: 1, control: "status" }
+    outputs:
+      - { name: "CAN standby", pin: 21, type: "high" }
+    batt_pin: 35
+    batt_type: 1
+    batt_mult: 5.8
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[v5 firmware only]
+This template uses the v5 settings from [ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), which isn't released yet. That PR also removes the `macchina-a0` firmware flavor, so on v5 the A0 runs the plain `esp32` build and gets its board-specific behavior from this template. On v4 releases, install the `macchina-a0` flavor and skip the template.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- **Battery multiplier is an estimate.** The old flavor converted the raw ADC reading with a fixed formula. 5.8 is that formula translated to the generic code's calibrated millivolts, not a measured value. Compare the node's **Battery Voltage** with a multimeter on the OBD-II port's 12 V and scale `batt_mult` by (multimeter ÷ reported). It accepts 1–20.
+- **Battery type 1 is 12 V lead-acid.** It uses the A0 flavor's old charge curve and adds a **Charging** binary sensor, on above 13.2 V (engine running).
+- **CAN standby:** GPIO 21 held high keeps the CAN transceiver in standby, as the old flavor did at boot. It's an Always High output, so it gets no MQTT or Home Assistant entity.
+- **The LED is brighter than before.** The old flavor capped LED brightness at 20 %, and templates can't set that.
+- On many cars the OBD-II port stays powered with the ignition off, so a node left plugged in slowly drains the car battery.
+
+## Sources
+
+- ESPresense firmware v4: `main/Battery.cpp`, `main/CAN.cpp` and the `MACCHINA_A0` block in `main/defaults.h`
+- [ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530) (v5 hardware settings, removes the flavor)
+- [Macchina A0 docs](https://docs.macchina.cc/a0-docs)

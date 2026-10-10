@@ -79,6 +79,7 @@ These boards run ESPresense, but antenna and module QC vary — RSSI from one of
 | Generic D1 Mini ESP32 (Micro-B and USB-C) | Multiple users report working in practice; same no-brand → no-QC caveat on the RF front-end | [#2334][p] / [#162][162] |
 | LOLIN D32 ESP32 | Works; unbranded RF caveat | [#2334][p] |
 | M5StickC Plus | Built-in battery is a liability for a fixed-in-place node | [#2334][p] |
+| [Macchina A0](/nodes/macchina-a0) | Car OBD-II dongle. From v5 it runs the plain `esp32` build with a board template instead of its own flavor | [#2530](https://github.com/ESPresense/ESPresense/pull/2530) |
 | SEEEDSTUDIO XIAO ESP32-C3 ([amz/us](https://amzn.to/4e4zCRp), 3-pack) | Runs on the `esp32C3` flavour. One report of a board overheating ([#1364][1364]); use a known-good USB-C cable and a real power supply | [#2334][p] / [#1364][1364] |
 
 ## Ethernet and PoE boards
