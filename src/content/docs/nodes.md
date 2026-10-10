@@ -80,6 +80,25 @@ These boards run ESPresense, but antenna and module QC vary — RSSI from one of
 | M5StickC Plus | Built-in battery is a liability for a fixed-in-place node | [#2334][p] |
 | SEEEDSTUDIO XIAO ESP32-C3 ([amz/us](https://amzn.to/4e4zCRp), 3-pack) | Runs on the `esp32C3` flavour. One report of a board overheating ([#1364][1364]); use a known-good USB-C cable and a real power supply | [#2334][p] / [#1364][1364] |
 
+## Ethernet and PoE boards
+
+A wired node keeps WiFi out of the way, and a PoE board needs only one cable. Ethernet works on the `esp32` and `esp32s3` builds. Pick the board under **Ethernet Type** on the Network page, or apply the board's [template](/configuration/templates), which also moves I2C off the Ethernet pins ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)). Most of these are original-ESP32 boards, because that's where the Ethernet MAC is.
+
+| Board | Ethernet Type | PoE | Notes |
+|:------|:--------------|:----|:------|
+| **[Olimex ESP32-POE-ISO](/nodes/olimex-esp32-poe)** | ESP32-POE | 802.3af, isolated | The classic PoE node. Non-ISO version: never plug in USB while on PoE |
+| **[Silicognition wESP32](/nodes/wesp32)** | wESP32 Rev7+ (older: WESP32) | 802.3at, isolated | Rock solid, 12 V output. ~$55 plus a $15 programmer |
+| **[GL.iNet GL-S10](/nodes/gl-s10)** | GL-inet GL-S10 v2.1 | Yes | Enclosed, external antenna. Open the case once to flash |
+| **[Waveshare ESP32-S3-ETH](/nodes/waveshare-esp32-s3-eth)** | Waveshare ESP32-S3-ETH (W5500) | Add-on module | The only S3 option. Native USB, use the `esp32s3-cdc` flavor |
+| [LilyGO T-Internet-POE](/nodes/lilygo-t-internet-poe) | LilyGO-T-ETH-POE | 802.3af, isolated | No USB data port; flash with an adapter |
+| [LilyGO T-ETH-Lite (ESP32)](/nodes/lilygo-t-eth-lite) | LilyGO-T-ETH-Lite (RTL8201) | Shield | No USB data port. Not the S3 version |
+| [WT32-ETH01](/nodes/wt32-eth01) | WT32-ETH01 | No | Cheapest wired node. No USB, some units hang at power-up |
+| [EST-PoE-32](/nodes/est-poe-32) | EST-PoE-32 | Low power, not isolated | Often sold out |
+| [QuinLED-ESP32 (Ethernet)](/nodes/quinled-esp32) | QuinLED-ESP32 | No | Comes on QuinLED's "with LAN" LED controllers |
+| [Espressif ESP32-Ethernet-Kit](/nodes/esp32-ethernet-kit) | KIT-VE | 802.3at board | Dev kit, ~$55 |
+| TwilightLord-ESP32 Ethernet Shield | TwilightLord-ESP32 | No | Hobbyist Tindie shield, not currently sold |
+| RGB2Go Ethernet module, Athom "IoTorero" Ethernet controller | ESP32Deux | No | LED controllers that use this profile; reuse one if you have it |
+
 ## Smart plugs
 
 An ESP32 smart plug flashed with ESPresense is a node that's also a working outlet, and it never needs a USB charger. The relay is driven as an MQTT-controlled LED until the firmware gets a relay output ([#1316](https://github.com/ESPresense/ESPresense/issues/1316)).
@@ -97,7 +116,6 @@ Each of these comes up often enough that it's worth saying plainly:
 - **ESP32-CAM.** Not officially supported. Camera owns most of the GPIOs, tighter RAM, no maintained firmware variant. One community member keeps a fork working with source-side modifications ([#1347][1347]); we don't build for it.
 - **ESP32-S2 / ESP8266.** No Bluetooth radio — physically can't run ESPresense.
 - **NSPanel as a base station.** Open question. The chip is an ESP32, but no one has reported flashing ESPresense over the stock NSPanel firmware and getting both the touch UI and BT scanning working ([#1335][1335]).
-- **GL-S10 Bluetooth IoT Gateway.** Not an ESP32 — MediaTek MT7621 with a separate BLE module — so the ESPresense firmware doesn't apply ([#1263][1263]).
 
 ## Power and cabling
 
@@ -140,7 +158,6 @@ Each of these comes up often enough that it's worth saying plainly:
 
 [p]: https://github.com/ESPresense/ESPresense/discussions/2334
 [162]: https://github.com/ESPresense/ESPresense/discussions/162
-[1263]: https://github.com/ESPresense/ESPresense/discussions/1263
 [1335]: https://github.com/ESPresense/ESPresense/discussions/1335
 [1347]: https://github.com/ESPresense/ESPresense/discussions/1347
 [1364]: https://github.com/ESPresense/ESPresense/discussions/1364

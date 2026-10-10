@@ -1,0 +1,73 @@
+---
+title: "Olimex ESP32-POE / ESP32-POE-ISO"
+description: "Olimex ESP32-POE and ESP32-POE-ISO (ESP32, LAN8720, PoE) — pins, settings template and notes for running ESPresense over Ethernet."
+sidebar:
+  order: 20
+board:
+  name: "Olimex ESP32-POE-ISO"
+  chip: "ESP32"
+  formFactor: "Bare board, 98 × 28 mm (ISO); 80 × 28 mm (non-ISO). Olimex sells ISO enclosures and a DIN-rail clip"
+  flash: "4 MB (WROOM-32E-N4); 16 MB and WROVER variants exist"
+  antenna: "PCB antenna; -EA variants have a u.FL external antenna"
+  usb: "Micro-USB (CH340)"
+  install: "<a href=\"/firmware\">Browser installer</a>, <code>esp32</code> flavor. Non-ISO: unplug Ethernet first"
+  rating: "recommended"
+  ratingNote: "The classic PoE node. Get the ISO version: it's isolated, so USB and PoE can be plugged in together."
+  price: "~€25 (ISO), ~€18 (non-ISO)"
+  stores:
+    - { label: "olimex", url: "https://www.olimex.com/Products/IoT/ESP32/ESP32-POE-ISO/open-source-hardware" }
+  gpio:
+    - { pin: 34, use: "BUT1 button (active low, external pull-up)", setting: button_1_pin }
+    - { pin: 12, use: "PHY power" }
+    - { pin: 17, use: "Ethernet clock out" }
+    - { pin: 13, use: "UEXT I2C SDA", setting: I2C_Bus_1_SDA }
+    - { pin: 16, use: "UEXT I2C SCL", setting: I2C_Bus_1_SCL }
+    - { pin: 35, use: "Battery sense (ISO)" }
+    - { pin: 39, use: "External power sense" }
+  template:
+    led_1_pin: -1
+    led_2_pin: -1
+    led_3_pin: -1
+    button_1_type: 5
+    button_1_pin: 34
+    button_2_pin: -1
+    switch_1_pin: -1
+    switch_2_pin: -1
+    pir_pin: -1
+    radar_pin: -1
+    I2C_Bus_1_SDA: 13
+    I2C_Bus_1_SCL: 16
+    eth: 2
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[New page]
+Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The **Templates** page and the `eth` setting in templates need firmware with [ESPresense#2531](https://github.com/ESPresense/ESPresense/pull/2531). On older firmware, pick the Ethernet Type on the Network page and copy the pins into the Hardware page by hand. Firmware built from `main` since the ESP-IDF port also needs [ESPresense#2537](https://github.com/ESPresense/ESPresense/pull/2537): without it this board's Ethernet clock comes out on the wrong pin and Ethernet never links. Release v4.0.6 is fine.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- **Which Ethernet Type?** Pick **ESP32-POE** (`eth` 2) for both the ESP32-POE and the ESP32-POE-ISO; Olimex's own ESPHome configs use the same settings for both. **ESP32-POE_A1** (`eth` 12) is the same with PHY address 1, added for some newer boards. Olimex doesn't document an "A1" revision, so only try it if 2 never gets a link.
+- **Non-ISO boards: never plug USB into a computer while the board is powered by PoE.** Olimex warns this can damage the board, the computer or both. The ISO version is isolated (3000 V) and doesn't have this problem.
+- Buy the WROOM version. The WROVER (PSRAM) versions move the Ethernet clock to GPIO 0, which ESPresense doesn't have an entry for.
+- All four LEDs (power, charge, link, activity) are wired in hardware, so there's no status LED to configure.
+- BUT1 is on GPI 34, an input-only pin with an external pull-up, so the template uses pin type *Floating Inverted*.
+- I2C is set to the UEXT connector (SDA 13, SCL 16), which has 2.2 kΩ pull-ups on board. The plain `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)).
+- GPIO 18, 19, 21, 22, 23, 25, 26 and 27 belong to Ethernet (RMII and MDIO/MDC). Don't put sensors on them. GPIO 12 (PHY power) and 17 (clock) too.
+- PoE is IEEE 802.3af. The ISO can supply about 2 W to add-ons, the non-ISO about 4 W.
+
+## Sources
+
+- [Olimex ESP32-POE repo](https://github.com/OLIMEX/ESP32-POE) (manual, Rev M2 schematic, pinout, ESPHome configs)
+- [ESP32-POE-ISO product page](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE-ISO/open-source-hardware)

@@ -1,0 +1,71 @@
+---
+title: "Silicognition wESP32"
+description: "Silicognition wESP32 (ESP32, isolated 802.3at PoE) — pins, settings template and notes for running ESPresense over Ethernet."
+sidebar:
+  order: 21
+board:
+  name: "Silicognition wESP32 (Rev 7+)"
+  chip: "ESP32"
+  formFactor: "Bare board, 75 × 40 mm, four M2.5 holes"
+  flash: "16 MB (Rev 7+); 4 MB on earlier revisions"
+  antenna: "PCB antenna"
+  usb: "None — needs the wESP32-Prog adapter"
+  install: "<a href=\"/firmware\">Browser installer</a> through a wESP32-Prog, <code>esp32</code> flavor"
+  rating: "recommended"
+  ratingNote: "Rock-solid isolated 802.3at PoE and a 12 V output for accessories. Pricey, and you need the programmer too."
+  price: "~$55 + $15 programmer"
+  stores:
+    - { label: "amz/us", url: "https://www.amazon.com/dp/B084RV91NQ?tag=espresense-20" }
+    - { label: "prog (micro-B)", url: "https://www.amazon.com/dp/B084SPMLP3?tag=espresense-20" }
+    - { label: "prog-C (USB-C)", url: "https://www.amazon.com/dp/B0CZ16991K?tag=espresense-20" }
+  gpio:
+    - { pin: 15, use: "Qwiic I2C SDA (Rev 8+)", setting: I2C_Bus_1_SDA }
+    - { pin: 4, use: "Qwiic I2C SCL (Rev 8+)", setting: I2C_Bus_1_SCL }
+    - { pin: 0, use: "Ethernet clock in" }
+    - { pin: 16, use: "Ethernet MDC" }
+    - { pin: 17, use: "Ethernet MDIO" }
+  template:
+    led_1_pin: -1
+    led_2_pin: -1
+    led_3_pin: -1
+    button_1_pin: -1
+    button_2_pin: -1
+    switch_1_pin: -1
+    switch_2_pin: -1
+    pir_pin: -1
+    radar_pin: -1
+    I2C_Bus_1_SDA: 15
+    I2C_Bus_1_SCL: 4
+    eth: 13
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[New page]
+Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The **Templates** page and the `eth` setting in templates need firmware with [ESPresense#2531](https://github.com/ESPresense/ESPresense/pull/2531). On older firmware, pick the Ethernet Type on the Network page and copy the pins into the Hardware page by hand.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- **Check the revision before you pick an Ethernet Type.** It's printed next to the RJ45 jack. Rev 7 and later (RTL8201 PHY) use **wESP32 Rev7+** (`eth` 13), which is what the template sets. Earlier boards (LAN8720) use **WESP32** (`eth` 3): change `eth` to 3 before applying. Silicognition warns that the wrong type can drive pins against a LAN8720 and damage a pre-Rev 7 board.
+- The board ships with MicroPython. Silicognition only replaces boards that are faulty under MicroPython, so check that Ethernet works before flashing ESPresense.
+- There's no USB on the board. The wESP32-Prog / Prog-C adapters (CP2102N, auto-program) plug onto the J2 header and work with the browser installer. USB is isolated from Ethernet, so both can be plugged in at once.
+- PoE is IEEE 802.3at Type 1, fully isolated (1500 Vrms). One mounting hole is at PoE potential, so don't screw it to a grounded metal case.
+- There are no user LEDs or buttons.
+- I2C is set to the Qwiic connector (Rev 8+: SDA 15, SCL 4). On older revisions those pins are on the header.
+- GPIO 0, 16, 17, 19, 21, 22, 25, 26 and 27 belong to Ethernet. Keep GPIO 2 and 12 low or floating at boot.
+
+## Sources
+
+- [wESP32 product brief (Rev 11)](https://wesp32.com/files/wESP32-Product-Brief.pdf)
+- [wesp32.com hardware](https://wesp32.com/hardware/) and [software](https://wesp32.com/software/) pages
