@@ -103,7 +103,7 @@ A wired node keeps WiFi out of the way, and a PoE board needs only one cable. Et
 
 ## Smart plugs
 
-An ESP32 smart plug flashed with ESPresense is a node that's also a working outlet, and it never needs a USB charger. The relay is driven as an MQTT-controlled LED until the firmware gets a relay output ([#1316](https://github.com/ESPresense/ESPresense/issues/1316)).
+An ESP32 smart plug flashed with ESPresense is a node that's also a working outlet, and it never needs a USB charger. From v5 ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530)) the relay is a proper output, a Home Assistant switch that the plug's button toggles, and BL0937/HLW8012 power meters report power and energy.
 
 | Plug | Chip | Notes |
 |:-----|:-----|:------|

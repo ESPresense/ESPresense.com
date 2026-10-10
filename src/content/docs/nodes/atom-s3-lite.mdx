@@ -18,25 +18,17 @@ board:
     - { label: ali, url: "https://s.click.aliexpress.com/e/_c3SezL2p" }
     - { label: amz/us, url: "https://amzn.to/47b6xzW" }
   gpio:
-    - { pin: 35, use: SK6812 RGB LED, setting: led_1_pin }
-    - { pin: 41, use: Button (active low), setting: button_1_pin }
+    - { pin: 35, use: SK6812 RGB LED, setting: leds }
+    - { pin: 41, use: Button (active low), setting: inputs }
     - { pin: 4, use: IR emitter }
     - { pin: 2, use: GROVE SDA (yellow) }
     - { pin: 1, use: GROVE SCL (white) }
   template:
-    led_1_type: 2
-    led_1_pin: 35
-    led_1_cnt: 1
-    led_1_cntrl: 1
-    led_2_pin: -1
-    led_3_pin: -1
-    button_1_type: 1
-    button_1_pin: 41
-    button_2_pin: -1
-    switch_1_pin: -1
-    switch_2_pin: -1
-    pir_pin: -1
-    radar_pin: -1
+    leds:
+      - { type: "grb", pin: 35, count: 1, control: "status" }
+    inputs:
+      - { name: "Button", role: "button", pin: 41, type: "pullup_inverted" }
+    outputs: []
     I2C_Bus_1_SDA: -1
     I2C_Bus_1_SCL: -1
 ---
@@ -44,7 +36,7 @@ board:
 import BoardPage from '../../../components/BoardPage.astro';
 
 :::caution[Mockup]
-Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and the **Templates** page needs firmware with [ESPresense#2531](https://github.com/ESPresense/ESPresense/pull/2531). On older firmware, copy the values into the Hardware page by hand.
+Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and the template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, set the same pins on the Hardware page by hand.
 :::
 
 <BoardPage part="summary" />
@@ -59,6 +51,6 @@ Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on
 
 ## Notes
 
-- The generic `esp32s3` build defaults LED 1 to a PWM LED on GPIO 2, which this board doesn't have. Without the template the status LED stays dark.
+- The generic `esp32s3` build defaults to a PWM LED on GPIO 2, which this board doesn't have. Without the template the status LED stays dark.
 - Plugging an I2C sensor into the GROVE port? Set `I2C_Bus_1_SDA` to 2 and `I2C_Bus_1_SCL` to 1 before importing.
 - The IR emitter isn't used by ESPresense.

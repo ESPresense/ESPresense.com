@@ -20,7 +20,7 @@ const board = z.object({
   gpio: z.array(z.object({ pin: z.number(), use: z.string(), setting: z.string().optional() })),
   // Firmware setting values, emitted as the template's "settings". Any endpoint's keys work
   // (e.g. `eth` from the main page). Dropdowns are option indexes, as the firmware stores them.
-  // v5 firmware (ESPresense#2530) also has JSON settings (`leds`, `inputs`, `outputs`, `power`),
+  // v5 firmware (ESPresense#2530) has JSON settings (`leds`, `inputs`, `outputs`, `power`),
   // written here as YAML lists/objects and passed through as-is.
   template: z.record(z.string(), z.union([z.number(), z.string(), z.boolean(), z.array(z.record(z.string(), z.unknown())), z.record(z.string(), z.unknown())])),
   verified: z.string().optional(),

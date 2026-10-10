@@ -17,8 +17,8 @@ board:
   stores:
     - { label: "gl.inet", url: "https://www.gl-inet.com/products/gl-s10/" }
   gpio:
-    - { pin: 32, use: "Status LED, white (active low)", setting: led_1_pin }
-    - { pin: 33, use: "Side button (active low)", setting: button_1_pin }
+    - { pin: 32, use: "Status LED, white (active low)", setting: leds }
+    - { pin: 33, use: "Side button (active low)", setting: inputs }
     - { pin: 14, use: "Power LED (active low)" }
     - { pin: 12, use: "BLE LED (active low, strapping pin)" }
     - { pin: 15, use: "I2C SDA pad (inside)" }
@@ -26,19 +26,11 @@ board:
     - { pin: 5, use: "Ethernet clock enable" }
     - { pin: 0, use: "Ethernet clock in" }
   template:
-    led_1_type: 1
-    led_1_pin: 32
-    led_1_cnt: 1
-    led_1_cntrl: 1
-    led_2_pin: -1
-    led_3_pin: -1
-    button_1_type: 1
-    button_1_pin: 33
-    button_2_pin: -1
-    switch_1_pin: -1
-    switch_2_pin: -1
-    pir_pin: -1
-    radar_pin: -1
+    leds:
+      - { type: "pwm_inverted", pin: 32, count: 1, control: "status" }
+    inputs:
+      - { name: "Button", role: "button", pin: 33, type: "pullup_inverted" }
+    outputs: []
     I2C_Bus_1_SDA: -1
     I2C_Bus_1_SCL: -1
     eth: 9
@@ -47,7 +39,7 @@ board:
 import BoardPage from '../../../components/BoardPage.astro';
 
 :::caution[New page]
-Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The **Templates** page and the `eth` setting in templates need firmware with [ESPresense#2531](https://github.com/ESPresense/ESPresense/pull/2531). On older firmware, pick the Ethernet Type on the Network page and copy the pins into the Hardware page by hand.
+Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, pick the Ethernet Type on the Network page and set the pins on the Hardware page by hand.
 :::
 
 <BoardPage part="summary" />

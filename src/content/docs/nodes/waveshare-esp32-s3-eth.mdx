@@ -19,7 +19,7 @@ board:
     - { label: "amz/us (PoE)", url: "https://www.amazon.com/dp/B0DKJ5VXC9?tag=espresense-20" }
     - { label: "waveshare", url: "https://www.waveshare.com/esp32-s3-eth.htm" }
   gpio:
-    - { pin: 21, use: "WS2812 RGB LED", setting: led_1_pin }
+    - { pin: 21, use: "WS2812 RGB LED", setting: leds }
     - { pin: 0, use: "BOOT button" }
     - { pin: 13, use: "W5500 SCLK" }
     - { pin: 12, use: "W5500 MISO" }
@@ -31,18 +31,10 @@ board:
     - { pin: 16, use: "Free (suggested I2C SDA)" }
     - { pin: 17, use: "Free (suggested I2C SCL)" }
   template:
-    led_1_type: 2
-    led_1_pin: 21
-    led_1_cnt: 1
-    led_1_cntrl: 1
-    led_2_pin: -1
-    led_3_pin: -1
-    button_1_pin: -1
-    button_2_pin: -1
-    switch_1_pin: -1
-    switch_2_pin: -1
-    pir_pin: -1
-    radar_pin: -1
+    leds:
+      - { type: "grb", pin: 21, count: 1, control: "status" }
+    inputs: []
+    outputs: []
     I2C_Bus_1_SDA: -1
     I2C_Bus_1_SCL: -1
     eth: 14
@@ -51,7 +43,7 @@ board:
 import BoardPage from '../../../components/BoardPage.astro';
 
 :::caution[New page]
-Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The **Templates** page and the `eth` setting in templates need firmware with [ESPresense#2531](https://github.com/ESPresense/ESPresense/pull/2531). On older firmware, pick the Ethernet Type on the Network page and copy the pins into the Hardware page by hand.
+Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, pick the Ethernet Type on the Network page and set the pins on the Hardware page by hand.
 :::
 
 <BoardPage part="summary" />

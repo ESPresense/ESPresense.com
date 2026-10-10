@@ -13,27 +13,17 @@ board:
   rating: caveats
   ratingNote: Works, but the antenna is weak. Use one you already own; buy the SwitchBot Plug Mini instead.
   gpio:
-    - { pin: 5, use: Relay, setting: led_1_pin }
-    - { pin: 6, use: LED, setting: led_2_pin }
-    - { pin: 3, use: Button (active low), setting: button_1_pin }
+    - { pin: 5, use: Relay, setting: outputs }
+    - { pin: 6, use: Blue LED (active low), setting: leds }
+    - { pin: 3, use: Button (active low), setting: inputs }
     - { pin: 20, use: CSE7766 power meter (RX) }
   template:
-    led_1_type: 0
-    led_1_pin: 5
-    led_1_cnt: 1
-    led_1_cntrl: 0
-    led_2_type: 1
-    led_2_pin: 6
-    led_2_cnt: 1
-    led_2_cntrl: 1
-    led_3_pin: -1
-    button_1_type: 1
-    button_1_pin: 3
-    button_2_pin: -1
-    switch_1_pin: -1
-    switch_2_pin: -1
-    pir_pin: -1
-    radar_pin: -1
+    leds:
+      - { type: "pwm_inverted", pin: 6, count: 1, control: "status" }
+    inputs:
+      - { name: "Button", role: "button", pin: 3, type: "pullup_inverted" }
+    outputs:
+      - { name: "Relay", pin: 5, type: "output", power_on: "restore", input: 1 }
     I2C_Bus_1_SDA: -1
     I2C_Bus_1_SCL: -1
 ---
@@ -41,7 +31,7 @@ board:
 import BoardPage from '../../../components/BoardPage.astro';
 
 :::caution[Mockup]
-Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and the **Templates** page needs firmware with [ESPresense#2531](https://github.com/ESPresense/ESPresense/pull/2531). On older firmware, copy the values into the Hardware page by hand.
+Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and the template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, set the same pins on the Hardware page by hand.
 :::
 
 <BoardPage part="summary" />
@@ -57,5 +47,5 @@ Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on
 ## Notes
 
 - **The antenna is weak.** RSSI reads low next to a branded board at the same distance, which throws off fleet calibration. That's why it's listed with caveats.
-- **The relay is driven as LED 1.** ESPresense has no relay output ([ESPresense#1316](https://github.com/ESPresense/ESPresense/issues/1316)), so the template sets the relay pin up as a PWM "LED" with MQTT control. Switch the outlet by publishing `{"state":"ON"}` or `{"state":"OFF"}` to `espresense/rooms/<room>/led_1/set`.
-- The CSE7766 power meter isn't supported, so there's no power reading.
+- **The relay is output 1.** It shows up in Home Assistant as a switch named Relay, and MQTT `espresense/rooms/<room>/output_1/set` takes `ON`, `OFF` or `TOGGLE`. The button is linked to it, so a press toggles the outlet, and after a power cut it comes back in its last state.
+- The CSE7766 power meter isn't supported (v5 handles BL0937 and HLW8012 only), so there's no power reading.
