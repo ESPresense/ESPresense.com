@@ -35,8 +35,8 @@ board:
 
 import BoardPage from '../../../components/BoardPage.astro';
 
-:::caution[Partly verified]
-Partly checked on hardware (2026-10-10): this template on a v5 build reads mains voltage (121.6 V) with `sel_inverted: true`. Power and current under load aren't checked yet.
+:::note[Verified]
+Checked on hardware (2026-10-10): this template on three plugs. Mains voltage reads 121–124 V, and a robot vacuum dock reads 82.9 W, 0.968 A at 123.8 V (power factor about 0.69, plausible for a charger). Readings haven't been compared with a reference meter.
 :::
 
 <BoardPage part="summary" />
@@ -56,4 +56,5 @@ Partly checked on hardware (2026-10-10): this template on a v5 build reads mains
 ## Notes
 
 - **The relay is output 1.** It shows up in Home Assistant as a switch named Relay, and MQTT `espresense/rooms/<room>/output_1/set` takes `ON`, `OFF` or `TOGGLE`. The button is linked to it, so a press toggles the outlet, and after a power cut it comes back in its last state. The white LED follows the relay; the other LED shows status.
-- **Power monitoring** uses the BL0937 with the calibration from [digiblur's ESPHome config](https://digiblur.com/wiki/devices/plugs/switchbot_15_amp_w1901400/) (`voltage_divider` 1450, `current_resistor` 0.0011). The node reports power, voltage, current and energy every 10 s. Check them against a plug-in meter. SEL is inverted on this plug (`sel_inverted: true`, as in that config); if voltage and current come out swapped, flip it.
+- **Power monitoring** uses the BL0937 with the calibration from [digiblur's ESPHome config](https://digiblur.com/wiki/devices/plugs/switchbot_15_amp_w1901400/) (`voltage_divider` 1450, `current_resistor` 0.0011). The node reports power, voltage, current and energy every 10 s. SEL is inverted on this plug (`sel_inverted: true`, as in that config).
+- **Always-on loads** such as a robot vacuum dock: change the output to `"power_on": "on", "input": 0`. The plug then powers up on and the button no longer switches it, so it can't be turned off by accident. It still reports power.
