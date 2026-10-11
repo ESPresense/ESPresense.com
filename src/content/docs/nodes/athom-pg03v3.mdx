@@ -9,14 +9,14 @@ board:
   formFactor: US smart plug (16 A)
   flash: 4 MB
   antenna: PCB antenna
-  install: Serial
+  install: "Serial, <code>esp32c3-cdc</code> flavor"
   rating: caveats
   ratingNote: Works, but the antenna is weak. Use one you already own; buy the SwitchBot Plug Mini instead.
   gpio:
     - { pin: 5, use: Relay, setting: outputs }
     - { pin: 6, use: Blue LED (active low), setting: leds }
     - { pin: 3, use: Button (active low), setting: inputs }
-    - { pin: 20, use: CSE7766 power meter (RX) }
+    - { pin: 20, use: CSE7766 power meter (RX), setting: power }
   template:
     leds:
       - { type: "pwm_inverted", pin: 6, count: 1, control: "status" }
@@ -24,6 +24,7 @@ board:
       - { name: "Button", role: "button", pin: 3, type: "pullup_inverted" }
     outputs:
       - { name: "Relay", pin: 5, type: "output", power_on: "restore", input: 1 }
+    power: { model: "cse7766", rx: 20 }
 ---
 
 import BoardPage from '../../../components/BoardPage.astro';
@@ -46,4 +47,5 @@ Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on
 
 - **The antenna is weak.** RSSI reads low next to a branded board at the same distance, which throws off fleet calibration. That's why it's listed with caveats.
 - **The relay is output 1.** It shows up in Home Assistant as a switch named Relay, and MQTT `espresense/rooms/<room>/output_1/set` takes `ON`, `OFF` or `TOGGLE`. The button is linked to it, so a press toggles the outlet, and after a power cut it comes back in its last state.
-- The CSE7766 power meter isn't supported (v5 handles BL0937 and HLW8012 only), so there's no power reading.
+- **Power monitoring** uses the CSE7766, which is factory calibrated, so the only setting is its RX pin. The node reports power, voltage, current and energy every 10 s.
+- **Install the `esp32c3-cdc` flavor.** The power meter talks on GPIO 20, the C3's serial console RX pin. The `-cdc` build moves the console to USB and frees that pin. Flashing over the serial pads still works the same way; you just won't see the serial log afterwards.

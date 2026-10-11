@@ -103,12 +103,12 @@ A wired node keeps WiFi out of the way, and a PoE board needs only one cable. Et
 
 ## Smart plugs
 
-An ESP32 smart plug flashed with ESPresense is a node that's also a working outlet, and it never needs a USB charger. From v5 ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530)) the relay is a proper output, a Home Assistant switch that the plug's button toggles, and BL0937/HLW8012 power meters report power and energy.
+An ESP32 smart plug flashed with ESPresense is a node that's also a working outlet, and it never needs a USB charger. From v5 ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530)) the relay is a proper output, a Home Assistant switch that the plug's button toggles, and BL0937, HLW8012 and CSE7766 power meters report power and energy.
 
 | Plug | Chip | Notes |
 |:-----|:-----|:------|
 | **[SwitchBot Plug Mini (W1901400)](/nodes/switchbot-plug-mini)** | ESP32-C3 | Excellent. Flashes over the air with SwitchbOTA if you haven't taken the v2.x update |
-| [Athom Plug V3](/nodes/athom-pg03v3) | ESP32-C3 | Works, but the antenna is weak |
+| [Athom Plug V3](/nodes/athom-pg03v3) | ESP32-C3 | Works, but the antenna is weak. Use the `esp32c3-cdc` flavor so the power meter gets GPIO 20 |
 
 ## Steer away
 
