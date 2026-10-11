@@ -1,0 +1,58 @@
+---
+title: "Espressif ESP32-Ethernet-Kit"
+description: "Espressif ESP32-Ethernet-Kit-VE (ESP32-WROVER-E, IP101, 802.3at PoE board) — pins, settings template and notes for ESPresense."
+sidebar:
+  order: 29
+board:
+  name: "Espressif ESP32-Ethernet-Kit-VE"
+  chip: "ESP32"
+  formFactor: "Two-board dev kit (Ethernet board + PoE board)"
+  flash: "4 MB + 8 MB PSRAM (WROVER-E)"
+  antenna: "PCB antenna"
+  usb: "Micro-USB (FT2232H)"
+  install: "<a href=\"/firmware\">Browser installer</a>, <code>esp32</code> flavor (use the second serial port)"
+  rating: "caveats"
+  ratingNote: "Espressif's reference design with 802.3at PoE, but it's a big dev kit at dev-kit prices."
+  price: "~$55"
+  stores:
+    - { label: "amz/us", url: "https://www.amazon.com/dp/B09D3V14P8?tag=espresense-20" }
+  gpio:
+    - { pin: 5, use: "PHY reset (held high)" }
+    - { pin: 0, use: "Ethernet clock in" }
+    - { pin: 32, use: "Free (suggested I2C SDA)" }
+    - { pin: 33, use: "Free (suggested I2C SCL)" }
+  template:
+    leds: []
+    inputs: []
+    outputs: []
+    eth: 7
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[New page]
+Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, pick the Ethernet Type on the Network page and set the pins on the Hardware page by hand. This kit also needs [ESPresense#2537](https://github.com/ESPresense/ESPresense/pull/2537), which corrects its PHY address; without it Ethernet doesn't start.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- The firmware calls this **KIT-VE** (`eth` 7). "VE" is the version with the ESP32-WROVER-E module.
+- The FT2232H shows up as two serial ports: the first is JTAG, the second is the ESP32's serial port. Pick the second one in the browser installer.
+- The PoE board is IEEE 802.3at. USB power is cut off automatically when PoE is present.
+- There's no user LED; the link and activity LEDs are driven by the PHY.
+- I2C is off by default on v5. For a sensor, any two of 32, 33, 4 and 2 work. GPIO 12–15 are free only with DIP switches 1–4 off (on routes them to JTAG). GPIO 16/17 are used by PSRAM. On v4 the `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)); set both I2C pins to -1 there.
+- GPIO 18, 19, 21, 22, 23, 25, 26 and 27 belong to Ethernet (RMII and MDIO/MDC). Don't put sensors on them. GPIO 0 and 5 too.
+
+## Sources
+
+- [ESP32-Ethernet-Kit user guide](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32/esp32-ethernet-kit/user_guide.html)

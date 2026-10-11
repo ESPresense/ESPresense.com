@@ -1,0 +1,139 @@
+---
+// Renders one part of a per-board page's `board` frontmatter block, Tasmota-template style.
+// Headings stay in the .mdx so they land in Starlight's table of contents.
+interface Props { part: 'summary' | 'gpio' | 'template' }
+const { part } = Astro.props;
+const { board } = Astro.locals.starlightRoute.entry.data;
+if (!board) throw new Error('BoardPage used on a page without a `board` frontmatter block');
+
+const ratings = {
+  recommended: { label: 'Recommended', cls: 'good' },
+  caveats: { label: 'Works, with caveats', cls: 'warn' },
+  avoid: { label: 'Avoid', cls: 'bad' },
+};
+const rating = ratings[board.rating];
+const settingLabels: Record<string, string> = {
+  I2C_Bus_1_SDA: 'I2C bus 1 SDA', I2C_Bus_1_SCL: 'I2C bus 1 SCL',
+  eth: 'Ethernet Type', batt_pin: 'Battery voltage pin',
+  leds: 'LEDs', inputs: 'Inputs', outputs: 'Outputs', power: 'Power monitor',
+};
+// The firmware matches "chip" exactly against its IDF target name: ESP32-C6 -> esp32c6.
+const chipTarget = board.chip.toLowerCase().replace(/[^a-z0-9]/g, '');
+const template = JSON.stringify({ name: board.name, chip: chipTarget, settings: board.template });
+const pretty = JSON.stringify({ name: board.name, chip: chipTarget, settings: board.template }, null, 2);
+---
+{part === 'summary' && (
+<div class="board not-content">
+  <div class="board-head">
+    <span class={`badge ${rating.cls}`}>{rating.label}</span>
+    <span class="rating-note">{board.ratingNote}</span>
+  </div>
+  <table>
+    <tbody>
+      <tr><th>Chip</th><td>{board.chip}</td></tr>
+      <tr><th>Form factor</th><td>{board.formFactor}</td></tr>
+      <tr><th>Flash</th><td>{board.flash}</td></tr>
+      <tr><th>Antenna</th><td>{board.antenna}</td></tr>
+      {board.usb && <tr><th>USB</th><td>{board.usb}</td></tr>}
+      <tr><th>Install</th><td set:html={board.install} /></tr>
+      {board.price && <tr><th>Price</th><td>{board.price}</td></tr>}
+      {board.stores.length > 0 && (
+        <tr><th>Stores</th><td>{board.stores.map((s) => <a href={s.url} target="_blank" rel="noopener noreferrer">{s.label}</a>)}</td></tr>
+      )}
+    </tbody>
+  </table>
+</div>
+)}
+
+{part === 'gpio' && (
+<table>
+  <thead><tr><th>GPIO</th><th>Function</th><th>ESPresense setting</th></tr></thead>
+  <tbody>
+    {board.gpio.map((g) => (
+      <tr>
+        <td>{g.pin}</td>
+        <td>{g.use}</td>
+        <td>{g.setting ? <code>{settingLabels[g.setting] ?? g.setting}</code> : '—'}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+)}
+
+{part === 'template' && (
+<Fragment>
+<p>
+  Paste this into the <strong>Board Template</strong> box on the node's <strong>Templates</strong> page,
+  then Preview and Apply. It sets the board's pins (and Ethernet type, if it has one) in one go.
+  The LED, input and output lists replace what was configured before, so the result doesn't depend
+  on the node's old setup.
+  See <a href="/configuration/templates">Templates</a>.
+</p>
+<div class="template not-content">
+  <pre><code>{template}</code></pre>
+  <button type="button" data-template={template}>Copy</button>
+</div>
+<details>
+  <summary>Formatted, with what each value means</summary>
+  <pre><code>{pretty}</code></pre>
+  <p>
+    LED <code>type</code>: pwm, pwm_inverted, grb, grbw, rgb or rgbw (the last four are addressable).
+    LED <code>control</code>: mqtt, status, motion, count, or output (follows the output numbered by
+    <code>output</code>). Input <code>type</code>: pullup, pulldown or floating, with
+    <code>_inverted</code> for active-low. Output <code>type</code>: output, output_inverted, or
+    high/low for a pin that's just held at that level. An output's <code>input</code> is the
+    1-based input that controls it. <code>power</code> takes ESPHome's hlw8012 values (a cse7766 needs only <code>rx</code>); <code>sel_inverted</code> matches ESPHome's <code>inverted</code> on <code>sel_pin</code>. <code>eth</code> is the Ethernet Type's option number.
+  </p>
+</details>
+{board.verified && <p class="verified"><em>{board.verified}</em></p>}
+</Fragment>
+)}
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.template button').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(btn.dataset.template ?? '');
+      btn.textContent = 'Copied';
+      setTimeout(() => (btn.textContent = 'Copy'), 1500);
+    });
+  });
+</script>
+
+<style>
+  .board {
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+  .board table { width: 100%; }
+  .board th { width: 9rem; text-align: left; color: var(--sl-color-gray-2); font-weight: 600; }
+  .board th, .board td { padding: 0.25rem 0.5rem; vertical-align: top; }
+  .board td a + a { margin-left: 0.75rem; }
+  .board-head { display: flex; gap: 0.75rem; align-items: baseline; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  .badge { padding: 0.15rem 0.6rem; border-radius: 999px; font-weight: 600; font-size: var(--sl-text-sm); }
+  .badge.good { background: var(--sl-color-green-low); color: var(--sl-color-green-high); }
+  .badge.warn { background: var(--sl-color-orange-low); color: var(--sl-color-orange-high); }
+  .badge.bad { background: var(--sl-color-red-low); color: var(--sl-color-red-high); }
+  .rating-note { color: var(--sl-color-gray-2); }
+  .template { position: relative; }
+  .template pre {
+    white-space: pre-wrap;
+    word-break: break-all;
+    padding: 0.75rem 5rem 0.75rem 0.75rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    background: var(--sl-color-gray-6);
+    font-size: var(--sl-text-sm);
+  }
+  .template button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--sl-color-gray-4);
+    background: var(--sl-color-black);
+    color: var(--sl-color-white);
+    cursor: pointer;
+  }
+</style>

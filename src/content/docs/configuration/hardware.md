@@ -7,7 +7,7 @@ sidebar:
 
 <img src="/images/hardware_screen.png" alt="Sensors section of the ESPresense settings UI" style="float:right;margin-left:20px;width:340px" />
 
-ESPresense supports various LED and GPIO sensor configurations for enhanced functionality and visual feedback. These settings are accessible from the **Hardware** page in the device web UI.
+ESPresense supports various LED and GPIO sensor configurations for enhanced functionality and visual feedback. These settings are accessible from the **Hardware** page in the device web UI. To set a known board up in one go, use a [board template](/configuration/templates).
 
 ## LEDs
 
@@ -21,6 +21,8 @@ For each LED (LED 1, LED 2, LED 3), you can configure:
 * **Pin (-1 to disable)** - GPIO pin for the LED data line, or -1 to disable
 * **Count (only applies to Addressable LEDs)** - Number of LEDs in the strip
 * **LED Control** - Control mode for the LED behavior
+
+**LED power pin (-1 to disable)** is held high from boot, for boards that only power their LED while a GPIO is high, such as the [M5Stack NanoC6](/nodes/nanoc6) (GPIO 19). Needs firmware with [ESPresense#2536](https://github.com/ESPresense/ESPresense/pull/2536).
 
 ### MQTT LED control (v4.0)
 
@@ -139,6 +141,15 @@ Configure a load cell amplifier.
 
 * **HX711 SCK (Clock) pin** - GPIO pin for the clock line.
 * **HX711 DOUT (Data) pin** - GPIO pin for the data line.
+
+## Battery
+
+For a battery-powered node with a single Li-ion cell, such as the [LILYGO T-Energy-S3](/nodes/t-energy-s3). Needs firmware with [ESPresense#2538](https://github.com/ESPresense/ESPresense/pull/2538).
+
+* **Battery voltage pin (-1 to disable)** - the GPIO the cell's voltage divider feeds. Must be an ADC1 pin (GPIO 32–39 on the ESP32, GPIO 1–10 on the S3), because WiFi uses ADC2.
+* **Battery voltage divider (multiplier)** - how much the divider scales the voltage down, e.g. 2 for two equal resistors.
+
+When the pin is set, the node adds `batt` (%) and `mV` to its telemetry and creates **Battery** and **Battery Voltage** sensors in Home Assistant. The percentage comes from a resting Li-ion curve (4.2 V full, 3.3 V empty), so it reads high while charging.
 
 ## Tips
 

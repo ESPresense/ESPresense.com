@@ -1,0 +1,57 @@
+---
+title: "EST-PoE-32"
+description: "Everything Smart Technology EST-PoE-32 (ESP32, LAN8720, PoE) — pins, settings template and notes for ESPresense."
+sidebar:
+  order: 27
+board:
+  name: "EST-PoE-32"
+  chip: "ESP32"
+  formFactor: "Bare board, 68 × 47 × 19 mm"
+  flash: "8 MB"
+  antenna: "PCB antenna (overhangs the board edge)"
+  usb: "USB-C (CH340G)"
+  install: "<a href=\"/firmware\">Browser installer</a>, <code>esp32</code> flavor"
+  rating: "caveats"
+  ratingNote: "PoE, USB-C and a 9–28 V terminal on one board, but often sold out and PoE isn't isolated."
+  price: "~£22"
+  stores:
+    - { label: "everythingsmart", url: "https://shop.everythingsmart.io/products/est-poe-32-esp32-poe-development-board" }
+  gpio:
+    - { pin: 12, use: "PHY power" }
+    - { pin: 17, use: "Ethernet clock out" }
+    - { pin: 0, use: "Flash (BOOT) button" }
+  template:
+    leds: []
+    inputs: []
+    outputs: []
+    eth: 10
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[New page]
+Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, pick the Ethernet Type on the Network page and set the pins on the Hardware page by hand. Firmware built from `main` since the ESP-IDF port also needs [ESPresense#2537](https://github.com/ESPresense/ESPresense/pull/2537): without it this board's Ethernet clock comes out on the wrong pin and Ethernet never links. Release v4.0.6 is fine.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- PoE is low power (Class 1) and **not isolated**. To be safe, unplug Ethernet before connecting USB to a computer.
+- If the browser installer won't connect, hold Flash and tap Reset.
+- There's no user LED, so the template turns the LEDs off.
+- I2C is off by default on v5. For a sensor, 32/33 or 13/16 are free. On v4 the `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)); set both I2C pins to -1 there.
+- GPIO 18, 19, 21, 22, 23, 25, 26 and 27 belong to Ethernet (RMII and MDIO/MDC). Don't put sensors on them. GPIO 12 and 17 too.
+
+## Sources
+
+- [EST-PoE-32 product page](https://shop.everythingsmart.io/products/est-poe-32-esp32-poe-development-board)
+- [EverythingSmartHome firmware repo](https://github.com/EverythingSmartHome/firmware/tree/main/EST-PoE-32/ESPHome)

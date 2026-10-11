@@ -59,6 +59,7 @@ export default defineConfig({
           label: 'Nodes',
           items: [
             { slug: 'nodes', label: 'Overview' },
+            { label: 'Boards', collapsed: true, items: [{ autogenerate: { directory: 'nodes' } }] },
             { slug: 'firmware' },
             { slug: 'enclosures' },
           ],
@@ -69,6 +70,7 @@ export default defineConfig({
             { slug: 'configuration/network' },
             { slug: 'configuration/settings' },
             { slug: 'configuration/hardware' },
+            { slug: 'configuration/templates' },
             { slug: 'configuration/mqtt' },
             { slug: 'configuration/rest-api' },
           ],

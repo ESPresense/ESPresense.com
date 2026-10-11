@@ -1,0 +1,54 @@
+---
+title: M5 Atom S3 Lite
+description: M5Stack Atom S3 Lite (ESP32-S3) — pins, settings template and notes for running ESPresense.
+sidebar:
+  order: 1
+board:
+  name: M5 Atom S3 Lite
+  chip: ESP32-S3
+  formFactor: Enclosed cube, 24 × 24 mm
+  flash: 8 MB
+  antenna: 3D antenna
+  usb: USB-C (native USB-CDC)
+  install: <a href="/firmware">Browser installer</a>
+  rating: recommended
+  ratingNote: The default pick for a new node.
+  stores:
+    - { label: m5stack, url: "https://shop.m5stack.com/products/atoms3-lite-esp32s3-dev-kit?ref=ESPresense" }
+    - { label: ali, url: "https://s.click.aliexpress.com/e/_c3SezL2p" }
+    - { label: amz/us, url: "https://amzn.to/47b6xzW" }
+  gpio:
+    - { pin: 35, use: SK6812 RGB LED, setting: leds }
+    - { pin: 41, use: Button (active low), setting: inputs }
+    - { pin: 4, use: IR emitter }
+    - { pin: 2, use: GROVE SDA (yellow) }
+    - { pin: 1, use: GROVE SCL (white) }
+  template:
+    leds:
+      - { type: "grb", pin: 35, count: 1, control: "status" }
+    inputs:
+      - { name: "Button", role: "button", pin: 41, type: "pullup_inverted" }
+    outputs: []
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[Mockup]
+Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and the template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, set the same pins on the Hardware page by hand.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- The generic `esp32s3` build defaults to a PWM LED on GPIO 2, which this board doesn't have. Without the template the status LED stays dark.
+- Plugging an I2C sensor into the GROVE port? Set `I2C_Bus_1_SDA` to 2 and `I2C_Bus_1_SCL` to 1 on the Hardware page (I2C is off by default on v5).
+- The IR emitter isn't used by ESPresense.

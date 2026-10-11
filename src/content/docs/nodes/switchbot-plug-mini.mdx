@@ -1,0 +1,59 @@
+---
+title: SwitchBot Plug Mini (W1901400)
+description: SwitchBot Plug Mini W1901400 (ESP32-C3) smart plug — flashing over the air, pins and settings template for ESPresense.
+sidebar:
+  order: 10
+board:
+  name: SwitchBot Plug Mini (W1901400)
+  chip: ESP32-C3
+  formFactor: US smart plug (15 A)
+  flash: 4 MB
+  antenna: PCB antenna
+  install: OTA with <a href="https://github.com/kendallgoto/switchbota">SwitchbOTA</a> (see notes), otherwise serial — the case is ultrasonically welded
+  rating: recommended
+  ratingNote: Excellent node that's also a working smart plug. Mains powered, so it never needs a USB charger.
+  stores:
+    - { label: amz/us, url: "https://www.amazon.com/dp/B0DSJHFG69?tag=espresense-20" }
+  gpio:
+    - { pin: 6, use: Relay, setting: outputs }
+    - { pin: 7, use: White LED (active low), setting: leds }
+    - { pin: 8, use: Status LED (active low), setting: leds }
+    - { pin: 2, use: Button (active low), setting: inputs }
+    - { pin: 18, use: BL0937 CF, setting: power }
+    - { pin: 19, use: BL0937 CF1, setting: power }
+    - { pin: 20, use: BL0937 SEL (inverted), setting: power }
+  template:
+    leds:
+      - { type: "pwm_inverted", pin: 7, count: 1, control: "output", output: 1 }
+      - { type: "pwm_inverted", pin: 8, count: 1, control: "status" }
+    inputs:
+      - { name: "Button", role: "button", pin: 2, type: "pullup_inverted" }
+    outputs:
+      - { name: "Relay", pin: 6, type: "output", power_on: "restore", input: 1 }
+    power: { model: "bl0937", cf: 18, cf1: 19, sel: 20, sel_inverted: true, voltage_divider: 1450, current_resistor: 0.0011 }
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[Mockup]
+Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and the template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, set the same pins on the Hardware page by hand.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Flashing
+
+[SwitchbOTA](https://github.com/kendallgoto/switchbota) replaces the stock firmware over WiFi, no disassembly needed. It works on stock firmware up to 1.4, and on 2025–2026 units that ship with v1.8 **as long as you don't accept the v2.x update in the SwitchBot app first**. It's unknown whether it works after v2.7. If the OTA route is closed, you'll need serial, and the case is welded shut.
+
+## Notes
+
+- **The relay is output 1.** It shows up in Home Assistant as a switch named Relay, and MQTT `espresense/rooms/<room>/output_1/set` takes `ON`, `OFF` or `TOGGLE`. The button is linked to it, so a press toggles the outlet, and after a power cut it comes back in its last state. The white LED follows the relay; the other LED shows status.
+- **Power monitoring** uses the BL0937 with the calibration from [digiblur's ESPHome config](https://digiblur.com/wiki/devices/plugs/switchbot_15_amp_w1901400/) (`voltage_divider` 1450, `current_resistor` 0.0011). The node reports power, voltage, current and energy every 10 s. Check them against a plug-in meter. SEL is inverted on this plug (`sel_inverted: true`, as in that config); if voltage and current come out swapped, flip it.

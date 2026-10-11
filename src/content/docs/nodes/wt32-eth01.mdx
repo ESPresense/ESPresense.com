@@ -1,0 +1,63 @@
+---
+title: "WT32-ETH01"
+description: "Wireless-Tag WT32-ETH01 (ESP32, LAN8720) — pins, settings template and flashing notes for running ESPresense over Ethernet."
+sidebar:
+  order: 26
+board:
+  name: "WT32-ETH01"
+  chip: "ESP32"
+  formFactor: "Bare module board, 55 × 25 mm"
+  flash: "4 MB"
+  antenna: "PCB antenna"
+  usb: "None"
+  install: "USB-TTL adapter (hold IO0 low at power-up), <code>esp32</code> flavor"
+  rating: "caveats"
+  ratingNote: "Cheapest wired node, but no PoE, no USB, and some units hang on boot after power-up."
+  price: "~$10–17"
+  stores:
+    - { label: "amz/us", url: "https://www.amazon.com/dp/B0BYXJTWPB?tag=espresense-20" }
+  gpio:
+    - { pin: 16, use: "Ethernet oscillator enable" }
+    - { pin: 0, use: "Ethernet clock in" }
+    - { pin: 1, use: "TXD (programming)" }
+    - { pin: 3, use: "RXD (programming)" }
+    - { pin: 5, use: "LED3 (lights on RXD2 traffic)" }
+    - { pin: 17, use: "LED4 (lights on TXD2 traffic)" }
+    - { pin: 33, use: "Free (suggested I2C SDA)" }
+    - { pin: 32, use: "Free (suggested I2C SCL)" }
+  template:
+    leds: []
+    inputs: []
+    outputs: []
+    eth: 1
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[New page]
+Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, pick the Ethernet Type on the Network page and set the pins on the Hardware page by hand.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- There's no USB. Flash it with a 3.3 V USB-TTL adapter on the programming header (TXD = IO1, RXD = IO3, GND, 3V3): tie IO0 to GND, power it up, flash, then remove the IO0 link.
+- Power it from **either** the 5V pin or the 3V3 pin, never both. There's no PoE; use a PoE splitter if you want one cable.
+- There's no user LED or button. LED3/LED4 follow IO5/IO17 serial traffic.
+- I2C is off by default on v5. For a sensor, SDA 33 / SCL 32 is the pair known to work alongside Ethernet. On v4 the `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)); set both I2C pins to -1 there.
+- GPIO 18, 19, 21, 22, 23, 25, 26 and 27 belong to Ethernet (RMII and MDIO/MDC). Don't put sensors on them. GPIO 0 and 16 too. GPIO 2 and 12 are strapping pins.
+- The **WT32-ETH01 EVO** (ESP32-C3 + DM9051) is a different board and isn't supported ([#2400](https://github.com/ESPresense/ESPresense/issues/2400)).
+
+## Sources
+
+- [Wireless-Tag WT32-ETH01](https://en.wireless-tag.com/product-item-2.html) (datasheet V1.4)
+- [ESPHome Ethernet docs](https://esphome.io/components/ethernet/)

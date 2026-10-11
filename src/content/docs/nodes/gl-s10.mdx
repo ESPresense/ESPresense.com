@@ -1,0 +1,67 @@
+---
+title: "GL.iNet GL-S10"
+description: "GL.iNet GL-S10 Bluetooth IoT gateway (ESP32, IP101, PoE) — pins, settings template and flashing notes for ESPresense."
+sidebar:
+  order: 22
+board:
+  name: "GL.iNet GL-S10 (v2.x)"
+  chip: "ESP32"
+  formFactor: "Enclosed, 57 × 57 × 25 mm"
+  flash: "4 MB + 8 MB PSRAM"
+  antenna: "External antenna (IPEX)"
+  usb: "Micro-USB, power only"
+  install: "USB-TTL adapter on the internal header, <code>esp32</code> flavor (case must be opened)"
+  rating: "recommended"
+  ratingNote: "Enclosed, PoE and an external antenna: built for exactly this job. Flashing means opening the case once."
+  price: "~$25"
+  stores:
+    - { label: "gl.inet", url: "https://www.gl-inet.com/products/gl-s10/" }
+  gpio:
+    - { pin: 32, use: "Status LED, white (active low)", setting: leds }
+    - { pin: 33, use: "Side button (active low)", setting: inputs }
+    - { pin: 14, use: "Power LED (active low)" }
+    - { pin: 12, use: "BLE LED (active low, strapping pin)" }
+    - { pin: 15, use: "I2C SDA pad (inside)" }
+    - { pin: 13, use: "I2C SCL pad (inside)" }
+    - { pin: 5, use: "Ethernet clock enable" }
+    - { pin: 0, use: "Ethernet clock in" }
+  template:
+    leds:
+      - { type: "pwm_inverted", pin: 32, count: 1, control: "status" }
+    inputs:
+      - { name: "Button", role: "button", pin: 33, type: "pullup_inverted" }
+    outputs: []
+    eth: 9
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[New page]
+Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, pick the Ethernet Type on the Network page and set the pins on the Hardware page by hand.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- **Flashing:** pry the back plate off from its notch (there are no screws) and unplug the antenna. Wire a 3.3 V USB-TTL adapter's TX, RX and GND to the header on the PCB (not VCC), then hold the **internal** button next to the USB port while plugging in micro-USB power. The outside button is not the boot button. GL.iNet has a [flash guide](https://docs.gl-inet.com/iot/en/ble_proxy/gl-s10/flash_guide).
+- **Never connect USB and PoE at the same time.**
+- The Ethernet Type entry is for hardware v2.1 and later (IP101 PHY). v1.0 units used a LAN8720 and aren't covered by this entry.
+- The template uses the white LED for status and the side button as button 1. The power LED (GPIO 14) and BLE LED (GPIO 12) aren't configured; GPIO 12 is a strapping pin, so leave it alone.
+- I2C is off by default on v5. If you add a sensor, the pads inside are SDA 15 and SCL 13. A light sensor works; a temperature sensor inside the case reads the board's own heat.
+- On v4 the `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)); set both I2C pins to -1 there.
+- Earlier ESPresense issues with this board are fixed: PoE link drops ([#888](https://github.com/ESPresense/ESPresense/issues/888)) and packet loss ([#1182](https://github.com/ESPresense/ESPresense/issues/1182)).
+
+## Sources
+
+- [GL.iNet GL-S10 spec](https://docs.gl-inet.com/router/en/3/specification/gl-s10/)
+- [ESPHome device page](https://devices.esphome.io/devices/GL-iNet-GL-S10)
+- [blakadder: GL-S10](https://blakadder.com/gl-s10/)

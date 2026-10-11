@@ -1,0 +1,65 @@
+---
+title: "LILYGO T-Energy-S3"
+description: "LILYGO T-Energy-S3 (ESP32-S3, 18650 battery holder) — a portable ESPresense node for calibration walks. Pins, settings template and battery notes."
+sidebar:
+  order: 11
+board:
+  name: "LILYGO T-Energy-S3"
+  chip: "ESP32-S3"
+  formFactor: "Bare board with 18650 holder and power switch, 91.5 × 32 × 20 mm"
+  flash: "16 MB + 8 MB PSRAM"
+  antenna: "PCB antenna (ESP32-S3-WROOM-1)"
+  usb: "USB-C (native USB), charges the 18650"
+  install: "<a href=\"/firmware\">Browser installer</a>, <code>esp32s3-cdc</code> flavor"
+  rating: "recommended"
+  ratingNote: "A portable node for calibration: carry it around on one 18650 for about a day. As a fixed node it's just an S3 dev board."
+  price: "~$13 (no battery)"
+  stores:
+    - { label: "amz/us", url: "https://www.amazon.com/dp/B0HKM6N3N2?tag=espresense-20" }
+    - { label: "lilygo", url: "https://lilygo.cc/products/t-energy-s3" }
+  gpio:
+    - { pin: 0, use: "BOOT button" }
+    - { pin: 3, use: "Battery voltage (1:2 divider)", setting: batt_pin }
+    - { pin: 15, use: "32 kHz crystal" }
+    - { pin: 16, use: "32 kHz crystal" }
+    - { pin: 43, use: "TXD (4-pin UART connector)" }
+    - { pin: 44, use: "RXD (4-pin UART connector)" }
+  template:
+    leds: []
+    inputs: []
+    outputs: []
+    batt_pin: 3
+    batt_mult: 2
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[New page]
+Pin data comes from LILYGO's schematic and hasn't been checked on hardware yet. The template, including battery reporting, needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). v4 has no battery setting for this board.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- **Why this board:** it's a battery-powered node you can carry around, for example to stand at known spots during [calibration](/configuration/settings#calibration). Charge it over USB-C and use the power switch between sessions.
+- **Battery life:** ESPresense keeps WiFi and BLE scanning on all the time, so expect roughly 90–150 mA. A 2,500–3,500 mAh 18650 gives about 17–39 hours. That's an estimate, not a measurement.
+- Use an 18650 cell. LILYGO's board has its own charge (HX6610S) and protection (IP3005A) chips.
+- **Charge reminder:** the template sets **Battery voltage pin** to GPIO 3 with a ×2 divider, so the node reports a Battery (%) and a Battery Voltage sensor to Home Assistant. Add an automation that notifies you when Battery drops below, say, 20 %.
+- Install the **`esp32s3-cdc`** flavor. USB-C goes to the S3's native USB, and the standard `esp32s3` build talks on the UART pins instead. If flashing fails, hold BOOT and press reset.
+- There's no user LED: the red LED shows power and the other two show charging. The `esp32s3` build defaults to an LED on GPIO 2, so the template clears the LED list.
+- The 4-pin connector is UART (RX, TX, 3V3, GND), not Qwiic. For an I2C sensor, use two free header pins, for example 17/18.
+- GPIO 15/16 drive the 32 kHz crystal. GPIO 35–37 are used by the octal PSRAM.
+
+## Sources
+
+- [LILYGO T-Energy-S3 repo](https://github.com/Xinyuan-LilyGO/T-Energy-S3) (README, `pin_config.h`, V1.0 schematic)
+- [CNX Software: T-Energy-S3](https://www.cnx-software.com/2024/06/25/lilygo-t-energy-s3-esp32-s3-board-offers-18650-battery-holder-two-20-pin-gpio-headers/)
