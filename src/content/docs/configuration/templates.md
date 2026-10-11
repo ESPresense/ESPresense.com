@@ -7,7 +7,7 @@ sidebar:
 
 A board template sets a board up in one go: its LED, button and sensor pins and, on Ethernet boards, its Ethernet type. Each [board page](/nodes/) has one to copy.
 
-Importing templates is on `main` ([ESPresense#2531](https://github.com/ESPresense/ESPresense/pull/2531)) but not in a release yet. The board pages' templates use the v5 hardware settings from [ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), so they need v5 firmware.
+Importing templates needs firmware v5.0.0b1 or later, a pre-release from the [releases page](https://github.com/ESPresense/ESPresense/releases). Board templates use the v5 hardware settings ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530)), so a node on v4 can't import them.
 
 ## Applying a template
 
