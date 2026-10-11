@@ -108,7 +108,7 @@ An ESP32 smart plug flashed with ESPresense is a node that's also a working outl
 | Plug | Chip | Notes |
 |:-----|:-----|:------|
 | **[SwitchBot Plug Mini (W1901400)](/nodes/switchbot-plug-mini)** | ESP32-C3 | Excellent. Flashes over the air with SwitchbOTA if you haven't taken the v2.x update |
-| [Athom Plug V3 (PG03V3-US16A)](/nodes/athom-pg03v3) | ESP32-C3 | Works, but the antenna is weak |
+| [Athom Plug V3](/nodes/athom-pg03v3) | ESP32-C3 | Works, but the antenna is weak |
 
 ## Steer away
 
