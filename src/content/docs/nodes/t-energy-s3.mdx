@@ -1,18 +1,18 @@
 ---
 title: "LILYGO T-Energy-S3"
-description: "LILYGO T-Energy-S3 (ESP32-S3, 18650 battery holder) — a portable ESPresense node for calibration walks. Pins, settings template and battery notes."
+description: "LILYGO T-Energy-S3 (ESP32-S3, 18650 holder) — a portable node for calibration walks. Pins, template and battery notes."
 sidebar:
   order: 11
 board:
   name: "LILYGO T-Energy-S3"
   chip: "ESP32-S3"
-  formFactor: "Bare board with 18650 holder and power switch, 91.5 × 32 × 20 mm"
+  formFactor: "Board with 18650 holder and power switch, 91.5 × 32 × 20 mm"
   flash: "16 MB + 8 MB PSRAM"
   antenna: "PCB antenna (ESP32-S3-WROOM-1)"
   usb: "USB-C (native USB), charges the 18650"
   install: "<a href=\"/firmware\">Browser installer</a>, <code>esp32s3-cdc</code> flavor"
   rating: "recommended"
-  ratingNote: "A portable node for calibration: carry it around on one 18650 for about a day. As a fixed node it's just an S3 dev board."
+  ratingNote: "Portable calibration node, about a day per 18650. As a fixed node it's just an S3 dev board."
   price: "~$13 (no battery)"
   stores:
     - { label: "amz/us", url: "https://www.amazon.com/dp/B0HKM6N3N2?tag=espresense-20" }
@@ -50,13 +50,13 @@ Pin data comes from LILYGO's schematic and hasn't been checked on hardware yet.
 
 ## Notes
 
-- **Why this board:** it's a battery-powered node you can carry around, for example to stand at known spots during [calibration](/configuration/settings#calibration). Charge it over USB-C and use the power switch between sessions.
-- **Battery life:** ESPresense keeps WiFi and BLE scanning on all the time, so expect roughly 90–150 mA. A 2,500–3,500 mAh 18650 gives about 17–39 hours. That's an estimate, not a measurement.
+- **Why this board:** a battery-powered node you can carry around, for example to stand at known spots during [calibration](/configuration/settings#calibration). Charge it over USB-C and use the power switch between sessions.
+- **Battery life:** ESPresense keeps WiFi and BLE scanning on, so expect roughly 90–150 mA. A 2,500–3,500 mAh 18650 gives about 17–39 hours. Estimate, not a measurement.
 - Use an 18650 cell. LILYGO's board has its own charge (HX6610S) and protection (IP3005A) chips.
-- **Charge reminder:** the template sets **Battery voltage pin** to GPIO 3 with a ×2 divider, so the node reports a Battery (%) and a Battery Voltage sensor to Home Assistant. Add an automation that notifies you when Battery drops below, say, 20 %.
-- Install the **`esp32s3-cdc`** flavor. USB-C goes to the S3's native USB, and the standard `esp32s3` build talks on the UART pins instead. If flashing fails, hold BOOT and press reset.
+- **Charge reminder:** the template sets **Battery voltage pin** to GPIO 3 with a ×2 divider, so the node reports Battery (%) and Battery Voltage to Home Assistant. Add an automation to notify you below, say, 20 %.
+- Install the **`esp32s3-cdc`** flavor. USB-C goes to the S3's native USB; the plain `esp32s3` build talks on the UART pins instead. If flashing fails, hold BOOT and press reset.
 - There's no user LED: the red LED shows power and the other two show charging. The `esp32s3` build defaults to an LED on GPIO 2, so the template clears the LED list.
-- The 4-pin connector is UART (RX, TX, 3V3, GND), not Qwiic. For an I2C sensor, use two free header pins, for example 17/18.
+- The 4-pin connector is UART (RX, TX, 3V3, GND), not Qwiic. For I2C, use two free header pins, for example 17/18.
 - GPIO 15/16 drive the 32 kHz crystal. GPIO 35–37 are used by the octal PSRAM.
 
 ## Sources

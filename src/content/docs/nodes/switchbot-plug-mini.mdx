@@ -1,6 +1,6 @@
 ---
 title: SwitchBot Plug Mini
-description: SwitchBot Plug Mini W1901400 (ESP32-C3) smart plug — flashing over the air, pins and settings template for ESPresense.
+description: SwitchBot Plug Mini W1901400 (ESP32-C3) smart plug — OTA flashing, pins and settings template for ESPresense.
 sidebar:
   order: 10
 board:
@@ -9,9 +9,9 @@ board:
   formFactor: US smart plug (15 A)
   flash: 4 MB
   antenna: PCB antenna
-  install: OTA with <a href="https://github.com/kendallgoto/switchbota">SwitchbOTA</a> (see notes), otherwise serial — the case is ultrasonically welded
+  install: OTA with <a href="https://github.com/kendallgoto/switchbota">SwitchbOTA</a> (see notes), otherwise serial — the case is welded shut
   rating: recommended
-  ratingNote: Excellent node that's also a working smart plug. Mains powered, so it never needs a USB charger.
+  ratingNote: Good node that's also a smart plug. Mains powered, so no USB charger.
   stores:
     - { label: amz/us, url: "https://www.amazon.com/dp/B0DSJHFG69?tag=espresense-20" }
   gpio:
@@ -55,6 +55,6 @@ Checked on hardware (2026-10-10): this template on three plugs. Mains voltage re
 
 ## Notes
 
-- **The relay is output 1.** It shows up in Home Assistant as a switch named Relay, and MQTT `espresense/rooms/<room>/output_1/set` takes `ON`, `OFF` or `TOGGLE`. The button is linked to it, so a press toggles the outlet, and after a power cut it comes back in its last state. The white LED follows the relay; the other LED shows status.
-- **Power monitoring** uses the BL0937 with the calibration from [digiblur's ESPHome config](https://digiblur.com/wiki/devices/plugs/switchbot_15_amp_w1901400/) (`voltage_divider` 1450, `current_resistor` 0.0011). The node reports power, voltage, current and energy every 10 s. SEL is inverted on this plug (`sel_inverted: true`, as in that config).
-- **Always-on loads** such as a robot vacuum dock: change the output to `"power_on": "on", "input": 0`. The plug then always powers up on, and a bump of the button no longer cuts the dock. Home Assistant can still switch it, and it still reports power.
+- **The relay is output 1.** It shows in Home Assistant as a switch named Relay, and MQTT `espresense/rooms/<room>/output_1/set` takes `ON`, `OFF` or `TOGGLE`. The button toggles it, and after a power cut it returns in its last state. The white LED follows the relay; the other shows status.
+- **Power monitoring** uses the BL0937 with [digiblur's ESPHome calibration](https://digiblur.com/wiki/devices/plugs/switchbot_15_amp_w1901400/) (`voltage_divider` 1450, `current_resistor` 0.0011). Reports power, voltage, current and energy every 10 s. SEL is inverted here (`sel_inverted: true`, as in that config).
+- **Always-on loads** such as a robot vacuum dock: set the output to `"power_on": "on", "input": 0`. The plug then always powers up on, and a bump of the button no longer cuts the dock. Home Assistant can still switch it, and it still reports power.

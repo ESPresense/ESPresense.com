@@ -1,6 +1,6 @@
 ---
 title: Athom Plug V3
-description: Athom Smart Plug V3 PG03V3-US16A (ESP32-C3) — pins, settings template and why it isn't recommended for ESPresense.
+description: Athom Plug V3 PG03V3-US16A (ESP32-C3) — pins, settings template and why it's not recommended.
 sidebar:
   order: 11
 board:
@@ -11,7 +11,7 @@ board:
   antenna: PCB antenna
   install: "Serial, <code>esp32c3-cdc</code> flavor"
   rating: caveats
-  ratingNote: Works, but the antenna is weak. Use one you already own; buy the SwitchBot Plug Mini instead.
+  ratingNote: Weak antenna. Use one you already own; buy the SwitchBot Plug Mini instead.
   gpio:
     - { pin: 5, use: Relay, setting: outputs }
     - { pin: 6, use: Blue LED (active low), setting: leds }
@@ -45,7 +45,7 @@ Checked on hardware (2026-10-10): this template on a v5 build. The CSE7766 reads
 
 ## Notes
 
-- **The antenna is weak.** RSSI reads low next to a branded board at the same distance, which throws off fleet calibration. That's why it's listed with caveats.
-- **The relay is output 1.** It shows up in Home Assistant as a switch named Relay, and MQTT `espresense/rooms/<room>/output_1/set` takes `ON`, `OFF` or `TOGGLE`. The button is linked to it, so a press toggles the outlet, and after a power cut it comes back in its last state.
-- **Power monitoring** uses the CSE7766, which is factory calibrated, so the only setting is its RX pin. The node reports power, voltage, current and energy every 10 s.
-- **Install the `esp32c3-cdc` flavor.** The power meter talks on GPIO 20, the C3's serial console RX pin. The `-cdc` build moves the console to USB and frees that pin. Flashing over the serial pads still works the same way; you just won't see the serial log afterwards.
+- **The antenna is weak.** RSSI reads low next to a branded board at the same distance, which throws off fleet calibration. Hence the caveat.
+- **The relay is output 1.** It shows in Home Assistant as a switch named Relay, and MQTT `espresense/rooms/<room>/output_1/set` takes `ON`, `OFF` or `TOGGLE`. The button toggles it, and after a power cut it returns in its last state.
+- **Power monitoring** uses the CSE7766, factory calibrated, so the only setting is its RX pin. Reports power, voltage, current and energy every 10 s.
+- Install the **`esp32c3-cdc`** flavor. The power meter is on GPIO 20, the C3's serial RX pin; `-cdc` moves the console to USB and frees it. Flashing over the serial pads is unchanged, you just lose the serial log.

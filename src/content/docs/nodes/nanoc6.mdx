@@ -12,7 +12,7 @@ board:
   usb: USB-C (native USB-CDC)
   install: <a href="/firmware">Browser installer</a>
   rating: recommended
-  ratingNote: Tiny and about $6 — the pick for kitting out a whole house. C6 support is still bleeding edge.
+  ratingNote: Tiny, about $6. The pick for a whole house. C6 support is still bleeding edge.
   price: ~$6
   stores:
     - { label: m5stack, url: "https://shop.m5stack.com/products/m5stack-nanoc6-dev-kit?ref=ESPresense" }
@@ -38,8 +38,8 @@ board:
 
 import BoardPage from '../../../components/BoardPage.astro';
 
-:::caution[Mockup]
-Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet.
+:::caution[Unverified pins]
+Pin data comes from the vendor docs and hasn't been checked on hardware yet.
 :::
 
 <BoardPage part="summary" />
@@ -55,4 +55,4 @@ Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on
 ## Notes
 
 - The RGB LED (LED 1, Addressable GRB) shows status in colour. It's only powered while GPIO 19 is high, so the template adds an Always High output on 19 (no Home Assistant entity). The blue LED is LED 2, controlled over MQTT.
-- GPIO 9 is also the boot strapping pin: holding the button while plugging in enters download mode.
+- GPIO 9 is the boot strapping pin: holding the button while plugging in enters download mode.

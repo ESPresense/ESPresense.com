@@ -18,15 +18,15 @@ Pick a chip first, then a board within it.
 | ESP32-S3 | yes — recommended for new deployments | 8 MB flash typical, BT 5.0 LE coded PHY, USB-CDC |
 | ESP32-C3 | yes — recommended for cost-sensitive deployments | RISC-V, 4 MB flash typical |
 | ESP32-C6 | yes — bleeding edge | Newer RISC-V part with BT 5.3; firmware build available |
-| Original ESP32 | yes, for now | Older silicon with less CPU and RAM than the S3/C3/C6 parts. Still supported, but expect it to age out of new firmware features eventually — prefer a newer chip for new deployments. |
+| Original ESP32 | yes, for now | Less CPU and RAM than the S3/C3/C6. Still supported, but expect it to age out; prefer a newer chip. |
 | ESP32-S2 | no | No Bluetooth radio |
 | ESP8266 | no | No Bluetooth radio |
 
 ## Recommended boards
 
-**The boards in bold are the picks if you don't want to think about it** — M5 Atom S3 Lite as the default, M5Stack NanoC6 for kitting out a whole house (tiny, enclosed, very capable, ~$6), M5 Stamp C3 Mate as a cost-conscious alternative.
+**The boards in bold are the picks if you don't want to think about it** — M5 Atom S3 Lite as the default, M5Stack NanoC6 for kitting out a whole house (tiny, enclosed, ~$6), M5 Stamp C3 Mate as a cost-conscious alternative.
 
-All branded boards listed here flash with the [browser installer](/firmware), which picks the right firmware flavour automatically.
+All branded boards here flash with the [browser installer](/firmware), which picks the right firmware flavour automatically.
 
 :::note[Affiliate disclosure]
 Some store links on this page (Amazon, AliExpress, M5Stack) are affiliate links. As an Amazon Associate, ESPresense earns from qualifying purchases, at no extra cost to you. Affiliate revenue helps fund the project — see [Credits](/credits) for other ways to support.
@@ -61,7 +61,7 @@ C6 support is bleeding edge — expect rougher edges than S3/C3.
 
 ### Original ESP32
 
-Still supported, but don't buy one new — the silicon is old and the newer S3/C3/C6 boards above are better and cost about the same. These are listed for people who already own one.
+Still supported, but don't buy one new — the silicon is old and the newer S3/C3/C6 boards above are better for about the same money. These are for people who already own one.
 
 | Board | Notes |
 |:------|:------|
@@ -71,7 +71,7 @@ Still supported, but don't buy one new — the silicon is old and the newer S3/C
 
 ## Works, with caveats
 
-These boards run ESPresense, but antenna and module QC vary — RSSI from one of these often won't agree with a branded board at the same distance, which makes fleet calibration harder and is a real problem for Companion's room solver. Use one you already own rather than buying a new one. **If a "with caveats" board misbehaves, reproduce on a tier-1 board before opening a firmware issue** — RF problems on a marginal clone look identical to firmware bugs and burn a lot of triage time.
+These boards run ESPresense, but antenna and module QC vary — RSSI from one of these often won't agree with a branded board at the same distance, which makes fleet calibration harder and hurts Companion's room solver. Use one you already own rather than buying a new one. **If a "with caveats" board misbehaves, reproduce on a tier-1 board before opening a firmware issue** — RF problems on a marginal clone look identical to firmware bugs and burn triage time.
 
 | Board | Caveat | Source |
 |:------|:-------|:-------|
@@ -103,7 +103,7 @@ A wired node keeps WiFi out of the way, and a PoE board needs only one cable. Et
 
 ## Smart plugs
 
-An ESP32 smart plug flashed with ESPresense is a node that's also a working outlet, and it never needs a USB charger. From v5 ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530)) the relay is a proper output, a Home Assistant switch that the plug's button toggles, and BL0937, HLW8012 and CSE7766 power meters report power and energy.
+An ESP32 smart plug flashed with ESPresense is a node that's also a working outlet, and it never needs a USB charger. From v5 ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530)) the relay is a proper output, a Home Assistant switch the button toggles, and BL0937, HLW8012 and CSE7766 meters report power and energy.
 
 | Plug | Chip | Notes |
 |:-----|:-----|:------|
@@ -114,10 +114,10 @@ An ESP32 smart plug flashed with ESPresense is a node that's also a working outl
 
 Each of these comes up often enough that it's worth saying plainly:
 
-- **Unbranded "ESP32 dev board" listings (Amazon / AliExpress).** ESPresense uses RSSI as its primary input — every distance estimate and every Companion room solve assumes the fleet's readings agree with each other. Unbranded clones don't have consistent antenna designs even within a single product listing; two boards from the same batch routinely differ by several dB at the same distance, which translates to feet of error in the Companion floor plan. None of that matters for sensor/relay/presence projects like ESPHome, which is why *"these same cheap boards never drop with ESPHome"* is a common (and accurate, but irrelevant) objection — ESPHome isn't doing RSSI distance estimation across a calibrated fleet. The failure mode here is also silent: the board flashes, joins WiFi, reports to MQTT, but its RSSI numbers don't line up with the rest of the fleet and you can't tell whether bad tracking is firmware, calibration, or a bad RF front-end. @maxi1134 separately reports a 40-50% WiFi-retry rate on generic ESP32 dev boards ([#1364][1364], summarised in [#2334][p]). For any node you intend to calibrate against the fleet — and especially for Companion — spend the extra few dollars on a branded board.
-- **ESP32-CAM.** Not officially supported. Camera owns most of the GPIOs, tighter RAM, no maintained firmware variant. One community member keeps a fork working with source-side modifications ([#1347][1347]); we don't build for it.
-- **ESP32-S2 / ESP8266.** No Bluetooth radio — physically can't run ESPresense.
-- **NSPanel as a base station.** Open question. The chip is an ESP32, but no one has reported flashing ESPresense over the stock NSPanel firmware and getting both the touch UI and BT scanning working ([#1335][1335]).
+- **Unbranded "ESP32 dev board" listings (Amazon / AliExpress).** ESPresense uses RSSI as its main input: every distance estimate and every Companion room solve assumes the fleet's readings agree. Unbranded clones don't have consistent antenna designs, even within one listing; two boards from the same batch routinely differ by several dB at the same distance, which is feet of error on the Companion floor plan. That doesn't matter for ESPHome-style sensor/relay projects, which is why *"these same cheap boards never drop with ESPHome"* is a common (accurate but irrelevant) objection — ESPHome isn't doing RSSI distance estimation across a calibrated fleet. The failure is silent too: the board flashes, joins WiFi and reports to MQTT, but its RSSI doesn't line up with the rest of the fleet. @maxi1134 separately reports a 40-50% WiFi-retry rate on generic ESP32 dev boards ([#1364][1364], summarised in [#2334][p]). For any node you intend to calibrate against the fleet — and especially for Companion — spend the extra few dollars on a branded board.
+- **ESP32-CAM.** Not supported. Camera owns most of the GPIOs, tighter RAM, no maintained firmware variant. One member keeps a fork working with source-side changes ([#1347][1347]); we don't build for it.
+- **ESP32-S2 / ESP8266.** No Bluetooth radio — can't run ESPresense.
+- **NSPanel as a base station.** Open question. The chip is an ESP32, but no one has got both the touch UI and BT scanning working under ESPresense ([#1335][1335]).
 
 ## Power and cabling
 

@@ -1,18 +1,18 @@
 ---
 title: M5 Atom S3 Lite
-description: M5Stack Atom S3 Lite (ESP32-S3) — pins, settings template and notes for running ESPresense.
+description: M5Stack Atom S3 Lite (ESP32-S3) — pins, settings template and notes for ESPresense.
 sidebar:
   order: 1
 board:
   name: M5 Atom S3 Lite
   chip: ESP32-S3
-  formFactor: Enclosed cube, 24 × 24 mm
+  formFactor: Cube, 24 × 24 mm
   flash: 8 MB
   antenna: 3D antenna
   usb: USB-C (native USB-CDC)
   install: <a href="/firmware">Browser installer</a>
   rating: recommended
-  ratingNote: The default pick for a new node.
+  ratingNote: Default pick for a new node.
   stores:
     - { label: m5stack, url: "https://shop.m5stack.com/products/atoms3-lite-esp32s3-dev-kit?ref=ESPresense" }
     - { label: ali, url: "https://s.click.aliexpress.com/e/_c3SezL2p" }
@@ -33,8 +33,8 @@ board:
 
 import BoardPage from '../../../components/BoardPage.astro';
 
-:::caution[Mockup]
-Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet.
+:::caution[Unverified pins]
+Pin data comes from the vendor docs and hasn't been checked on hardware yet.
 :::
 
 <BoardPage part="summary" />

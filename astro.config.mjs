@@ -59,7 +59,38 @@ export default defineConfig({
           label: 'Nodes',
           items: [
             { slug: 'nodes', label: 'Overview' },
-            { label: 'Boards', collapsed: true, items: [{ autogenerate: { directory: 'nodes' } }] },
+            // Explicit groups and labels, so board pages can have a short sidebar name
+            // that differs from their (longer) page title.
+            {
+              label: 'Boards',
+              collapsed: true,
+              items: [
+                { label: 'Atom S3 Lite', link: '/nodes/atom-s3-lite' },
+                { label: 'NanoC6', link: '/nodes/nanoc6' },
+                { label: 'Stamp C3', link: '/nodes/stamp-c3' },
+                { label: 'XIAO ESP32S3', link: '/nodes/xiao-esp32s3' },
+                { label: 'T-Energy-S3', link: '/nodes/t-energy-s3' },
+                { label: 'SwitchBot Plug Mini', link: '/nodes/switchbot-plug-mini' },
+                { label: 'Athom Plug V3', link: '/nodes/athom-pg03v3' },
+                { label: 'Macchina A0', link: '/nodes/macchina-a0' },
+              ],
+            },
+            {
+              label: 'Ethernet and PoE boards',
+              collapsed: true,
+              items: [
+                { label: 'Olimex ESP32-POE-ISO', link: '/nodes/olimex-esp32-poe' },
+                { label: 'wESP32', link: '/nodes/wesp32' },
+                { label: 'GL-S10', link: '/nodes/gl-s10' },
+                { label: 'ESP32-S3-ETH', link: '/nodes/waveshare-esp32-s3-eth' },
+                { label: 'T-Internet-POE', link: '/nodes/lilygo-t-internet-poe' },
+                { label: 'T-ETH-Lite ESP32', link: '/nodes/lilygo-t-eth-lite' },
+                { label: 'WT32-ETH01', link: '/nodes/wt32-eth01' },
+                { label: 'EST-PoE-32', link: '/nodes/est-poe-32' },
+                { label: 'QuinLED-ESP32 Ethernet', link: '/nodes/quinled-esp32' },
+                { label: 'ESP32-Ethernet-Kit', link: '/nodes/esp32-ethernet-kit' },
+              ],
+            },
             { slug: 'firmware' },
             { slug: 'enclosures' },
           ],
