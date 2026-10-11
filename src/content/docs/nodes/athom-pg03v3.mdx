@@ -29,8 +29,8 @@ board:
 
 import BoardPage from '../../../components/BoardPage.astro';
 
-:::caution[Mockup]
-Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and the template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, set the same pins on the Hardware page by hand.
+:::caution[Partly verified]
+Checked on hardware (2026-10-10): this template on a v5 build, with the CSE7766 reading mains voltage (123 V) and Home Assistant showing the Relay switch and Button. Power and current under load aren't checked yet. The template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, set the same pins on the Hardware page by hand.
 :::
 
 <BoardPage part="summary" />
