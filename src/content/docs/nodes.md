@@ -46,7 +46,7 @@ Some store links on this page (Amazon, AliExpress, M5Stack) are affiliate links.
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
-| **M5 Stamp C3 Mate** | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_omweFp9) [amz/us](https://amzn.to/4tVkzP4) | Stamp form. 4 MB flash, 3D antenna, RGB LED, button |
+| **[M5 Stamp C3 Mate](/nodes/stamp-c3)** | [m5stack](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_omweFp9) [amz/us](https://amzn.to/4tVkzP4) | Stamp form. 4 MB flash, 3D antenna, RGB LED, button |
 | M5 Stamp C3U Mate | [m5stack](https://shop.m5stack.com/products/m5stamp-c3u-mate-with-pin-headers?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_onkgbFp) [amz/us](https://amzn.to/479m4QW) | Stamp form, USB-A. 4 MB flash, 3D antenna, RGB LED, button [^cdc] |
 | ESP32-C3-DevKitM-1U | [ali](https://s.click.aliexpress.com/e/_c3bVwFQb) | Espressif's dev board with ESP32-C3-MINI-1U module and U.FL connector. 4 MB flash, 160 MHz |
 

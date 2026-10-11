@@ -1,0 +1,51 @@
+---
+title: M5Stack Stamp C3
+description: M5Stack Stamp C3 / Stamp C3 Mate (ESP32-C3) — pins, settings template and notes for running ESPresense.
+sidebar:
+  order: 3
+board:
+  name: M5Stack Stamp C3
+  chip: ESP32-C3
+  formFactor: Stamp module, 24 × 24 mm (Mate version has pin headers)
+  flash: 4 MB
+  antenna: 3D antenna
+  usb: USB-C (USB-to-serial chip)
+  install: <a href="/firmware">Browser installer</a>, <code>esp32c3</code> flavor
+  rating: recommended
+  ratingNote: The cost-conscious pick.
+  stores:
+    - { label: m5stack, url: "https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers?ref=ESPresense" }
+    - { label: ali, url: "https://s.click.aliexpress.com/e/_omweFp9" }
+    - { label: amz/us, url: "https://amzn.to/4tVkzP4" }
+  gpio:
+    - { pin: 2, use: SK6812 RGB LED, setting: leds }
+    - { pin: 3, use: Button (active low), setting: inputs }
+  template:
+    leds:
+      - { type: "grb", pin: 2, count: 1, control: "status" }
+    inputs:
+      - { name: "Button", role: "button", pin: 3, type: "pullup_inverted" }
+    outputs: []
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::note[Verified]
+Checked on hardware (2026-10-10): this template on a Stamp C3 (ESP32-C3 rev 0.3). The status LED lights and blinks, and the button reads correctly.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- The generic `esp32c3` build defaults to a PWM LED on GPIO 2, but this board's LED is addressable. Without the template the status LED never lights.
+- Install the plain **`esp32c3`** flavor. The board has a USB-to-serial chip, so it doesn't need `esp32c3-cdc`. (The Stamp C3U has native USB and does.)
+- No I2C is wired on the board, and I2C is off by default.
