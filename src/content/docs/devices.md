@@ -27,6 +27,7 @@ Some store links on this page (Amazon, AliExpress) are affiliate links. As an Am
 | Whoop strap 4.0      |                                             | Id format: name:whoop-xxxxxxx |
 | Amazfit Balance      |                                             | Seen as `mifit:xxx`. Enable "Visibility" in Zepp app (Profile -> Watch) |
 | Amazfit Band         | [amz/us](https://amzn.to/3lArIr0)           | Make sure discoverable is turned on |
+| Amazfit Bip 6        |                                             | Seen as `mifit:xxx`. Enable "Visibility" in Zepp app (Profile -> Watch) |
 | Amazfit Bip S        | [amz/us](https://amzn.to/3C4DyMK)           |
 | Amazfit Bip 3 Pro    | [amz/us](https://amzn.asia/d/98vWhnk)       | Use the Zepp app on your paired phone to set the watch to be discoverable |
 | Amazfit GTS 2 Mini   | [amz/us](https://amzn.to/3e6JQom)           |
@@ -58,6 +59,7 @@ Some store links on this page (Amazon, AliExpress) are affiliate links. As an Am
 | Apple AirTags       | We can only count how many are currently not connected to a phone |
 | Garmin Fenix 5X Plus | Seen as `garmin:xxxx` at boot only for a few seconds; does not reliably beacon |
 | Samsung SmartTags   | Randomized mac addresses |
+| Xiaomi Mi Band 9      | Only advertises while in pairing / "Connect new phone" mode; stops beaconing once normally connected to the phone |
 
 ### Add to the list
 
