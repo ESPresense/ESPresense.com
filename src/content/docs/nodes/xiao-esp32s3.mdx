@@ -29,7 +29,7 @@ board:
 import BoardPage from '../../../components/BoardPage.astro';
 
 :::note[Verified]
-Checked on hardware (2026-10-10): this template on a XIAO ESP32S3 (ESP32-S3 rev 0.2). The status LED blinks.
+Checked on hardware (2026-10-10): this template on a XIAO ESP32S3 (ESP32-S3 rev 0.2). It boots, joins WiFi, scans, and the status LED works.
 :::
 
 <BoardPage part="summary" />
@@ -44,7 +44,11 @@ Checked on hardware (2026-10-10): this template on a XIAO ESP32S3 (ESP32-S3 rev 
 
 ## Notes
 
-- Install the **`esp32s3-cdc`** flavor. It flashes over USB-C without pressing anything. The BOOT and RESET buttons are tiny and a case usually hides them.
+- Install the **`esp32s3-cdc`** flavor. It flashes over USB-C without pressing anything: the flasher resets it into the bootloader itself.
+- If the flasher gets no response, plug straight into the computer rather than through a USB hub. If it's still stuck, hold BOOT while plugging in. BOOT is tiny, and a case may hide it.
 - Opening the USB port resets the chip. A serial monitor that keeps reconnecting makes the board look like it's boot-looping; close it and check again.
-- The orange LED is the user LED and shows status. The red LED is the battery-charge indicator and can't be controlled; with no battery fitted it flickers.
+- The orange LED is the user LED and shows status. Without the template the generic build drives GPIO 2, which isn't an LED on this board.
+- The red LED is the battery-charge indicator and can't be controlled. With no battery fitted it flickers or goes off; that doesn't mean the board is dead.
+- Nothing else is wired: no button or I2C. D0–D10 are free for your own inputs, outputs or I2C sensors.
+- The firmware uses the standard 4 MB flash layout; the extra flash and PSRAM go unused, which is fine.
 - Buy the plain XIAO ESP32S3. The listings also sell the C3 and the S3 Sense (with camera); pick the S3 option.
