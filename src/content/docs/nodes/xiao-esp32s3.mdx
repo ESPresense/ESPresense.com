@@ -1,0 +1,50 @@
+---
+title: Seeed Studio XIAO ESP32S3
+description: Seeed Studio XIAO ESP32S3 (ESP32-S3) — pins, settings template and flashing notes for running ESPresense.
+sidebar:
+  order: 4
+board:
+  name: Seeed Studio XIAO ESP32S3
+  chip: ESP32-S3
+  formFactor: Tiny module, 21 × 17.8 mm
+  flash: 8 MB + 8 MB PSRAM
+  antenna: External antenna on U.FL
+  usb: USB-C (native USB-CDC)
+  install: <a href="/firmware">Browser installer</a>, <code>esp32s3-cdc</code> flavor
+  rating: recommended
+  ratingNote: Tiny, with an external antenna. Needs a case.
+  stores:
+    - { label: ali, url: "https://s.click.aliexpress.com/e/_c4thPCrX" }
+    - { label: amz/us, url: "https://amzn.to/4dpWw5E" }
+  gpio:
+    - { pin: 21, use: Orange user LED (active low), setting: leds }
+    - { pin: 0, use: BOOT button }
+  template:
+    leds:
+      - { type: "pwm_inverted", pin: 21, count: 1, control: "status" }
+    inputs: []
+    outputs: []
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::note[Verified]
+Checked on hardware (2026-10-10): this template on a XIAO ESP32S3 (ESP32-S3 rev 0.2). The status LED blinks.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- Install the **`esp32s3-cdc`** flavor. It flashes over USB-C without pressing anything. The BOOT and RESET buttons are tiny and a case usually hides them.
+- Opening the USB port resets the chip. A serial monitor that keeps reconnecting makes the board look like it's boot-looping; close it and check again.
+- The orange LED is the user LED and shows status. The red LED is the battery-charge indicator and can't be controlled; with no battery fitted it flickers.
+- Buy the plain XIAO ESP32S3. The listings also sell the C3 and the S3 Sense (with camera); pick the S3 option.

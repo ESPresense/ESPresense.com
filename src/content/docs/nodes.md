@@ -40,7 +40,7 @@ Some store links on this page (Amazon, AliExpress, M5Stack) are affiliate links.
 | **[LILYGO T-Energy-S3](/nodes/t-energy-s3)** | [amz/us](https://www.amazon.com/dp/B0HKM6N3N2?tag=espresense-20) | 18650 holder and power switch: a portable node for calibration walks, about a day per charge. 16 MB flash, PCB antenna, USB-C [^cdc] |
 | M5 Atom S3U | [m5stack](https://shop.m5stack.com/products/atoms3u?ref=ESPresense) [ali](https://s.click.aliexpress.com/e/_c3bZmzLz) [amz/us](https://amzn.to/4uZJFgE) | Enclosed, USB-A. 8 MB flash, 3D antenna, IR emitter, PDM mic, RGB LED, button, GROVE [^cdc] |
 | M5 Stamp S3 | [ali](https://s.click.aliexpress.com/e/_oB3a0Dv) [amz/us](https://amzn.to/4dv6anp) | Stamp form. 8 MB flash, 3D antenna, RGB LED [^cdc] |
-| Seeed XIAO ESP32-S3 | [ali](https://s.click.aliexpress.com/e/_c4thPCrX) [amz/us](https://amzn.to/4dpWw5E) | Tiny module, USB-C. 8 MB flash + 8 MB PSRAM, U.FL connector with external antenna. Listing also sells the C3 and S3 Sense — pick the S3 option. Amazon sells a 3-pack [^cdc] |
+| [Seeed XIAO ESP32-S3](/nodes/xiao-esp32s3) | [ali](https://s.click.aliexpress.com/e/_c4thPCrX) [amz/us](https://amzn.to/4dpWw5E) | Tiny module, USB-C. 8 MB flash + 8 MB PSRAM, U.FL connector with external antenna. Listing also sells the C3 and S3 Sense — pick the S3 option. Amazon sells a 3-pack [^cdc] |
 
 ### ESP32-C3
 
