@@ -34,7 +34,7 @@ board:
 import BoardPage from '../../../components/BoardPage.astro';
 
 :::caution[Mockup]
-Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet, and the template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, set the same pins on the Hardware page by hand.
+Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on hardware yet.
 :::
 
 <BoardPage part="summary" />
@@ -50,5 +50,5 @@ Board-page pilot. Pin data comes from the vendor docs and hasn't been checked on
 ## Notes
 
 - The generic `esp32s3` build defaults to a PWM LED on GPIO 2, which this board doesn't have. Without the template the status LED stays dark.
-- Plugging an I2C sensor into the GROVE port? Set `I2C_Bus_1_SDA` to 2 and `I2C_Bus_1_SCL` to 1 on the Hardware page (I2C is off by default on v5).
+- Plugging an I2C sensor into the GROVE port? Set `I2C_Bus_1_SDA` to 2 and `I2C_Bus_1_SCL` to 1 on the Hardware page (I2C is off by default).
 - The IR emitter isn't used by ESPresense.

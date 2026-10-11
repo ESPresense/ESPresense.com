@@ -31,7 +31,7 @@ board:
 import BoardPage from '../../../components/BoardPage.astro';
 
 :::caution[New page]
-Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, pick the Ethernet Type on the Network page and set the pins on the Hardware page by hand. This kit also needs [ESPresense#2537](https://github.com/ESPresense/ESPresense/pull/2537), which corrects its PHY address; without it Ethernet doesn't start.
+Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. This kit also needs [ESPresense#2537](https://github.com/ESPresense/ESPresense/pull/2537), which corrects its PHY address; without it Ethernet doesn't start.
 :::
 
 <BoardPage part="summary" />
@@ -50,7 +50,7 @@ Pin data comes from the vendor's docs and schematics and hasn't been checked on 
 - The FT2232H shows up as two serial ports: the first is JTAG, the second is the ESP32's serial port. Pick the second one in the browser installer.
 - The PoE board is IEEE 802.3at. USB power is cut off automatically when PoE is present.
 - There's no user LED; the link and activity LEDs are driven by the PHY.
-- I2C is off by default on v5. For a sensor, any two of 32, 33, 4 and 2 work. GPIO 12–15 are free only with DIP switches 1–4 off (on routes them to JTAG). GPIO 16/17 are used by PSRAM. On v4 the `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)); set both I2C pins to -1 there.
+- I2C is off by default. For a sensor, any two of 32, 33, 4 and 2 work. GPIO 12–15 are free only with DIP switches 1–4 off (on routes them to JTAG). GPIO 16/17 are used by PSRAM.
 - GPIO 18, 19, 21, 22, 23, 25, 26 and 27 belong to Ethernet (RMII and MDIO/MDC). Don't put sensors on them. GPIO 0 and 5 too.
 
 ## Sources

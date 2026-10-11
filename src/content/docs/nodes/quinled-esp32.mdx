@@ -32,7 +32,7 @@ board:
 import BoardPage from '../../../components/BoardPage.astro';
 
 :::caution[New page]
-Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, pick the Ethernet Type on the Network page and set the pins on the Hardware page by hand. Firmware built from `main` since the ESP-IDF port also needs [ESPresense#2537](https://github.com/ESPresense/ESPresense/pull/2537): without it this board's Ethernet clock comes out on the wrong pin and Ethernet never links. Release v4.0.6 is fine.
+Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. Firmware built from `main` since the ESP-IDF port also needs [ESPresense#2537](https://github.com/ESPresense/ESPresense/pull/2537): without it this board's Ethernet clock comes out on the wrong pin and Ethernet never links.
 :::
 
 <BoardPage part="summary" />
@@ -51,7 +51,7 @@ Pin data comes from the vendor's docs and schematics and hasn't been checked on 
 - There's no PoE: 5 V only (don't exceed 6 V).
 - The template uses the blue LED on GPIO 2 for status. It's only on v2r1 and later, and its polarity isn't documented. If it's lit when it should be off, change the LED type to `pwm_inverted`.
 - On a Dig-Uno/Quad, the LED channels use some of the free pins; check QuinLED's pinout guide before adding sensors.
-- I2C is off by default on v5. On v4 the `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)); set both I2C pins to -1 there.
+- I2C is off by default.
 - GPIO 18, 19, 21, 22, 23, 25, 26 and 27 belong to Ethernet (RMII and MDIO/MDC). Don't put sensors on them. GPIO 5 and 17 too.
 
 ## Sources

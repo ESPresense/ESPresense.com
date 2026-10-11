@@ -36,7 +36,7 @@ board:
 import BoardPage from '../../../components/BoardPage.astro';
 
 :::caution[New page]
-Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. The template needs v5 firmware ([ESPresense#2530](https://github.com/ESPresense/ESPresense/pull/2530), not released yet). On v4, pick the Ethernet Type on the Network page and set the pins on the Hardware page by hand. Firmware built from `main` since the ESP-IDF port also needs [ESPresense#2537](https://github.com/ESPresense/ESPresense/pull/2537): without it this board's Ethernet clock comes out on the wrong pin and Ethernet never links. Release v4.0.6 is fine.
+Pin data comes from the vendor's docs and schematics and hasn't been checked on hardware yet. Firmware built from `main` since the ESP-IDF port also needs [ESPresense#2537](https://github.com/ESPresense/ESPresense/pull/2537): without it this board's Ethernet clock comes out on the wrong pin and Ethernet never links.
 :::
 
 <BoardPage part="summary" />
@@ -55,7 +55,7 @@ Pin data comes from the vendor's docs and schematics and hasn't been checked on 
 - There's no USB-serial chip: the USB-C port only supplies power. Flash it through LilyGO's downloader board on the 6-pin header, or any 3.3 V USB-TTL adapter wired to EN, TX, RX, GND and IO0. Without DTR/RTS, hold BOOT, tap RST, release BOOT.
 - PoE is IEEE 802.3af and isolated.
 - There's no user LED (only power and the jack's link LEDs), so the template turns the LEDs off.
-- I2C is off by default on v5. For a sensor, use SDA 32 / SCL 33 on the header. On v4 the `esp32` build defaults I2C bus 1 to GPIO 21/22, which are Ethernet pins, so Ethernet fails to start ([#2510](https://github.com/ESPresense/ESPresense/issues/2510)); set both I2C pins to -1 there.
+- I2C is off by default. For a sensor, use SDA 32 / SCL 33 on the header.
 - GPIO 18, 19, 21, 22, 23, 25, 26 and 27 belong to Ethernet (RMII and MDIO/MDC). Don't put sensors on them. GPIO 5 and 17 too.
 - Other LilyGO Ethernet boards (T-POE-PRO, T-INTER-COM, T-ETH-Lite S3) wire Ethernet differently and aren't supported.
 
