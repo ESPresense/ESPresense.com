@@ -1,0 +1,131 @@
+---
+---
+<div id="esw" class="esw not-content">
+  <p id="esw-unsupported" class="esw-warn" hidden>
+    This browser has no Web Bluetooth. Use Chrome or Edge on desktop or Android. On iPhone, use
+    <a href="https://apps.apple.com/us/app/bluefy-web-ble-browser/id1492822055">Bluefy</a> or the
+    nRF Connect steps below.
+  </p>
+  <div class="esw-row">
+    <button type="button" id="esw-connect">Connect to plug</button>
+    <label><input type="checkbox" id="esw-all" /> Show all Bluetooth devices</label>
+  </div>
+  <div class="esw-row">
+    <label>Version byte
+      <select id="esw-ver">
+        <option value="0c" selected>0C (v1.2, default)</option>
+        <option value="0d">0D (v1.3)</option>
+        <option value="0e">0E (v1.4)</option>
+      </select>
+    </label>
+    <button type="button" id="esw-start" disabled>1. Start</button>
+    <button type="button" id="esw-install" disabled>2. Install</button>
+  </div>
+  <p id="esw-status" class="esw-status">Not connected.</p>
+  <pre id="esw-log" class="esw-log"></pre>
+</div>
+
+<script>
+  // SwitchBot BLE API (same UUIDs as pySwitchbot).
+  const SVC = 'cba20d00-224d-11e6-9fb8-0002a5d5c51b';
+  const TX = 'cba20002-224d-11e6-9fb8-0002a5d5c51b';
+  const RX = 'cba20003-224d-11e6-9fb8-0002a5d5c51b';
+  const WOAN = 0x0969; // SwitchBot's Bluetooth company ID
+  const WAIT = 60;
+
+  const $ = (id: string) => document.getElementById(id) as any;
+  const hex = (b: Uint8Array) => [...b].map((x) => x.toString(16).padStart(2, '0')).join(' ').toUpperCase();
+  const log = (msg: string) => { $('esw-log').textContent += `${new Date().toLocaleTimeString()}  ${msg}\n`; };
+  const status = (msg: string) => { $('esw-status').textContent = msg; };
+
+  let device: any;
+  let tx: any;
+  let timer: number | undefined;
+
+  async function link() {
+    if (tx && device.gatt.connected) return tx;
+    status(`Connecting to ${device.name || device.id}…`);
+    const server = await device.gatt.connect();
+    const svc = await server.getPrimaryService(SVC);
+    tx = await svc.getCharacteristic(TX);
+    try {
+      const rx = await svc.getCharacteristic(RX);
+      await rx.startNotifications();
+      rx.addEventListener('characteristicvaluechanged', (e: any) =>
+        log(`plug replied: ${hex(new Uint8Array(e.target.value.buffer))}`));
+    } catch { /* notify is optional; writes still work */ }
+    return tx;
+  }
+
+  async function send(bytes: number[]) {
+    const c = await link();
+    const data = new Uint8Array(bytes);
+    if (c.properties.write) await c.writeValueWithResponse(data);
+    else await c.writeValueWithoutResponse(data);
+    log(`sent ${hex(data)}`);
+  }
+
+  $('esw-connect').addEventListener('click', async () => {
+    try {
+      device = await (navigator as any).bluetooth.requestDevice($('esw-all').checked
+        ? { acceptAllDevices: true, optionalServices: [SVC] }
+        : { filters: [{ services: [SVC] }, { manufacturerData: [{ companyIdentifier: WOAN }] }], optionalServices: [SVC] });
+      tx = undefined;
+      device.addEventListener('gattserverdisconnected', () => log('plug disconnected (it reconnects on the next command)'));
+      await link();
+      status(`Connected to ${device.name || device.id}. Press Start.`);
+      log(`connected to ${device.name || device.id}`);
+      $('esw-start').disabled = false;
+    } catch (e: any) {
+      status(e.name === 'NotFoundError' ? 'No device chosen.' : `Error: ${e.message}`);
+      if (e.name !== 'NotFoundError') log(`error: ${e.message}`);
+    }
+  });
+
+  $('esw-start').addEventListener('click', async () => {
+    try {
+      await send([0x57, 0x0f, 0x0a, 0x01, parseInt($('esw-ver').value, 16)]);
+      $('esw-start').disabled = true;
+      $('esw-install').disabled = false;
+      let left = WAIT;
+      clearInterval(timer);
+      const tick = () => {
+        if (left <= 0) { clearInterval(timer); status('Ready. Press Install.'); return; }
+        status(`Plug is downloading the stage. Install in ${left--} s (or press Install now if the server log shows WoPlugUS_V12.bin).`);
+      };
+      tick();
+      timer = window.setInterval(tick, 1000);
+    } catch (e: any) {
+      status(`Start failed: ${e.message}`);
+      log(`error: ${e.message}`);
+    }
+  });
+
+  $('esw-install').addEventListener('click', async () => {
+    clearInterval(timer);
+    try {
+      await send([0x57, 0x0f, 0x0b]);
+      $('esw-install').disabled = true;
+      status('Install sent. The plug reboots into the stage. Watch the LEDs (table below) and do NOT unplug while they blink fast.');
+    } catch (e: any) {
+      status(`Install failed: ${e.message}. Reconnect and press Install again.`);
+      log(`error: ${e.message}`);
+    }
+  });
+
+  if (!(navigator as any).bluetooth) {
+    $('esw-unsupported').hidden = false;
+    $('esw-connect').disabled = true;
+  }
+</script>
+
+<style>
+  .esw { border: 1px solid var(--sl-color-gray-5); border-radius: 0.5rem; padding: 1rem; margin: 1.5rem 0; }
+  .esw-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; }
+  .esw button { padding: 0.4rem 1rem; border-radius: 0.3rem; border: 0; background: var(--sl-color-accent); color: var(--sl-color-black); font-weight: 600; cursor: pointer; }
+  .esw button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .esw select { margin-left: 0.4rem; }
+  .esw-status { font-weight: 600; }
+  .esw-warn { color: var(--sl-color-orange); }
+  .esw-log { font-size: 0.8rem; min-height: 3rem; max-height: 12rem; overflow: auto; margin: 0; }
+</style>
