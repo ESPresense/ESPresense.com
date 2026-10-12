@@ -25,7 +25,7 @@ Losing power while the plug is writing the new firmware bricks it, and the case 
 
 1. Press **Connect to plug** and pick your plug. Match it by the BLE MAC from the SwitchBot app. If it isn't listed, tick **Show all Bluetooth devices** and try again.
 2. Press **Install**. The plug downloads the stage from your server; its log should show `/version/wocaotech/firmware/WoPlugUS/WoPlugUS_V12.bin`.
-3. Wait for the countdown (about a minute), then press **Reboot**. This step is required: Install only downloads the stage; Reboot makes the plug switch to it and restart. The server log then shows `/payload.md5` and `/payload.bin`.
+3. Wait about a minute **after** the server logs `WoPlugUS_V12.bin` (the countdown is a guide), then press **Reboot**. This step is required: Install only downloads the stage; Reboot makes the plug switch to it and restart. The server log then shows `/payload.md5` and `/payload.bin`.
 
 <EspreSwitch />
 

@@ -92,7 +92,7 @@
       let left = WAIT;
       clearInterval(timer);
       const tick = () => {
-        if (left <= 0) { clearInterval(timer); status('Ready. Press Reboot.'); return; }
+        if (left <= 0) { clearInterval(timer); status('Press Reboot once the server log has shown WoPlugUS_V12.bin for about a minute.'); return; }
         status(`Plug is downloading the stage. Reboot in ${left--} s (or press Reboot now if the server log shows WoPlugUS_V12.bin).`);
       };
       tick();
