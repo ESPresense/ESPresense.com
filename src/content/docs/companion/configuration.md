@@ -74,22 +74,23 @@ mqtt:
   username: your_username
   password: your_password
   ssl: false
-  # insecure: false
   # ca_cert_path: /config/espresense/ca.crt
+  # insecure: true
 
 # For external MQTT, also include:
   host: your_host
   port: 1883
 ```
 
-With `ssl: true`, `insecure` and `ca_cert_path` decide how the broker's certificate is checked:
+With `ssl: true`, Companion checks the broker's certificate:
 
-| `insecure` | `ca_cert_path` | Broker certificate |
-|---|---|---|
-| not set | not set | Any certificate is accepted (the behavior before these options existed) |
-| `true` | ignored | Any certificate is accepted, with a warning in the log |
-| `false` | not set | Must be trusted by the system's CA store, e.g. Let's Encrypt |
-| not set or `false` | set | Must be signed by that CA, e.g. your own CA for a self-signed broker. If the file doesn't exist, MQTT fails with a `ca_cert_path ... does not exist` error |
+| Setting | Broker certificate |
+|---|---|
+| neither | Must be trusted by the system's CA store, e.g. Let's Encrypt |
+| `ca_cert_path` | Must be signed by that CA, e.g. your own CA for a self-signed broker. Takes precedence over `insecure` |
+| `insecure: true` | Not checked at all |
+
+If the check fails, the log says which of these to set.
 
 ### GPS Settings
 ```yaml
