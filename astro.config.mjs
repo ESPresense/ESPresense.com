@@ -60,6 +60,7 @@ export default defineConfig({
           items: [
             { slug: 'nodes', label: 'Overview' },
             { slug: 'firmware' },
+            { slug: 'espreswitch', label: 'ESPreSwitch (SwitchBot Plug)' },
             { slug: 'enclosures' },
           ],
         },
