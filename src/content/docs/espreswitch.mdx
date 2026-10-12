@@ -65,7 +65,7 @@ While the ESPreSwitch stage is running, both LEDs blink together to show what it
 Two different networks can help here:
 
 - **`espreswitch`, password `espreswitch`:** a network **you** create. The plug **joins** it only if it has no saved WiFi. It must resolve `wohand.com` to your server.
-- **`espreswitch-xxxxxx`:** an open rescue network the **plug** opens after a minute without WiFi. Join it, browse to http://192.168.4.1 and enter a WiFi network that resolves `wohand.com` to your server.
+- **`espreswitch-xxxxxx`:** an open rescue network the **plug** opens after a minute without WiFi (`xxxxxx` matches the `espresense-xxxxxx` network it opens once converted). Join it; the page should pop up, or browse to http://192.168.4.1. Enter a WiFi network that resolves `wohand.com` to your server. The rescue network closes as soon as you save, while the plug joins your network. If the join fails, it comes back in about a minute: reconnect and check the name and password.
 
 See [the README](https://github.com/ESPresense/ESPreSwitch#the-plug-cant-reach-wifi) for details.
 
