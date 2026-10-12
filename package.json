@@ -17,11 +17,11 @@
     "fflate": "^0.7.5",
     "hono": "^4.13.7",
     "rehype-external-links": "^3.0.0",
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260722.1",
     "playwright": "^1.58.1",
-    "wrangler": "^4.147.0"
+    "wrangler": "^4.149.0"
   }
 }
