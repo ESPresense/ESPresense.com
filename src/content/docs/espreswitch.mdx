@@ -10,7 +10,9 @@ import EspreSwitch from '../../components/EspreSwitch.astro';
 [ESPreSwitch](https://github.com/ESPresense/ESPreSwitch) converts a stock SwitchBot Plug Mini (W1901400 / W1901401) to ESPresense over the air, without opening it. This page sends the two Bluetooth commands that start the conversion, replacing the nRF Connect steps in the README.
 
 :::danger
-Losing power while the plug is writing the new firmware bricks it, and the case is welded shut. Only do this on a plug you're prepared to open. The plug must be on **stock SwitchBot firmware**; a plug already running Tasmota or ESPresense can't be converted this way.
+Only do this on plugs you can afford to lose. 
+
+This page is for plugs on **stock SwitchBot firmware**. Plugs already running ESPresense on Tasmota's layout (converted via SwitchbOTA) are moved over without Bluetooth: see [Plugs already running ESPresense](https://github.com/ESPresense/ESPreSwitch#plugs-already-running-espresense).
 :::
 
 ## Before you start
@@ -58,7 +60,7 @@ While the ESPreSwitch stage is running, both LEDs blink together to show what it
 
 - **Stock SwitchBot behaviour:** the stage isn't running yet.
 - **Dark, with an open `espresense-…` WiFi network:** the conversion worked.
-- **Dark, with no network at all:** the plug isn't booting. If it went dark while the erased patterns were showing, it lost power mid-write and needs opening.
+- **Dark, with no network at all:** the plug is done
 
 ### The plug can't reach WiFi
 
