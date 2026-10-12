@@ -24,8 +24,8 @@ Losing power while the plug is writing the new firmware bricks it, and the case 
 ## Trigger the conversion
 
 1. Press **Connect to plug** and pick your plug. Match it by the BLE MAC from the SwitchBot app. If it isn't listed, tick **Show all Bluetooth devices** and try again.
-2. Press **Start**. The plug downloads the stage from your server; its log should show `/version/wocaotech/firmware/WoPlugUS/WoPlugUS_V12.bin`.
-3. Wait for the countdown (about a minute), then press **Install**. This step is required: Start only downloads the stage, Install makes the plug install it and reboot into it. The server log then shows `/payload.md5` and `/payload.bin`.
+2. Press **Install**. The plug downloads the stage from your server; its log should show `/version/wocaotech/firmware/WoPlugUS/WoPlugUS_V12.bin`.
+3. Wait for the countdown (about a minute), then press **Reboot**. This step is required: Install only downloads the stage; Reboot makes the plug switch to it and restart. The server log then shows `/payload.md5` and `/payload.bin`.
 
 <EspreSwitch />
 
@@ -42,7 +42,7 @@ While the ESPreSwitch stage is running, both LEDs blink together to show what it
 | Pattern | Meaning | What to do |
 |---|---|---|
 | Slow blink, once a second | Looking for WiFi | Wait. After a minute it switches to the rescue network |
-| 2 blinks, pause | Can't reach WiFi; rescue network `espreswitch-xxxxxx` is up | Join it and enter a WiFi network (see below) |
+| 2 blinks, pause | No WiFi after a minute, so the plug has opened its own rescue network `espreswitch-xxxxxx` | Join it and enter a WiFi network (see below) |
 | Short blip every 2 seconds | On WiFi, but the ESPreSwitch server isn't answering properly | Check the server is running, the payload has finished downloading, and `wohand.com` resolves to it |
 | 3 blinks, long pause | Refused: the payload is too big for this plug's flash layout | Nothing was erased. Pick a smaller payload or unplug |
 | Solid | Talking to the server; about to erase or copying itself to the other slot | Wait |
@@ -60,7 +60,14 @@ While the ESPreSwitch stage is running, both LEDs blink together to show what it
 - **Dark, with an open `espresense-…` WiFi network:** the conversion worked.
 - **Dark, with no network at all:** the plug isn't booting. If it went dark while the erased patterns were showing, it lost power mid-write and needs opening.
 
-If the plug can't reach WiFi, it opens an open network `espreswitch-xxxxxx` after a minute. Join it, browse to http://192.168.4.1 and enter a network that resolves `wohand.com` to your server. See [the README](https://github.com/ESPresense/ESPreSwitch#the-plug-cant-reach-wifi) for details.
+### The plug can't reach WiFi
+
+Two different networks can help here:
+
+- **`espreswitch`, password `espreswitch`:** a network **you** create. The plug **joins** it only if it has no saved WiFi. It must resolve `wohand.com` to your server.
+- **`espreswitch-xxxxxx`:** an open rescue network the **plug** opens after a minute without WiFi. Join it, browse to http://192.168.4.1 and enter a WiFi network that resolves `wohand.com` to your server.
+
+See [the README](https://github.com/ESPresense/ESPreSwitch#the-plug-cant-reach-wifi) for details.
 
 ## After the conversion
 

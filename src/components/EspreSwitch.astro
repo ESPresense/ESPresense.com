@@ -18,8 +18,8 @@
         <option value="0e">0E (v1.4)</option>
       </select>
     </label>
-    <button type="button" id="esw-start" disabled>1. Start</button>
-    <button type="button" id="esw-install" disabled>2. Install</button>
+    <button type="button" id="esw-start" disabled>1. Install</button>
+    <button type="button" id="esw-install" disabled>2. Reboot</button>
   </div>
   <p id="esw-status" class="esw-status">Not connected.</p>
   <pre id="esw-log" class="esw-log"></pre>
@@ -71,9 +71,11 @@
         ? { acceptAllDevices: true, optionalServices: [SVC] }
         : { filters: [{ services: [SVC] }, { manufacturerData: [{ companyIdentifier: WOAN }] }], optionalServices: [SVC] });
       tx = undefined;
+      clearInterval(timer);
+      $('esw-install').disabled = true;
       device.addEventListener('gattserverdisconnected', () => log('plug disconnected (it reconnects on the next command)'));
       await link();
-      status(`Connected to ${device.name || device.id}. Press Start.`);
+      status(`Connected to ${device.name || device.id}. Press Install.`);
       log(`connected to ${device.name || device.id}`);
       $('esw-start').disabled = false;
     } catch (e: any) {
@@ -90,13 +92,13 @@
       let left = WAIT;
       clearInterval(timer);
       const tick = () => {
-        if (left <= 0) { clearInterval(timer); status('Ready. Press Install.'); return; }
-        status(`Plug is downloading the stage. Install in ${left--} s (or press Install now if the server log shows WoPlugUS_V12.bin).`);
+        if (left <= 0) { clearInterval(timer); status('Ready. Press Reboot.'); return; }
+        status(`Plug is downloading the stage. Reboot in ${left--} s (or press Reboot now if the server log shows WoPlugUS_V12.bin).`);
       };
       tick();
       timer = window.setInterval(tick, 1000);
     } catch (e: any) {
-      status(`Start failed: ${e.message}`);
+      status(`Install failed: ${e.message}`);
       log(`error: ${e.message}`);
     }
   });
@@ -106,9 +108,9 @@
     try {
       await send([0x57, 0x0f, 0x0b]);
       $('esw-install').disabled = true;
-      status('Install sent. The plug reboots into the stage. Watch the LEDs (table below) and do NOT unplug while they blink fast.');
+      status('Reboot sent. The plug reboots into the stage. Watch the LEDs (table below) and do NOT unplug while they blink fast.');
     } catch (e: any) {
-      status(`Install failed: ${e.message}. Reconnect and press Install again.`);
+      status(`Reboot failed: ${e.message}. Reconnect and press Reboot again.`);
       log(`error: ${e.message}`);
     }
   });
