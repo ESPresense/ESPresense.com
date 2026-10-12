@@ -1,0 +1,54 @@
+---
+title: Seeed Studio XIAO ESP32S3
+description: Seeed XIAO ESP32S3 (ESP32-S3) — pins, settings template and flashing notes for ESPresense.
+sidebar:
+  order: 4
+board:
+  name: XIAO ESP32S3
+  chip: ESP32-S3
+  formFactor: Module, 21 × 17.8 mm
+  flash: 8 MB + 8 MB PSRAM
+  antenna: U.FL external antenna
+  usb: USB-C (native USB-CDC)
+  install: <a href="/firmware">Browser installer</a>, <code>esp32s3-cdc</code> flavor
+  rating: recommended
+  ratingNote: Tiny, external antenna. Needs a case.
+  stores:
+    - { label: ali, url: "https://s.click.aliexpress.com/e/_c4thPCrX" }
+    - { label: amz/us, url: "https://amzn.to/4dpWw5E" }
+  gpio:
+    - { pin: 21, use: Orange user LED (active low), setting: leds }
+    - { pin: 0, use: BOOT button }
+  template:
+    leds:
+      - { type: "pwm_inverted", pin: 21, count: 1, control: "status" }
+    inputs: []
+    outputs: []
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::note[Verified]
+Checked on hardware (2026-10-10): this template on a XIAO ESP32S3 (ESP32-S3 rev 0.2). It boots, joins WiFi, scans, and the status LED works.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- Install the **`esp32s3-cdc`** flavor. It flashes over USB-C without pressing anything: the flasher resets it into the bootloader.
+- If the flasher gets no response, plug straight into the computer, not through a USB hub. Still stuck? Hold BOOT while plugging in. BOOT is tiny, and a case may hide it.
+- Opening the USB port resets the chip. A serial monitor that keeps reconnecting makes the board look like it's boot-looping; close it and check again.
+- The orange LED is the user LED and shows status. Without the template the generic build drives GPIO 2, which isn't an LED here.
+- The red LED is the battery-charge indicator and can't be controlled. With no battery fitted it flickers or goes off; that doesn't mean the board is dead.
+- Nothing else is wired: no button or I2C. D0–D10 are free for your own inputs, outputs or I2C.
+- The firmware uses the standard 4 MB flash layout; the extra flash and PSRAM go unused, which is fine.
+- Buy the plain XIAO ESP32S3. Listings also sell the C3 and the S3 Sense (camera); pick the S3.
