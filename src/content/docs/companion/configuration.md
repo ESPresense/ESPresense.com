@@ -89,7 +89,7 @@ With `ssl: true`, `insecure` and `ca_cert_path` decide how the broker's certific
 | not set | not set | Any certificate is accepted (the behavior before these options existed) |
 | `true` | ignored | Any certificate is accepted, with a warning in the log |
 | `false` | not set | Must be trusted by the system's CA store, e.g. Let's Encrypt |
-| not set or `false` | set | Must be signed by that CA, e.g. your own CA for a self-signed broker. if the file doesn't exist, Companion logs an error and doesn't connect |
+| not set or `false` | set | Must be signed by that CA, e.g. your own CA for a self-signed broker. if the file doesn't exist, MQTT fails with a `ca_cert_path ... does not exist` error |
 
 ### GPS Settings
 ```yaml
