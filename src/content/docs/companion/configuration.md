@@ -74,8 +74,9 @@ mqtt:
   username: your_username
   password: your_password
   ssl: false
-  insecure: false # true to accept self-signed cert; false -> configure path to CA
-  ca_cert_path: "/path_to_CA-Cert.crt"
+  # With ssl: true —
+  # insecure: true  # accept any certificate (self-signed); leave unset for the old behavior
+  # ca_cert_path: /config/espresense/ca.crt  # or validate the broker against your own CA
 
 # For external MQTT, also include:
   host: your_host
