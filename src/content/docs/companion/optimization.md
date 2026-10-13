@@ -41,30 +41,35 @@ ESPresense Companion automatically optimizes node settings by sending out iBeaco
    - If settings result in worse error, they are discarded
 
 #### Optimizers
-The system uses three optimizers:
-- RxAdjRssi Optimizer
-- Absorption Avg Optimizer
-- Absorption Error Optimizer
+`optimization.optimizer` picks which optimizers run:
 
-These algorithms can adjust these node settings:
-- Absorption
-- RxAdjRssi
+| `optimizer` | What it fits |
+|---|---|
+| `legacy` (default) | Four separate optimizers: RxAdjRssi, Absorption Avg, Absorption Error and Isotonic Regression. Each can update node settings on its own if it finds an improvement. |
+| `global_absorption` | One absorption value shared by every node, plus each node's RxAdjRssi and TxRefRssi, fitted together |
+| `per_node_absorption` | Each node's own absorption and RxAdjRssi, plus each node's TxRefRssi, fitted together |
 
-Each optimizer runs independently and can update node settings if it finds improvements.
+A result is only applied if it was evaluated on at least `min_samples` measurements (default 5). Candidates are scored by Pearson correlation and normalized RMSE, weighted by `weights.correlation` and `weights.rmse` (0.5 each by default).
 
 #### Default Configuration
 
 ```yaml
 optimization:
-  enabled: true
-  interval_secs: 3600
+  enabled: false
+  interval_secs: 60
+  optimizer: legacy
+  keep_snapshot_mins: 5
+  min_samples: 5
   limits:
-    absorption_min: 2.5
-    absorption_max: 3.5
+    absorption_min: 2
+    absorption_max: 4
     tx_ref_rssi_min: -70
     tx_ref_rssi_max: -50
-    rx_adj_rssi_min: -15
-    rx_adj_rssi_max: 20
+    rx_adj_rssi_min: -5
+    rx_adj_rssi_max: 30
+  weights:
+    correlation: 0.5
+    rmse: 0.5
 ```
 
 The limits section prevents the optimizers from setting values outside these ranges.
