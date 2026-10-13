@@ -74,11 +74,23 @@ mqtt:
   username: your_username
   password: your_password
   ssl: false
+  # ca_cert_path: /config/espresense/ca.crt
+  # insecure: true
 
 # For external MQTT, also include:
   host: your_host
   port: 1883
 ```
+
+With `ssl: true`, Companion checks the broker's certificate:
+
+| Setting | Broker certificate |
+|---|---|
+| neither | Must be trusted by the system's CA store, e.g. Let's Encrypt |
+| `ca_cert_path` | Must be signed by that CA, e.g. your own CA for a self-signed broker. Takes precedence over `insecure` |
+| `insecure: true` | Not checked at all |
+
+If the check fails, the log says which of these to set.
 
 ### GPS Settings
 ```yaml
