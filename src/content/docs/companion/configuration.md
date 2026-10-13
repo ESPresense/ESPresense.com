@@ -80,7 +80,11 @@ mqtt:
 # For external MQTT, also include:
   host: your_host
   port: 1883
+
+  discovery_topic: homeassistant # Home Assistant discovery prefix (default: homeassistant)
 ```
+
+Leave `host` empty under Home Assistant and Companion uses the MQTT broker the Supervisor provides.
 
 With `ssl: true`, Companion checks the broker's certificate:
 
@@ -99,9 +103,11 @@ gps:
   longitude: your_decimal_longitude
   elevation: your_elevation_in_meters
   rotation: your_rotation_in_degrees # Rotation in degrees from north (0 degrees)
+  report: false # Send each device's latitude/longitude to Home Assistant (default: false)
 ```
 
 *   `rotation`: Specifies the orientation of your map relative to North (0 degrees). This helps align the map correctly if your floorplan's 'up' direction isn't true North.
+*   `report`: When true, device locations sent to Home Assistant include GPS `latitude`, `longitude` and elevation, worked out from these settings.
 *   Use the **Geolocation** view in the UI to verify your GPS coordinates and rotation are set correctly.
 *   Remember, the `config.yaml` file live reloads, so you can adjust these settings and see the changes on the map immediately without needing to restart.
 
@@ -218,33 +224,64 @@ The penalty is: `weight = exp(-distance^2 / (2 * motion_sigma^2))`
 optimization:
   enabled: true
   interval_secs: 3600
-  limits:
-    absorption_min: 2.5
-    absorption_max: 3.5
+  optimizer: legacy       # legacy, global_absorption or per_node_absorption (default: legacy)
+  keep_snapshot_mins: 5   # How long to keep optimization snapshots (default: 5)
+  min_samples: 5          # Minimum measurements a result must be evaluated on before it's applied (default: 5)
+  limits:                 # Defaults shown
+    absorption_min: 2
+    absorption_max: 4
     tx_ref_rssi_min: -70
     tx_ref_rssi_max: -50
-    rx_adj_rssi_min: -15
-    rx_adj_rssi_max: 20
+    rx_adj_rssi_min: -5
+    rx_adj_rssi_max: 30
+  weights:                # How candidate results are scored (defaults shown)
+    correlation: 0.5      # Pearson correlation
+    rmse: 0.5             # Normalized RMSE
+```
+See [Optimization](/companion/optimization) for what each optimizer does.
 
+### Locators
+Each enabled locator produces a candidate location, and Companion picks the most likely one. If none are enabled, it uses `nelder_mead` on every floor.
+
+```yaml
 locators:
   nadaraya_watson:
     enabled: true
-    floors: ["ground", "outside"]  # floor id, see floor configuration section
+    floors: ["ground", "outside"]  # floor ids, see floor configuration section
     bandwidth: 0.5
     kernel: gaussian
 
   nelder_mead:
-    enabled: true
-    floors: ["ground", "outside"]  # floor id, see floor configuration section
+    enabled: false
+    floors: ["ground", "outside"]
+    weighting:
+      algorithm: gaussian  # equal, linear, gaussian or exponential (default: gaussian)
+      props:
+        sigma: 0.30        # gaussian: higher = flatter weights (default: 0.3)
+        # lambda: 1.5      # exponential: higher = steeper decay (default: 1.5)
+
+  bfgs:                    # Same options as nelder_mead, different solver
+    enabled: false
+    floors: ["ground", "outside"]
     weighting:
       algorithm: gaussian
-      props:
-        sigma: 0.10
 
-  nearest_node:
+  mle:                     # Maximum likelihood estimate, same options as nelder_mead
+    enabled: false
+    floors: ["ground", "outside"]
+    weighting:
+      algorithm: gaussian
+
+  multi_floor:             # Solves across all floors at once, so it takes no floors list
+    enabled: false
+    weighting:
+      algorithm: gaussian
+
+  nearest_node:            # Places the device at the closest node
     enabled: true
-    max_distance: 10 # in meters
 ```
+`weighting` sets how much each node's distance counts, closest nodes first. Leave it out to get `gaussian` with `sigma: 0.3`. `floors` lists floor ids; leave it out to use every floor.
+
 Note: The locators section and most of the optimization section can be left out if optimization is not wanted, as long as enabled is set to false
 
 ### Other Settings
@@ -252,6 +289,7 @@ Note: The locators section and most of the optimization section can be left out 
 
 timeout: 30 # How long before device considered stale
 away_timeout: 120 # How long before device is considered away
+device_retention: 30d # Forget devices not seen for this long, e.g. 30d, 720h (default: 30d)
 
 history:
   enabled: false # Enable to log history to db (Beta)
@@ -270,20 +308,28 @@ floors:
 
 ### Rooms
 
-Rooms are all measured from the initial starting point, regardless of floor. Paste output from floor plan creator or measure manually. Units are always meters.
+Rooms go under their floor's `rooms:`. Paste output from floor plan creator or measure manually. Points are measured from the initial starting point, regardless of floor. Units are always meters.
 
 ```yaml
-rooms:
-  - id: living-room
-    name: Living Room
-    floor: ground
-    points:
-      - [0,0]
-      - [3,0]
-      - [3,4]
-      - [0,4]
+floors:
+  - id: ground
+    name: Ground Floor
+    bounds: [[0, 0, 0], [10, 8, 3]]
+    rooms:
+      - id: living-room # optional, defaults to the name in snake_case
+        name: Living Room
+        color: "#1F77B4" # optional, otherwise Companion picks one
+        points:
+          - [0,0]
+          - [3,0]
+          - [3,4]
+          - [0,4]
 ```
 Note: you can define 4 or more points depending on the shape of the room. Use clockwise or counter-clockwise order consistently across all rooms.
+
+:::caution
+Companion ignores keys it doesn't recognize. A `rooms:` list at the top level of the file, outside a floor, is silently dropped.
+:::
 
 ### Nodes
 Create 1 node entry for each node. Units are always meters.
@@ -291,11 +337,13 @@ Create 1 node entry for each node. Units are always meters.
 nodes:
   - id: esp32-1 # optional
     name: Living Room Node
-    room: living-room # room id, see rooms section
     point: [2,2,1]  # absolute x,y,z coordinates (same origin as rooms, NOT relative to the room)
     floors: ["ground", "outside"] # floor id, LIST THE FLOOR THE NODE IS ON FIRST, followed by the next closest location.
+    stationary: true # default; set false for a node that moves, e.g. one in a car
 ```
-Note: Multiple nodes can be mapped to one room, but each needs a unique name.
+Note: Multiple nodes can be in one room, but each needs a unique name.
+
+A node with `stationary: false` isn't used to calibrate other nodes. When other nodes hear it, it's tracked like any other device.
 
 **Coordinates are absolute, not room- or floor-relative.** Like rooms, node points are measured from the map's origin, and z must include the floor's base elevation. On a multi-story home, a node mounted 1.7m up a wall on a floor whose `bounds` start at z=3 gets `point: [x, y, 4.7]` — not `1.7`. If a node's z falls outside the z-range of its floor's `bounds`, it will be excluded from locating on that floor and will render at the wrong height in the 3D view.
 
