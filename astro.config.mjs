@@ -89,9 +89,8 @@ export default defineConfig({
               label: 'Add-ons',
               items: [
                 { label: 'Grove AHT20', link: '/addons/grove-aht20' },
+                { label: 'Grove Barometer', link: '/addons/grove-barometer' },
                 { label: 'Grove BME280', link: '/addons/grove-bme280' },
-                { label: 'Grove BMP180', link: '/addons/grove-bmp180' },
-                { label: 'Grove BMP280', link: '/addons/grove-bmp280' },
                 { label: 'Grove SCD41', link: '/addons/grove-scd41' },
                 { label: 'Grove SGP30', link: '/addons/grove-sgp30' },
                 { label: 'Grove SHT31 / SHT40', link: '/addons/grove-sht' },
