@@ -9,7 +9,7 @@ board:
   formFactor: US smart plug (15 A)
   flash: 4 MB
   antenna: PCB antenna
-  install: <a href="https://github.com/kendallgoto/switchbota">SwitchbOTA</a> over WiFi, else serial (case is welded; see notes)
+  install: <a href="/espreswitch/">ESPreSwitch</a> over WiFi, else serial (case is welded; see notes)
   rating: recommended
   ratingNote: Good node that's also a smart plug. Mains powered, so no USB charger.
   stores:
@@ -51,7 +51,9 @@ Checked on hardware (2026-10-10): this template on three plugs. Mains voltage re
 
 ## Flashing
 
-[SwitchbOTA](https://github.com/kendallgoto/switchbota) replaces the stock firmware over WiFi, no disassembly needed. It works on stock firmware up to 1.4, and on 2025–2026 units that ship with v1.8 **as long as you don't accept the v2.x update in the SwitchBot app first**. It's unknown whether it works after v2.7. If the OTA route is closed, you'll need serial, and the case is welded shut.
+[ESPreSwitch](/espreswitch/) converts a stock plug to ESPresense over WiFi, no disassembly needed. It installs the full ESPresense image, bootloader and partition table included, so the plug ends up on the same flash layout as any other node. It has been tested on stock firmware v2.7; newer versions are untested, so **don't accept SwitchBot firmware updates** before converting. If the OTA route is closed, you'll need serial, and the case is welded shut.
+
+Plugs converted earlier with [SwitchbOTA](https://github.com/kendallgoto/switchbota) still have Tasmota's bootloader and partition table. ESPreSwitch moves them to ESPresense's layout over MQTT, without Bluetooth: see [Plugs already running ESPresense](https://github.com/ESPresense/ESPreSwitch#plugs-already-running-espresense).
 
 ## Notes
 
