@@ -26,9 +26,25 @@ const board = z.object({
   verified: z.string().optional(),
 });
 
+// Add-on pages (src/content/docs/addons/*.mdx) carry an `addon` block: a sensor or module that
+// plugs into a board. Its template names only the add-on's own settings, with no "chip" or pins,
+// so it stacks on any board template that set up the connection (e.g. the GROVE I2C pins).
+const settings = z.record(z.string(), z.union([z.number(), z.string(), z.boolean()]));
+const addon = z.object({
+  name: z.string(),
+  connection: z.string(),
+  sensors: z.string(),
+  stores: z.array(z.object({ label: z.string(), url: z.string().url() })).default([]),
+  template: settings.optional(),
+  // Versions of one module that need different settings (e.g. a BMP280 or an older BMP180 board),
+  // keyed by name; the page shows each with <AddonPage part="template" variant="..." />.
+  variants: z.record(z.string(), settings).optional(),
+  verified: z.string().optional(),
+}).refine((a) => a.template || a.variants, { message: 'an add-on needs a template or variants' });
+
 export const collections = {
   docs: defineCollection({
     loader: docsLoader(),
-    schema: docsSchema({ extend: z.object({ board: board.optional() }) }),
+    schema: docsSchema({ extend: z.object({ board: board.optional(), addon: addon.optional() }) }),
   }),
 };

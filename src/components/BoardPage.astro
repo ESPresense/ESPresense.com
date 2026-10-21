@@ -1,6 +1,8 @@
 ---
 // Renders one part of a per-board page's `board` frontmatter block, Tasmota-template style.
 // Headings stay in the .mdx so they land in Starlight's table of contents.
+import TemplateBox from './TemplateBox.astro';
+
 interface Props { part: 'summary' | 'gpio' | 'template' }
 const { part } = Astro.props;
 const { board } = Astro.locals.starlightRoute.entry.data;
@@ -65,14 +67,12 @@ const pretty = JSON.stringify({ name: board.name, chip: chipTarget, settings: bo
 <p>
   Paste this into the <strong>Board Template</strong> box on the node's <strong>Templates</strong> page,
   then Preview and Apply (firmware v5.0.0b1 or later). It sets the board's pins (and Ethernet type, if it has one) in one go.
+  Apply it before any <a href="/configuration/templates#add-on-templates">add-on template</a>.
   The LED, input and output lists replace what was configured before, so the result doesn't depend
   on the node's old setup.
   See <a href="/configuration/templates">Templates</a>.
 </p>
-<div class="template not-content">
-  <pre><code>{template}</code></pre>
-  <button type="button" data-template={template}>Copy</button>
-</div>
+<TemplateBox template={template} />
 <details>
   <summary>Formatted, with what each value means</summary>
   <pre><code>{pretty}</code></pre>
@@ -88,16 +88,6 @@ const pretty = JSON.stringify({ name: board.name, chip: chipTarget, settings: bo
 {board.verified && <p class="verified"><em>{board.verified}</em></p>}
 </Fragment>
 )}
-
-<script>
-  document.querySelectorAll<HTMLButtonElement>('.template button').forEach((btn) => {
-    btn.addEventListener('click', async () => {
-      await navigator.clipboard.writeText(btn.dataset.template ?? '');
-      btn.textContent = 'Copied';
-      setTimeout(() => (btn.textContent = 'Copy'), 1500);
-    });
-  });
-</script>
 
 <style>
   .board {
@@ -115,25 +105,4 @@ const pretty = JSON.stringify({ name: board.name, chip: chipTarget, settings: bo
   .badge.warn { background: var(--sl-color-orange-low); color: var(--sl-color-orange-high); }
   .badge.bad { background: var(--sl-color-red-low); color: var(--sl-color-red-high); }
   .rating-note { color: var(--sl-color-gray-2); }
-  .template { position: relative; }
-  .template pre {
-    white-space: pre-wrap;
-    word-break: break-all;
-    padding: 0.75rem 5rem 0.75rem 0.75rem;
-    border: 1px solid var(--sl-color-gray-5);
-    border-radius: 0.5rem;
-    background: var(--sl-color-gray-6);
-    font-size: var(--sl-text-sm);
-  }
-  .template button {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.25rem;
-    border: 1px solid var(--sl-color-gray-4);
-    background: var(--sl-color-black);
-    color: var(--sl-color-white);
-    cursor: pointer;
-  }
 </style>

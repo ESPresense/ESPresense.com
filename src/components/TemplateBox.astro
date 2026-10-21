@@ -1,0 +1,43 @@
+---
+// A template to paste into the node's Templates page: one line, with a Copy button.
+interface Props { template: string }
+const { template } = Astro.props;
+---
+<div class="template not-content">
+  <pre><code>{template}</code></pre>
+  <button type="button" data-template={template}>Copy</button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.template button').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      await navigator.clipboard.writeText(btn.dataset.template ?? '');
+      btn.textContent = 'Copied';
+      setTimeout(() => (btn.textContent = 'Copy'), 1500);
+    });
+  });
+</script>
+
+<style>
+  .template { position: relative; }
+  .template pre {
+    white-space: pre-wrap;
+    word-break: break-all;
+    padding: 0.75rem 5rem 0.75rem 0.75rem;
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    background: var(--sl-color-gray-6);
+    font-size: var(--sl-text-sm);
+  }
+  .template button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    border: 1px solid var(--sl-color-gray-4);
+    background: var(--sl-color-black);
+    color: var(--sl-color-white);
+    cursor: pointer;
+  }
+</style>

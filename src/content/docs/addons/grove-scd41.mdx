@@ -1,0 +1,29 @@
+---
+title: "Grove SCD41"
+description: "Seeed Grove CO2 & Temperature & Humidity (SCD41) on an ESPresense node: add-on template and notes."
+addon:
+  name: "Seeed Grove CO2 & Temperature & Humidity (SCD41)"
+  sensors: "SCD41: CO2, temperature, humidity"
+  connection: "GROVE I2C (0x62)"
+  template:
+    SCD4x_I2c_Bus: 1
+    SCD4x_I2c: "0x62"
+---
+
+import AddonPage from '../../../components/AddonPage.astro';
+
+:::caution[Unverified]
+These settings follow the sensor datasheets and the built-in drivers but haven't been checked on this module with the current firmware yet.
+:::
+
+<AddonPage part="summary" />
+
+## Template
+
+<AddonPage part="template" />
+
+## Notes
+
+- Plug it into the GROVE port. The [Atom S3 Lite](/nodes/atom-s3-lite) and [NanoC6](/nodes/nanoc6) board templates set GROVE as I2C bus 1. On another board, set I2C bus 1's SDA and SCL pins on the Hardware page first.
+- Applying the template needs firmware newer than v5.0.0b2 ([ESPresense#2555](https://github.com/ESPresense/ESPresense/pull/2555)). Older firmware asks for a `"chip"`; set the values on the Hardware page instead.
+- Publishes `co2` (ppm), `temperature` and `humidity`. An SHT sensor uses the same temperature and humidity topics, and an SGP30 the same `co2`, so don't pair it with either.
