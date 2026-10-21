@@ -223,7 +223,7 @@ The penalty is: `weight = exp(-distance^2 / (2 * motion_sigma^2))`
 ```yaml
 optimization:
   enabled: true
-  interval_secs: 3600
+  interval_secs: 3600     # How often optimization runs, in seconds (default: 60)
   optimizer: legacy       # legacy, global_absorption or per_node_absorption (default: legacy)
   keep_snapshot_mins: 5   # How long to keep optimization snapshots (default: 5)
   min_samples: 5          # Minimum measurements a result must be evaluated on before it's applied (default: 5)

@@ -31,7 +31,7 @@ ESPresense Companion automatically optimizes node settings by sending out iBeaco
 1. When optimization is enabled, the system:
    - Takes 3 optimization snapshots at configured intervals
    - Establishes a baseline error measurement
-   - Runs continuously at the configured interval (default: hourly)
+   - Runs continuously at the configured interval (default: every 60 seconds)
 
 2. For each optimization run:
    - Takes a new snapshot
