@@ -3,12 +3,16 @@
 // (the node would take it as the board's name) and no "chip" (it sets no pins), so it fits any node.
 import TemplateBox from './TemplateBox.astro';
 
-interface Props { part: 'summary' | 'template' }
-const { part } = Astro.props;
+// part="template" shows how to apply it and the template; with `variant`, only that version's
+// template (put part="howto" above the versions once).
+interface Props { part: 'summary' | 'howto' | 'template'; variant?: string }
+const { part, variant } = Astro.props;
 const { addon } = Astro.locals.starlightRoute.entry.data;
 if (!addon) throw new Error('AddonPage used on a page without an `addon` frontmatter block');
 
-const template = JSON.stringify({ settings: addon.template });
+const settings = variant ? addon.variants?.[variant] : addon.template;
+if (part === 'template' && !settings) throw new Error(`add-on has no ${variant ? `variant "${variant}"` : 'template'}`);
+const template = JSON.stringify({ settings });
 ---
 {part === 'summary' && (
 <div class="addon not-content">
@@ -24,18 +28,17 @@ const template = JSON.stringify({ settings: addon.template });
 </div>
 )}
 
-{part === 'template' && (
-<Fragment>
+{(part === 'howto' || (part === 'template' && !variant)) && (
 <p>
   First apply your board's template from its <a href="/nodes/">board page</a>, so the I2C pins are set.
   Then paste this into the <strong>Board Template</strong> box on the node's <strong>Templates</strong> page,
   Preview and Apply. It sets only this add-on's settings and works on any chip.
   See <a href="/configuration/templates#add-on-templates">Add-on templates</a>.
 </p>
-<TemplateBox template={template} />
-{addon.verified && <p class="verified"><em>{addon.verified}</em></p>}
-</Fragment>
 )}
+
+{part === 'template' && <TemplateBox template={template} />}
+{part === 'template' && !variant && addon.verified && <p class="verified"><em>{addon.verified}</em></p>}
 
 <style>
   .addon {

@@ -1,13 +1,17 @@
 ---
 title: "Grove Barometer"
-description: "Seeed Grove Barometer (BMP280 or the older BMP180) on an ESPresense node: add-on template and notes."
+description: "Seeed Grove Barometer (BMP280, or the older BMP180) on an ESPresense node: add-on templates and notes."
 addon:
-  name: "Seeed Grove Barometer (BMP280 / BMP180)"
-  sensors: "BMP280 (older boards: BMP180): temperature, pressure"
+  name: "Seeed Grove Barometer"
+  sensors: "BMP280, or BMP180 on the older board: temperature, pressure"
   connection: "GROVE I2C (0x77)"
-  template:
-    BMP280_I2c_Bus: 1
-    BMP280_I2c: "0x77"
+  variants:
+    BMP280:
+      BMP280_I2c_Bus: 1
+      BMP280_I2c: "0x77"
+    BMP180:
+      BMP180_I2c_Bus: 1
+      BMP180_I2c: "0x77"
 ---
 
 import AddonPage from '../../../components/AddonPage.astro';
@@ -20,18 +24,24 @@ These settings follow the sensor datasheets and the built-in drivers but haven't
 
 ## Template
 
-<AddonPage part="template" />
+<AddonPage part="howto" />
+
+Seeed made this board with two different chips. Use the template for yours, not both: Home Assistant would show the missing chip's sensors as unavailable.
+
+### BMP280
+
+<AddonPage part="template" variant="BMP280" />
+
+Publishes `bmp280_temperature` and `bmp280_pressure`. If nothing shows up, try `"BMP280_I2c": "0x76"`.
+
+### BMP180 (older board)
+
+<AddonPage part="template" variant="BMP180" />
+
+Publishes `bmp180_temperature` and `bmp180_pressure`. The BMP180 is always at 0x77.
 
 ## Notes
 
 - Plug it into the GROVE port. The [Atom S3 Lite](/nodes/atom-s3-lite) and [NanoC6](/nodes/nanoc6) board templates set GROVE as I2C bus 1. On another board, set I2C bus 1's SDA and SCL pins on the Hardware page first.
-- Applying the template needs firmware newer than v5.0.0b2 ([ESPresense#2555](https://github.com/ESPresense/ESPresense/pull/2555)). Older firmware asks for a `"chip"`; set the values on the Hardware page instead.
-- The template is for the BMP280 version. The older board has a BMP180; for that one apply this instead:
-
-  ```json
-  {"settings": {"BMP180_I2c_Bus": 1, "BMP180_I2c": "0x77"}}
-  ```
-
-  Don't set both: Home Assistant would show the missing chip's sensors as unavailable.
-- Publishes `bmp280_temperature` and `bmp280_pressure` (BMP180: `bmp180_temperature` and `bmp180_pressure`).
-- If nothing shows up, try `"BMP280_I2c": "0x76"` (BMP280 only; the BMP180 is always 0x77), or turn on "Debug I2C addresses" on the Hardware page and check the serial log.
+- Applying a template needs firmware newer than v5.0.0b2 ([ESPresense#2555](https://github.com/ESPresense/ESPresense/pull/2555)). Older firmware asks for a `"chip"`; set the values on the Hardware page instead.
+- Not sure which chip you have? Turn on "Debug I2C addresses" on the Hardware page, or apply one template and check the serial log: the wrong driver logs "Couldn't find a sensor".
