@@ -24,9 +24,11 @@ board:
     - { pin: 7, use: Blue LED, setting: leds }
     - { pin: 9, use: Button (active low), setting: inputs }
     - { pin: 3, use: IR emitter }
-    - { pin: 2, use: GROVE SDA (yellow) }
-    - { pin: 1, use: GROVE SCL (white) }
+    - { pin: 2, use: GROVE SDA (yellow), setting: I2C_Bus_1_SDA }
+    - { pin: 1, use: GROVE SCL (white), setting: I2C_Bus_1_SCL }
   template:
+    I2C_Bus_1_SDA: 2
+    I2C_Bus_1_SCL: 1
     leds:
       - { type: "grb", pin: 20, count: 1, control: "status" }
       - { type: "pwm", pin: 7, count: 1, control: "mqtt" }
@@ -56,3 +58,4 @@ Pin data comes from the vendor docs and hasn't been checked on hardware yet.
 
 - The RGB LED (LED 1, Addressable GRB) shows status in colour. It's only powered while GPIO 19 is high, so the template adds an Always High output on 19 (no Home Assistant entity). The blue LED is LED 2, controlled over MQTT.
 - GPIO 9 is the boot strapping pin: holding the button while plugging in enters download mode.
+- The template makes the GROVE port I2C bus 1, ready for a sensor such as the [ENV IV](/addons/m5stack-env-iv): apply its add-on template next.

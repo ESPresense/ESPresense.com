@@ -85,6 +85,10 @@ export default defineConfig({
                 { label: 'XIAO ESP32S3', link: '/nodes/xiao-esp32s3' },
               ],
             },
+            {
+              label: 'Add-ons',
+              items: [{ label: 'M5Stack ENV IV', link: '/addons/m5stack-env-iv' }],
+            },
             { slug: 'firmware' },
             { slug: 'espreswitch', label: 'ESPreSwitch (SwitchBot Plug)' },
             { slug: 'enclosures' },

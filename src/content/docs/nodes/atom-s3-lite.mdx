@@ -21,9 +21,11 @@ board:
     - { pin: 35, use: SK6812 RGB LED, setting: leds }
     - { pin: 41, use: Button (active low), setting: inputs }
     - { pin: 4, use: IR emitter }
-    - { pin: 2, use: GROVE SDA (yellow) }
-    - { pin: 1, use: GROVE SCL (white) }
+    - { pin: 2, use: GROVE SDA (yellow), setting: I2C_Bus_1_SDA }
+    - { pin: 1, use: GROVE SCL (white), setting: I2C_Bus_1_SCL }
   template:
+    I2C_Bus_1_SDA: 2
+    I2C_Bus_1_SCL: 1
     leds:
       - { type: "grb", pin: 35, count: 1, control: "status" }
     inputs:
@@ -50,5 +52,5 @@ Pin data comes from the vendor docs and hasn't been checked on hardware yet.
 ## Notes
 
 - The generic `esp32s3` build defaults to a PWM LED on GPIO 2, which this board doesn't have. Without the template the status LED stays dark.
-- Plugging an I2C sensor into the GROVE port? Set `I2C_Bus_1_SDA` to 2 and `I2C_Bus_1_SCL` to 1 on the Hardware page (I2C is off by default).
+- The template makes the GROVE port I2C bus 1, ready for a sensor such as the [ENV IV](/addons/m5stack-env-iv): apply its add-on template next.
 - The IR emitter isn't used by ESPresense.

@@ -1,0 +1,50 @@
+---
+// Renders one part of an add-on page's `addon` frontmatter block. Its template has no "name"
+// (the node would take it as the board's name) and no "chip" (it sets no pins), so it fits any node.
+import TemplateBox from './TemplateBox.astro';
+
+interface Props { part: 'summary' | 'template' }
+const { part } = Astro.props;
+const { addon } = Astro.locals.starlightRoute.entry.data;
+if (!addon) throw new Error('AddonPage used on a page without an `addon` frontmatter block');
+
+const template = JSON.stringify({ settings: addon.template });
+---
+{part === 'summary' && (
+<div class="addon not-content">
+  <table>
+    <tbody>
+      <tr><th>Sensors</th><td>{addon.sensors}</td></tr>
+      <tr><th>Connection</th><td>{addon.connection}</td></tr>
+      {addon.stores.length > 0 && (
+        <tr><th>Stores</th><td>{addon.stores.map((s) => <a href={s.url} target="_blank" rel="noopener noreferrer">{s.label}</a>)}</td></tr>
+      )}
+    </tbody>
+  </table>
+</div>
+)}
+
+{part === 'template' && (
+<Fragment>
+<p>
+  First apply your board's template from its <a href="/nodes/">board page</a>, so the I2C pins are set.
+  Then paste this into the <strong>Board Template</strong> box on the node's <strong>Templates</strong> page,
+  Preview and Apply. It sets only this add-on's settings and works on any chip.
+  See <a href="/configuration/templates#add-on-templates">Add-on templates</a>.
+</p>
+<TemplateBox template={template} />
+{addon.verified && <p class="verified"><em>{addon.verified}</em></p>}
+</Fragment>
+)}
+
+<style>
+  .addon {
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 0.5rem;
+    padding: 1rem;
+  }
+  .addon table { width: 100%; }
+  .addon th { width: 9rem; text-align: left; color: var(--sl-color-gray-2); font-weight: 600; }
+  .addon th, .addon td { padding: 0.25rem 0.5rem; vertical-align: top; }
+  .addon td a + a { margin-left: 0.75rem; }
+</style>
