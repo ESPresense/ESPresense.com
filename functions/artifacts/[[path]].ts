@@ -7,10 +7,13 @@ import { github } from '../../lib/github.ts'
 import { cors } from 'hono/cors'
 import * as fflate from "fflate"
 
-function esp32(path: string) {
+// Builds also upload <name>.factory.bin: the build's own bootloader, partition table and OTA data
+// merged with the app, written at 0x0, so the bootloader matches the ESP-IDF the app was built with.
+// Older runs without one get the static parts below.
+function esp32(path: string, factory?: string) {
   return {
     "chipFamily": "ESP32",
-    "parts": [{
+    "parts": factory ? [{ "path": factory, "offset": 0 }] : [{
       "path": "/static/esp32/bootloader.bin",
       "offset": 4096
     },
@@ -29,11 +32,11 @@ function esp32(path: string) {
   }
 }
 
-function esp32c3(path: string, serialType?: "cdc" | "uart") {
+function esp32c3(path: string, serialType?: "cdc" | "uart", factory?: string) {
   return {
     "chipFamily": "ESP32-C3",
     ...(serialType && { serialType }),
-    "parts": [{
+    "parts": factory ? [{ "path": factory, "offset": 0 }] : [{
       "path": "/static/esp32c3/bootloader.bin",
       "offset": 0x0000
     },
@@ -52,11 +55,11 @@ function esp32c3(path: string, serialType?: "cdc" | "uart") {
   }
 }
 
-function esp32s3(path: string, serialType?: "cdc" | "uart") {
+function esp32s3(path: string, serialType?: "cdc" | "uart", factory?: string) {
   return {
     "chipFamily": "ESP32-S3",
     ...(serialType && { serialType }),
-    "parts": [{
+    "parts": factory ? [{ "path": factory, "offset": 0 }] : [{
       "path": "/static/esp32s3/bootloader.bin",
       "offset": 0x0000
     },
@@ -75,11 +78,11 @@ function esp32s3(path: string, serialType?: "cdc" | "uart") {
   }
 }
 
-function esp32c6(path: string, serialType?: "cdc" | "uart") {
+function esp32c6(path: string, serialType?: "cdc" | "uart", factory?: string) {
   return {
     "chipFamily": "ESP32-C6",
     ...(serialType && { serialType }),
-    "parts": [{
+    "parts": factory ? [{ "path": factory, "offset": 0 }] : [{
       "path": "/static/esp32c6/bootloader.bin",
       "offset": 0x0000
     },
@@ -251,26 +254,30 @@ app.get('/:run_id_2{[0-9]+.json}',
       "new_install_prompt_erase": true,
       "builds": []
     }
+    const factory = (asset: Artifact) => {
+      const merged = findAsset(runArtifacts, asset.name.replace(/\.bin$/, '.factory.bin'))
+      return merged ? `download/runs/${run_id}/${merged.name}` : undefined
+    }
     const a32 = findAsset(runArtifacts, `esp32-${flavor}.bin`) || findAsset(runArtifacts, `${flavor}.bin`) || findAsset(runArtifacts, `esp32.bin`)
-    if (a32) manifest.builds.push(esp32(`download/runs/${run_id}/${a32.name}`))
+    if (a32) manifest.builds.push(esp32(`download/runs/${run_id}/${a32.name}`, factory(a32)))
 
     const c3 = findAsset(runArtifacts, `esp32c3-${flavor}.bin`) || findAsset(runArtifacts, `esp32c3.bin`)
-    if (c3) manifest.builds.push(esp32c3(`download/runs/${run_id}/${c3.name}`, "uart"))
+    if (c3) manifest.builds.push(esp32c3(`download/runs/${run_id}/${c3.name}`, "uart", factory(c3)))
 
     const c3_cdc = findAsset(runArtifacts, `esp32c3-${flavor}-cdc.bin`) || findAsset(runArtifacts, `esp32c3-cdc.bin`)
-    if (c3_cdc) manifest.builds.push(esp32c3(`download/runs/${run_id}/${c3_cdc.name}`, "cdc"))
+    if (c3_cdc) manifest.builds.push(esp32c3(`download/runs/${run_id}/${c3_cdc.name}`, "cdc", factory(c3_cdc)))
 
     const s3 = findAsset(runArtifacts, `esp32s3-${flavor}.bin`) || findAsset(runArtifacts, `esp32s3.bin`)
-    if (s3) manifest.builds.push(esp32s3(`download/runs/${run_id}/${s3.name}`, "uart"))
+    if (s3) manifest.builds.push(esp32s3(`download/runs/${run_id}/${s3.name}`, "uart", factory(s3)))
 
     const s3_cdc = findAsset(runArtifacts, `esp32s3-${flavor}-cdc.bin`) || findAsset(runArtifacts, `esp32s3-cdc.bin`)
-    if (s3_cdc) manifest.builds.push(esp32s3(`download/runs/${run_id}/${s3_cdc.name}`, "cdc"))
+    if (s3_cdc) manifest.builds.push(esp32s3(`download/runs/${run_id}/${s3_cdc.name}`, "cdc", factory(s3_cdc)))
 
     const c6 = findAsset(runArtifacts, `esp32c6-${flavor}.bin`) || findAsset(runArtifacts, `esp32c6.bin`)
-    if (c6) manifest.builds.push(esp32c6(`download/runs/${run_id}/${c6.name}`, "uart"))
+    if (c6) manifest.builds.push(esp32c6(`download/runs/${run_id}/${c6.name}`, "uart", factory(c6)))
 
     const c6_cdc = findAsset(runArtifacts, `esp32c6-${flavor}-cdc.bin`) || findAsset(runArtifacts, `esp32c6-cdc.bin`)
-    if (c6_cdc) manifest.builds.push(esp32c6(`download/runs/${run_id}/${c6_cdc.name}`, "cdc"))
+    if (c6_cdc) manifest.builds.push(esp32c6(`download/runs/${run_id}/${c6_cdc.name}`, "cdc", factory(c6_cdc)))
     return c.json(manifest)
   }
 )
