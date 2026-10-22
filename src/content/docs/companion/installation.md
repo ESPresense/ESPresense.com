@@ -77,6 +77,13 @@ services:
 
 Port `8268` is required for firmware updates.
 
+The image sets these environment variables:
+
+| Variable | Default in the image | Purpose |
+|---|---|---|
+| `CONFIG_DIR` | `/config/espresense` | Folder holding `config.yaml`. Outside the image it defaults to `~/.espresense`. |
+| `OTA_UPDATE_PORT` | `8268` | Port nodes download firmware updates from. Change the port mapping to match if you change it. |
+
 ## MQTT Setup
 
 ESPresense and ESPresense Companion require MQTT to function. Here's two ways to set it up:
