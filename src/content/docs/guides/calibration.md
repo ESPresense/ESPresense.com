@@ -32,7 +32,7 @@ You need: a beacon transmitting at **exactly 0 dBm** (a known-good iBeacon or Ed
 2. **Place the beacon exactly 1 m from the reference node.** Watch the average RSSI for that beacon on the reference node's Settings page. Record it.
 3. **Enter that value** as **RSSI expected from a 0 dBm transmitter at 1 m** on **every node**. This is the global reference, not per-node.
 4. **For each other node**, put the same beacon at the same distance and compare to the reference node's reading. If it reads stronger (less negative), set a **positive** Rx Adj RSSI of the difference; if weaker, a **negative** one. The node subtracts it from every reading. Adjust until both nodes report approximately the same RSSI for the beacon.
-5. **Move the beacon several meters through the kind of walls you actually have.** Adjust **Absorption Factor** (typical range `2.5`–`3.5`) until the reported *distance* matches reality. Higher = more attenuation assumed = larger reported distance for the same RSSI.
+5. **Move the beacon several meters through the kind of walls you actually have.** Adjust **Absorption Factor** (typical range `2.5`–`3.5`) until the reported *distance* matches reality. Beyond 1 m, higher absorption means a shorter reported distance for the same RSSI.
 6. **Verify at a second location.** Don't tune to one spot — it will overfit.
 
 Same procedure works for a single-node setup, except you skip step 4.
