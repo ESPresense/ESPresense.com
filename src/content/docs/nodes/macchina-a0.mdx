@@ -21,7 +21,7 @@ board:
     - { pin: 35, use: "12 V supply voltage (divider)", setting: batt_pin }
   template:
     leds:
-      - { type: "grb", pin: 2, count: 1, control: "status" }
+      - { type: "grb", pin: 2, count: 1, control: "status", max_brightness: 20 }
     inputs: []
     outputs:
       - { name: "CAN standby", pin: 21, type: "high" }
@@ -52,7 +52,7 @@ There's no `macchina-a0` flavor any more ([ESPresense#2530](https://github.com/E
 - **Battery type 1 is 12 V lead-acid.** It uses the A0 flavor's old charge curve and adds a **Charging** binary sensor, on above 13.2 V (engine running).
 - **CAN standby:** GPIO 21 held high keeps the CAN transceiver in standby, as the old flavor did at boot. It's an Always High output, so it gets no MQTT or Home Assistant entity.
 - I2C is off by default. Don't put it on GPIO 21: that's the CAN standby pin.
-- **The LED is brighter than before.** The old flavor capped LED brightness at 20 %, and templates can't set that.
+- **LED brightness is capped at 20 of 255,** as the old flavor's `MAX_BRIGHTNESS` was. `max_brightness` sets the ceiling, and the full brightness range is scaled down into it. Without it, addressable LEDs default to 100. Change it on the **Hardware** page.
 - On many cars the OBD-II port stays powered with the ignition off, so a node left plugged in slowly drains the car battery.
 
 ## Sources
