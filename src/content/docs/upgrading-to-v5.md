@@ -19,7 +19,7 @@ Room name, WiFi, MQTT, Home Assistant discovery, auto-update, and every setting 
 
 ### LEDs, motion, buttons and switches
 
-v4 kept these as separate settings (`led_1_pin`, `pir_pin`, `button_1_type`, ...). v5 has **LEDs** and **Inputs** lists on the Hardware page instead and doesn't read the v4 settings. After upgrading, add them again on the Hardware page. The choices have the same names as in v4 (PWM Inverted, Addressable GRB, Pullup Inverted, Floating, ...). A v4 PIR or radar is an input with role **Motion**; a button or switch is an input with that role.
+v4 kept these as separate settings (`led_1_pin`, `pir_pin`, `button_1_type`, ...). v5 has **LEDs** and **Inputs** lists on the Hardware page instead and doesn't read the v4 settings. After upgrading, add them again on the Hardware page. The choices have the same names as in v4 (PWM Inverted, Addressable GRB, Pullup Inverted, Floating, ...). A v4 PIR or radar becomes an input with role **Motion**, a button one with role **Button**, and a switch one with role **Switch**.
 
 A generic ESP32 board starts with v4's default LED (PWM on GPIO 2, showing status), so only LEDs you changed in v4 need setting again.
 
@@ -38,7 +38,7 @@ v4 had default I2C pins; v5 has none. If you never set the SDA and SCL pins your
 
 v4 published one `motion` sensor plus `button`, `switch`, `pir` and `radar` sensors. v5 publishes one binary sensor per input, `input_1`, `input_2` and so on, named after the input. A motion input gets the motion device class. After upgrading:
 
-- point automations that used the v4 motion, button or switch entities at the new input entities;
+- point automations that used any of the v4 `motion`, `pir`, `radar`, `button` or `switch` entities at the new input entities;
 - delete the old entities in Home Assistant, which stop updating.
 
 LEDs keep their entities (`led_1`, ...).
