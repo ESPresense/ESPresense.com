@@ -28,4 +28,4 @@ import AddonPage from '../../../components/AddonPage.astro';
 - Apply the [M5StickC Plus](/nodes/m5stickc-plus) board template first. The HAT plugs into the header on top of an M5StickC or M5StickC Plus, not the GROVE port. The template moves I2C bus 1 from the GROVE port (GPIO 32/33) to the HAT header, so the GROVE port has no I2C bus while it's applied. I2C bus 2 stays on GPIO 21/22 for the board's AXP192 power chip.
 - The template names `"chip": "esp32"` because it sets pins. Firmware before v5.0.0b3 requires a chip on every template anyway, so it works there too.
 - The SHT30 publishes `temperature` and `humidity`; the BMP280 publishes `bmp280_temperature` and `bmp280_pressure`. Use the SHT30's temperature: in testing the BMP280 read about 1.5 °C warmer.
-- The ENV III HAT pairs the SHT30 with a QMP6988, which has no driver. On that HAT, leave out the three `BMP280` settings and only the SHT30 reports (untested).
+- The ENV III HAT pairs the SHT30 with a QMP6988, which has no driver. On that HAT, leave out the two `BMP280` settings and only the SHT30 reports (untested).

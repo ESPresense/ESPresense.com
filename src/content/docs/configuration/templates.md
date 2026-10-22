@@ -40,6 +40,8 @@ An add-on template holds only the add-on's own settings, with no `name` and no `
 
 Templates only change the settings they name, so they stack. Apply the board's template first; on boards with a GROVE port it makes that port I2C bus 1. Then apply the add-on's. Leave out `name`: the node stores a template's name as the board's name. Add-on templates need firmware v5.0.0b3 or newer ([ESPresense#2555](https://github.com/ESPresense/ESPresense/pull/2555)).
 
+An add-on with its own connector, like a HAT on an M5StickC, is the exception. Its template also sets the I2C pins, so it names the `chip` (pin numbers differ between chips) and fits only that chip. Because it names a chip, it works on firmware before v5.0.0b3 too. See the [ENV II HAT](/addons/m5stack-env-ii-hat).
+
 ## Sharing your board
 
 **Export as template** on the Templates page saves `espresense-template.json`. It holds the Hardware page settings and Ethernet type, and only values that differ from the defaults. Room, WiFi, MQTT and scanning settings are never exported, so the file is safe to share. It leaves out `name`, so add the board's name before you share it.

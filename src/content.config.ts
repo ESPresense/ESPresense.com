@@ -41,7 +41,7 @@ const addon = z.object({
   variants: z.record(z.string(), settings).optional(),
   // Only for an add-on that brings its own pins (e.g. an M5StickC HAT on GPIO 0/26): the
   // template then names the chip, since pin numbers mean different things on each chip.
-  chip: z.string().optional(),
+  chip: z.enum(['esp32', 'esp32c3', 'esp32c6', 'esp32s3']).optional(),
   verified: z.string().optional(),
 }).refine((a) => a.template || a.variants, { message: 'an add-on needs a template or variants' });
 
