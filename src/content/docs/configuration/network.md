@@ -5,7 +5,7 @@ sidebar:
 ---
 
 
-<img src="/images/network_screen.png" alt="Screenshot of ESP32 initial settings interface" style="float:right;margin-left:20px;width:340px" />
+<img src="/images/network_screen.png" alt="Network page of the ESPresense node UI: room, WiFi, MQTT and updating" style="float:right;margin-left:20px;width:340px" />
 
 On first boot after flashing, the ESP32 launches a captive Wi-Fi portal under its own SSID. Join it, enter your network and MQTT credentials, and the device will reboot onto your network. These same fields stay editable from the **Network** page in the device web UI.
 

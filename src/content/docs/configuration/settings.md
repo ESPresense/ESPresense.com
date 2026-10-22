@@ -5,7 +5,7 @@ sidebar:
 ---
 
 
-<img src="/images/settings_screen.png" alt="Screenshot of ESP32 full settings interface" style="float:right;margin-left:20px;width:340px" />
+<img src="/images/settings_screen.png" alt="Settings page of the ESPresense node UI: scanning, querying, counting, filtering and calibration" style="float:right;margin-left:20px;width:340px" />
 
 These settings are accessible from the **Settings** page in the device web UI. Most can also be written live over [MQTT](/configuration/mqtt) — defaults and ranges for every option are listed in the [MQTT settings reference](/configuration/mqtt/#settings-reference). The ones marked **boot only** below are read once at startup and have no `<key>/set` handler; change them in the captive portal / Settings page and reboot the node.
 
