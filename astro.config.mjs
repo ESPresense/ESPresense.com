@@ -73,6 +73,7 @@ export default defineConfig({
                 { label: 'M5 Atom S3 Lite', link: '/nodes/atom-s3-lite' },
                 { label: 'M5 NanoC6', link: '/nodes/nanoc6' },
                 { label: 'M5 Stamp C3', link: '/nodes/stamp-c3' },
+                { label: 'M5StickC Plus', link: '/nodes/m5stickc-plus' },
                 { label: 'Macchina A0', link: '/nodes/macchina-a0' },
                 { label: 'Olimex ESP32-POE-ISO', link: '/nodes/olimex-esp32-poe' },
                 { label: 'QuinLED-ESP32 Ethernet', link: '/nodes/quinled-esp32' },
