@@ -106,6 +106,7 @@ export default defineConfig({
               ],
             },
             { slug: 'firmware' },
+            { slug: 'upgrading-to-v5', label: 'Upgrading to v5' },
             { slug: 'espreswitch', label: 'ESPreSwitch (SwitchBot Plug)' },
             { slug: 'enclosures' },
           ],
