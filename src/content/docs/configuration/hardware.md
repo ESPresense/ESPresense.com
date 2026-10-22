@@ -5,7 +5,7 @@ sidebar:
 ---
 
 
-<img src="/images/hardware_screen.png" alt="Sensors section of the ESPresense settings UI" style="float:right;margin-left:20px;width:340px" />
+<img src="/images/hardware_screen.png" alt="Hardware page of the ESPresense node UI: LEDs, inputs, outputs, power, GPIO and I2C sensors" style="float:right;margin-left:20px;width:340px" />
 
 ESPresense supports various LED and GPIO sensor configurations for enhanced functionality and visual feedback. These settings are accessible from the **Hardware** page in the device web UI. To set a known board up in one go, use a [board template](/configuration/templates).
 
