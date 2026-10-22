@@ -98,6 +98,7 @@ export default defineConfig({
                 { label: 'M5Stack CO2 / CO2L', link: '/addons/m5stack-co2' },
                 { label: 'M5Stack DLight', link: '/addons/m5stack-dlight' },
                 { label: 'M5Stack ENV II', link: '/addons/m5stack-env-ii' },
+                { label: 'M5Stack ENV II HAT', link: '/addons/m5stack-env-ii-hat' },
                 { label: 'M5Stack ENV III', link: '/addons/m5stack-env-iii' },
                 { label: 'M5Stack ENV IV', link: '/addons/m5stack-env-iv' },
                 { label: 'M5Stack TVOC', link: '/addons/m5stack-tvoc' },

@@ -39,6 +39,9 @@ const addon = z.object({
   // Versions of one module that need different settings (e.g. a BMP280 or an older BMP180 board),
   // keyed by name; the page shows each with <AddonPage part="template" variant="..." />.
   variants: z.record(z.string(), settings).optional(),
+  // Only for an add-on that brings its own pins (e.g. an M5StickC HAT on GPIO 0/26): the
+  // template then names the chip, since pin numbers mean different things on each chip.
+  chip: z.string().optional(),
   verified: z.string().optional(),
 }).refine((a) => a.template || a.variants, { message: 'an add-on needs a template or variants' });
 

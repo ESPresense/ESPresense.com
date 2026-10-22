@@ -1,6 +1,7 @@
 ---
 // Renders one part of an add-on page's `addon` frontmatter block. Its template has no "name"
-// (the node would take it as the board's name) and no "chip" (it sets no pins), so it fits any node.
+// (the node would take it as the board's name) and usually no "chip": it sets no pins, so it fits
+// any node. An add-on with its own pins (`chip` set) names the chip and sets its I2C pins itself.
 import TemplateBox from './TemplateBox.astro';
 
 // part="template" shows how to apply it and the template; with `variant`, only that version's
@@ -12,7 +13,7 @@ if (!addon) throw new Error('AddonPage used on a page without an `addon` frontma
 
 const settings = variant ? addon.variants?.[variant] : addon.template;
 if (part === 'template' && !settings) throw new Error(`add-on has no ${variant ? `variant "${variant}"` : 'template'}`);
-const template = JSON.stringify({ settings });
+const template = JSON.stringify(addon.chip ? { chip: addon.chip, settings } : { settings });
 ---
 {part === 'summary' && (
 <div class="addon not-content">
@@ -28,7 +29,16 @@ const template = JSON.stringify({ settings });
 </div>
 )}
 
-{(part === 'howto' || (part === 'template' && !variant)) && (
+{(part === 'howto' || (part === 'template' && !variant)) && addon.chip && (
+<p>
+  Paste this into the <strong>Board Template</strong> box on the node's <strong>Templates</strong> page,
+  Preview and Apply. It sets the I2C pins as well as the sensors, so it only fits <code>{addon.chip}</code> boards
+  with this connector, and it works on top of the board's own template.
+  See <a href="/configuration/templates#add-on-templates">Add-on templates</a>.
+</p>
+)}
+
+{(part === 'howto' || (part === 'template' && !variant)) && !addon.chip && (
 <p>
   First set up the I2C pins: apply your board's template from its <a href="/nodes/">board page</a>
   (the Atom S3 Lite and NanoC6 templates make the GROVE port I2C bus 1), or set I2C bus 1's SDA and SCL
