@@ -28,6 +28,19 @@ npm run preview    # serve the production build locally
 - `astro.config.mjs` — sidebar layout and URL redirects.
 - `public/images/` — committed images (screenshots, diagrams).
 
+## Screenshots
+
+The device-UI screenshots in `public/images/` come from the firmware's web UI, not from this site:
+
+```sh
+cd ../ESPresense/ui && npm run dev          # or let the capture script start it
+cd - && ESPRESENSE_DEVICE=<node ip> npm run screenshots
+```
+
+The script serves the UI from `../ESPresense/ui`, mocks `/wifi/hardware` so a bench node's
+leftover settings never land in the docs, and writes phone-width full-page captures. Point
+`ESPRESENSE_UI_REPO` elsewhere if the firmware repo is not a sibling directory.
+
 ## Contributing
 
 Read **[CONTRIBUTING-docs.md](./CONTRIBUTING-docs.md)** before opening a PR. It covers:
