@@ -8,7 +8,7 @@ v5 is a rewrite on ESP-IDF, with a new web UI. It installs over v4 like any othe
 On its first start, v5 converts the settings it stores differently, once. Most nodes need nothing more than the Home Assistant changes below. Board-specific v4 firmware needs its board template.
 
 :::note
-This page describes v5.0.0.
+This page describes v5.0.0, which isn't released yet. Until it is, it applies to the v5 beta builds after v5.0.0b3, and to the first Companion release that supports them. v5.0.0b3 and earlier still use `rx_adj_rssi`, report `rxAdj`, and don't convert v4 settings.
 :::
 
 ## Update the Companion first
