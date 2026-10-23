@@ -150,19 +150,6 @@ These are configured at boot (over the captive portal / Network page) and **cann
 | `arduino_ota` | ON / OFF | `OFF` | Enable the Arduino OTA protocol (espota / PlatformIO). Keep off for less RAM use and a smaller attack surface. |
 | `update` | string URL | `""` | If set, the node fetches firmware from this URL on next boot. Cleared after a successful update. |
 
-### Motion / Switch / Button
-
-Pin assignments live on the [Hardware](/configuration/hardware) page; the timeouts can be tuned at runtime.
-
-| Setting | Type | Default | Description |
-|---|---|---|---|
-| `pir_timeout` | float seconds (0–300) | `0.5` | PIR debounce / hold time after the last trigger. |
-| `radar_timeout` | float seconds (0–300) | `0.5` | Radar debounce / hold time after the last trigger. |
-| `switch_1_timeout` | float seconds (0–300) | `0.5` | Switch One debounce. |
-| `switch_2_timeout` | float seconds (0–300) | `0.5` | Switch Two debounce. |
-| `button_1_timeout` | float seconds (0–300) | `0.5` | Button One debounce. |
-| `button_2_timeout` | float seconds (0–300) | `0.5` | Button Two debounce. |
-
 ### Commands
 
 | Topic | Payload | Action |
@@ -188,30 +175,32 @@ All topics under `espresense/rooms/<room>/...` are retained unless noted.
 
 Republished retained when the node comes back online so a fresh subscriber sees the current values:
 
-`max_distance`, `absorption`, `tx_ref_rssi`, `rx_adj_rssi`, `query`, `include`, `exclude`, `known_macs`, `known_irks`, `count_ids`, plus updater state (`auto_update`, `prerelease`, `arduino_ota`) and per-input timeouts when those sensors are enabled.
+`max_distance`, `absorption`, `tx_ref_rssi`, `rx_adj_rssi`, `query`, `include`, `exclude`, `known_macs`, `known_irks`, `count_ids`, plus updater state (`auto_update`, `prerelease`, `arduino_ota`).
 
-### GPIO sensors
+### Inputs and outputs
 
-Published when the corresponding pin is configured ([Hardware](/configuration/hardware)):
+Published for each input and output set up on the [Hardware](/configuration/hardware) page. `<n>` is its place in the list, starting at 1:
 
 | Topic | Payload | Notes |
 |---|---|---|
-| `pir` | `ON` / `OFF` | Raw PIR state. |
-| `radar` | `ON` / `OFF` | Raw radar state. |
-| `motion` | `ON` / `OFF` | Logical OR of pir + radar. Use this in Home Assistant automations. |
-| `switch_1`, `switch_2` | `ON` / `OFF` | Individual switch state. |
-| `switch` | `ON` / `OFF` | Logical OR of both switches. |
-| `button_1`, `button_2` | `ON` / `OFF` | Individual button state. |
-| `button` | `ON` / `OFF` | Logical OR of both buttons. |
+| `input_<n>` | `ON` / `OFF` | An input (motion sensor, button or switch). |
+| `output_<n>` | `ON` / `OFF` | An output (relay). Not published for Always High / Always Low outputs. |
+| `output_<n>/set` | `ON` / `OFF` / `TOGGLE` | Switch an output. |
+
+v4's `pir`, `radar`, `motion`, `switch`, `switch_1`/`switch_2`, `button` and `button_1`/`button_2` topics are gone in v5; see [Upgrading from v4 to v5](/upgrading-to-v5#home-assistant-entities).
+
+### Energy meter
+
+Published every 10 seconds when an [energy meter](/configuration/hardware#energy-meter) is set up: `power` (W), `energy` (kWh), and, when the chip measures them, `voltage` (V) and `current` (A).
 
 ### LEDs
 
-When a configured LED has **LED Control = MQTT** ([Hardware → MQTT LED control](/configuration/hardware/#mqtt-led-control-v40)):
+For each LED with **LED Control = MQTT** ([Hardware → MQTT LED control](/configuration/hardware#mqtt-led-control)). `<n>` is its place in the LED list, 1 to 4:
 
 | Topic | Payload | Notes |
 |---|---|---|
-| `led_1`, `led_2`, `led_3` | JSON state | Published when the LED changes. |
-| `led_1/set`, `led_2/set`, `led_3/set` | JSON command | See the LED control example below. |
+| `led_<n>` | JSON state | Published when the LED changes. |
+| `led_<n>/set` | JSON command | See the LED control example below. |
 
 ### Per-device topics
 
