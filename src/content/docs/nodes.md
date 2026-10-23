@@ -65,7 +65,7 @@ Still supported, but don't buy one new — the silicon is old and the newer S3/C
 
 | Board | Notes |
 |:------|:------|
-| M5 Atom (Lite / Echo / Matrix) | Enclosed. The 3D antenna is much better than generic clones |
+| M5 Atom (Lite / Echo / [Matrix](/nodes/m5atom-matrix)) | Enclosed. The 3D antenna is much better than generic clones. The Matrix needs its template's LED brightness cap |
 | M5 Stamp Pico | Stamp form. Small, still has a 3D antenna |
 | Adafruit Huzzah32 | Dev board. Branded, quality control unlike generic ESP32 dev boards |
 

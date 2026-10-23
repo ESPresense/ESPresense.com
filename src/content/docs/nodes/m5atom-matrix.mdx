@@ -1,0 +1,63 @@
+---
+title: M5 Atom Matrix
+description: M5Stack Atom Matrix (ESP32) — pins, settings template and notes for ESPresense, including the legacy LED brightness cap for the 5 × 5 matrix.
+sidebar:
+  order: 13
+board:
+  name: M5 Atom Matrix
+  chip: ESP32
+  formFactor: Cube, 24 × 24 × 14 mm, 5 × 5 RGB LED matrix on top
+  flash: 4 MB
+  antenna: 3D antenna
+  usb: USB-C (USB-UART)
+  install: <a href="/firmware">Browser installer</a>, <code>m5atom</code> or <code>esp32</code> flavor (the same build on v5)
+  rating: caveats
+  ratingNote: Original ESP32. Fine if you own one, but keep the LED brightness cap.
+  stores:
+    - { label: m5stack, url: "https://shop.m5stack.com/products/atom-matrix-esp32-development-kit?ref=ESPresense" }
+  gpio:
+    - { pin: 27, use: 25 × WS2812C RGB LEDs (5 × 5 matrix), setting: leds }
+    - { pin: 39, use: Button under the matrix (active low), setting: inputs }
+    - { pin: 26, use: GROVE SDA (yellow), setting: I2C_Bus_1_SDA }
+    - { pin: 32, use: GROVE SCL (white), setting: I2C_Bus_1_SCL }
+    - { pin: 25, use: Internal I2C SDA (MPU6886 IMU) }
+    - { pin: 21, use: Internal I2C SCL }
+    - { pin: 12, use: IR emitter }
+  template:
+    I2C_Bus_1_SDA: 26
+    I2C_Bus_1_SCL: 32
+    leds:
+      - { type: "grb", pin: 27, count: 25, control: "status", max_brightness: 40 }
+    inputs:
+      - { name: "Button", role: "button", pin: 39, type: "floating_inverted" }
+    outputs: []
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[Unverified pins]
+Pin data comes from M5Stack's docs and the v4 `m5atom` flavor, and hasn't been checked with v5 on hardware yet.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- **Keep the brightness cap.** 25 LEDs packed under a small diffuser get hot at full brightness. `max_brightness: 40` (of 255) is the ceiling M5Stack's own Atom library uses: it maps its 0–100 brightness scale to 0–40 and starts at 20. [M5Stack's docs](https://docs.m5stack.com/en/core/Atom-Matrix) recommend a FastLED brightness of 20 and warn that full-on operation can damage the LEDs and panel. The v4 `m5atom` flavor used 50. The full brightness range from MQTT and Home Assistant is scaled down into the cap. Without it, the LEDs use the firmware's default: 100 for addressable LEDs up to v5.0.0b3, 64 from [ESPresense#2551](https://github.com/ESPresense/ESPresense/pull/2551). Change the cap on the **Hardware** page.
+- **Without the template the matrix stays dark.** The `esp32` build's default status LED is a PWM LED on GPIO 2, which this board doesn't have. The `m5atom` installer flavor is the same build under another name.
+- The button has an external pull-up and GPIO 39 is input-only, so it uses `floating_inverted`.
+- The template makes the GROVE port I2C bus 1, ready for a sensor such as the [ENV IV](/addons/m5stack-env-iv): apply its add-on template next. The internal bus to the IMU (GPIO 25/21) isn't set up, because ESPresense doesn't use the IMU.
+- The IR emitter isn't used by ESPresense.
+
+## Sources
+
+- ESPresense firmware v4: the `M5ATOM` block in `include/defaults.h` (LED on GPIO 27, 25 LEDs, button on GPIO 39, `MAX_BRIGHTNESS 50`, GROVE I2C on 26/32)
+- [M5Stack Atom Matrix docs](https://docs.m5stack.com/en/core/ATOM%20Matrix)
