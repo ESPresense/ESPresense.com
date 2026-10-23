@@ -70,6 +70,7 @@ export default defineConfig({
                 { label: 'ESP32-S3-ETH', link: '/nodes/waveshare-esp32-s3-eth' },
                 { label: 'EST-PoE-32', link: '/nodes/est-poe-32' },
                 { label: 'GL-S10', link: '/nodes/gl-s10' },
+                { label: 'M5 Atom Matrix', link: '/nodes/m5atom-matrix' },
                 { label: 'M5 Atom S3 Lite', link: '/nodes/atom-s3-lite' },
                 { label: 'M5 NanoC6', link: '/nodes/nanoc6' },
                 { label: 'M5 Stamp C3', link: '/nodes/stamp-c3' },

@@ -28,6 +28,16 @@ npm run preview    # serve the production build locally
 - `astro.config.mjs` — sidebar layout and URL redirects.
 - `public/images/` — committed images (screenshots, diagrams).
 
+## Screenshots
+
+The node web-UI screenshots in `public/images/` (`hardware_screen.png`, `network_screen.png`) are captured from the firmware repo's UI, with every endpoint mocked, so no node is needed:
+
+```sh
+cd ../ESPresense/ui && npm run screenshots
+```
+
+It writes straight into this repo's `public/images/` when the two repos are sibling checkouts. See `ui/scripts/docs-screenshots.js` in [ESPresense/ESPresense](https://github.com/ESPresense/ESPresense).
+
 ## Contributing
 
 Read **[CONTRIBUTING-docs.md](./CONTRIBUTING-docs.md)** before opening a PR. It covers:

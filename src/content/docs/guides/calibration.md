@@ -31,8 +31,8 @@ You need: a beacon transmitting at **exactly 0 dBm** (a known-good iBeacon or Ed
 1. **Pick one reference node** in an open area, away from walls and metal. Leave its **Rx Adj RSSI** at `0`. Every other node gets calibrated against this one.
 2. **Place the beacon exactly 1 m from the reference node.** Watch the average RSSI for that beacon on the reference node's Settings page. Record it.
 3. **Enter that value** as **RSSI expected from a 0 dBm transmitter at 1 m** on **every node**. This is the global reference, not per-node.
-4. **For each other node**, put the same beacon at the same distance and compare to the reference node's reading. If it reads stronger (less negative), set a **negative** Rx Adj RSSI; if weaker, set a **positive** value. Adjust until both nodes report approximately the same RSSI for the beacon.
-5. **Move the beacon several meters through the kind of walls you actually have.** Adjust **Absorption Factor** (typical range `2.5`–`3.5`) until the reported *distance* matches reality. Higher = more attenuation assumed = larger reported distance for the same RSSI.
+4. **For each other node**, put the same beacon at the same distance and compare to the reference node's reading. If it reads stronger (less negative), set a **positive** Rx Adj RSSI of the difference; if weaker, a **negative** one. The node subtracts it from every reading. Adjust until both nodes report approximately the same RSSI for the beacon.
+5. **Move the beacon several meters through the kind of walls you actually have.** Adjust **Absorption Factor** (typical range `2.5`–`3.5`) until the reported *distance* matches reality. Beyond 1 m, higher absorption means a shorter reported distance for the same RSSI.
 6. **Verify at a second location.** Don't tune to one spot — it will overfit.
 
 Same procedure works for a single-node setup, except you skip step 4.
@@ -67,7 +67,7 @@ The reference point for devices that don't broadcast their own `rssi@1m`. Set th
 
 ### Factor used to account for absorption, reflection, or diffraction
 
-The path-loss exponent. Higher numbers assume more attenuation, which produces a longer reported distance for the same RSSI. Range is `1`–`5`, typical is `2.5`–`3.5`.
+The path-loss exponent. Higher numbers assume more attenuation, so the same drop in signal means less distance: beyond 1 m, a higher value reports a **shorter** distance for the same RSSI. If far devices read too far away, raise it; if they read too close, lower it. Range is `1`–`5`, typical is `2.5`–`3.5`.
 
 - Free air: ~2.0.
 - Drywall, residential interior: 2.5–3.0.
@@ -77,12 +77,13 @@ The path-loss exponent. Higher numbers assume more attenuation, which produces a
 
 ### RSSI adjustment for receiver
 
-An additive offset (in dB) applied to *every* RSSI reading from this specific node. Different ESP32 boards, antennas, and even USB cables can shift readings by several dB; this normalizes them so trilateration is fair across mixed hardware.
+An offset (in dB) **subtracted** from *every* RSSI reading from this specific node. Different ESP32 boards, antennas, and even USB cables can shift readings by several dB; this normalizes them so trilateration is fair across mixed hardware.
 
 - Reference node: leave at `0`.
-- Stronger-reading node (RSSI is less negative than reference): set **negative**.
-- Weaker-reading node: set **positive**.
-- Because it's additive, it doesn't change relative motion *within* a single room — but it keeps multi-room decisions consistent.
+- Stronger-reading node (RSSI is less negative than reference): set **positive**. A node reading -60 where the reference reads -65 needs `5`.
+- Weaker-reading node: set **negative**. A node reading -70 there needs `-5`.
+- ESP32-S3 nodes default to `20` unless you set a value.
+- Because it's a constant offset, it doesn't change relative motion *within* a single room — but it keeps multi-room decisions consistent.
 - MQTT key: `rx_adj_rssi`.
 
 ### Forget beacon if not seen for (in milliseconds)
@@ -106,7 +107,7 @@ User [@scargill](https://github.com/scargill) in [#1687](https://github.com/ESPr
 **Fix:**
 
 - Add a node closer to the office, don't push existing nodes harder.
-- Use **Rx Adj RSSI** to compensate if a specific node has a known-weak antenna.
+- Use **Rx Adj RSSI** to compensate if a specific node has a known-weak antenna (a negative value).
 - Increase **Forget beacon if not seen for** so an unseen-but-recent device isn't dropped between advertisements.
 - Tune the "away" detection window in Home Assistant, not in firmware — that's where the flap actually shows up.
 
