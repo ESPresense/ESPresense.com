@@ -27,7 +27,7 @@ board:
     I2C_Bus_1_SDA: 26
     I2C_Bus_1_SCL: 32
     leds:
-      - { type: "grb", pin: 27, count: 25, control: "status", max_brightness: 50 }
+      - { type: "grb", pin: 27, count: 25, control: "status", max_brightness: 40 }
     inputs:
       - { name: "Button", role: "button", pin: 39, type: "floating_inverted" }
     outputs: []
@@ -51,7 +51,7 @@ Pin data comes from M5Stack's docs and the v4 `m5atom` flavor, and hasn't been c
 
 ## Notes
 
-- **Keep the brightness cap.** 25 LEDs packed under a small diffuser get hot at full brightness. `max_brightness: 50` (of 255) preserves the legacy cap the v4 `m5atom` flavor used; it is not thermally validated on v5. The full brightness range from MQTT and Home Assistant is scaled down into it. Without the cap, addressable LEDs default to 100, twice as bright. [M5Stack's docs](https://docs.m5stack.com/en/core/Atom-Matrix) recommend a FastLED brightness of 20 and warn against prolonged full-on operation. Change the cap on the **Hardware** page.
+- **Keep the brightness cap.** 25 LEDs packed under a small diffuser get hot at full brightness. `max_brightness: 40` (of 255) is the ceiling M5Stack's own Atom library uses: it maps its 0–100 brightness scale to 0–40 and starts at 20. [M5Stack's docs](https://docs.m5stack.com/en/core/Atom-Matrix) recommend a FastLED brightness of 20 and warn that full-on operation can damage the LEDs and panel. The v4 `m5atom` flavor used 50. The full brightness range from MQTT and Home Assistant is scaled down into the cap. Without it, the LEDs use the firmware's default: 100 for addressable LEDs up to v5.0.0b3, 64 from [ESPresense#2551](https://github.com/ESPresense/ESPresense/pull/2551). Change the cap on the **Hardware** page.
 - **Without the template the matrix stays dark.** The `esp32` build's default status LED is a PWM LED on GPIO 2, which this board doesn't have. The `m5atom` installer flavor is the same build under another name.
 - The button has an external pull-up and GPIO 39 is input-only, so it uses `floating_inverted`.
 - The template makes the GROVE port I2C bus 1, ready for a sensor such as the [ENV IV](/addons/m5stack-env-iv): apply its add-on template next. The internal bus to the IMU (GPIO 25/21) isn't set up, because ESPresense doesn't use the IMU.
