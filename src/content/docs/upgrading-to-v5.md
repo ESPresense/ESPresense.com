@@ -34,7 +34,7 @@ Check the Hardware page afterwards.
 
 ### I2C pins
 
-v4 had default I2C pins; v5 has none. If a node has an I2C sensor on bus 1 and never had its SDA and SCL pins set, v5 sets v4's default pins for its chip, so the sensor keeps reporting:
+v4 had default I2C pins; v5 has none. If a node has an I2C sensor on bus 1, v5 sets v4's default for each bus 1 pin that was never set, so the sensor keeps reporting as it did on v4:
 
 | Chip | Bus 1 SDA / SCL |
 |:--|:--|
