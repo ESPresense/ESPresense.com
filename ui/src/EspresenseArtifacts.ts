@@ -314,23 +314,10 @@ export class EspresenseArtifacts extends LitElement {
 
   async firstUpdated() {
     try {
-      const [runsResponse, prsResponse] = await Promise.all([
-        fetch(
-          "https://api.github.com/repos/ESPresense/ESPresense/actions/workflows/build.yml/runs?status=success&per_page=100",
-          { credentials: "same-origin" }
-        ),
-        fetch(
-          "https://api.github.com/repos/ESPresense/ESPresense/pulls?state=all&per_page=100",
-          { credentials: "same-origin" }
-        ),
-      ]);
-      if (!runsResponse.ok) throw new Error(`GitHub API error: ${runsResponse.status}`);
+      // Cached proxy, not api.github.com: browsers share a 60/hour allowance there
+      const runsResponse = await fetch("/artifacts/runs", { credentials: "same-origin" });
+      if (!runsResponse.ok) throw new Error(`Run listing error: ${runsResponse.status}`);
       const runsData = await runsResponse.json();
-      const prTitles = new Map<number, string>();
-      if (prsResponse.ok) {
-        const prsData = await prsResponse.json();
-        for (const pr of prsData) prTitles.set(pr.number, pr.title || "");
-      }
 
       this.querySha = new URLSearchParams(window.location.search).get("sha")?.trim().toLowerCase() || "";
       this.queryPr = new URLSearchParams(window.location.search).get("pr")?.trim() || "";
@@ -377,7 +364,7 @@ export class EspresenseArtifacts extends LitElement {
           seenPrs.set(pr.number, {
             key: `pr-${pr.number}`,
             label: `PR #${pr.number}`,
-            title: prTitles.get(pr.number) || pr.title || "",
+            title: r.display_title || "",
             count: 0,
             latestAge: timeAgo(r.created_at),
           });

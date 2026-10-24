@@ -633,8 +633,8 @@ const W = class W extends w {
     this.setAttribute("theme", e);
   }
   async firstUpdated() {
-    const e = await fetch("https://api.github.com/repos/ESPresense/ESPresense/releases", { credentials: "same-origin" });
-    if (!e.ok) throw new Error(`GitHub API error: ${e.status}`);
+    const e = await fetch("/releases/list", { credentials: "same-origin" });
+    if (!e.ok) throw new Error(`Release listing error: ${e.status}`);
     const t = await e.json();
     this.response = t.filter((s) => s.assets.length > 5).reduce((s, r) => {
       const o = r.prerelease ? "Beta" : "Release";
@@ -815,22 +815,9 @@ const F = class F extends w {
   }
   async firstUpdated() {
     try {
-      const [e, t] = await Promise.all([
-        fetch(
-          "https://api.github.com/repos/ESPresense/ESPresense/actions/workflows/build.yml/runs?status=success&per_page=100",
-          { credentials: "same-origin" }
-        ),
-        fetch(
-          "https://api.github.com/repos/ESPresense/ESPresense/pulls?state=all&per_page=100",
-          { credentials: "same-origin" }
-        )
-      ]);
-      if (!e.ok) throw new Error(`GitHub API error: ${e.status}`);
-      const s = await e.json(), r = /* @__PURE__ */ new Map();
-      if (t.ok) {
-        const a = await t.json();
-        for (const h of a) r.set(h.number, h.title || "");
-      }
+      const e = await fetch("/artifacts/runs", { credentials: "same-origin" });
+      if (!e.ok) throw new Error(`Run listing error: ${e.status}`);
+      const s = await e.json();
       this.querySha = new URLSearchParams(window.location.search).get("sha")?.trim().toLowerCase() || "", this.queryPr = new URLSearchParams(window.location.search).get("pr")?.trim() || "";
       const o = s.workflow_runs || [], n = o.filter(
         (a) => a.pull_requests.length === 0 && a.head_repository?.full_name === "ESPresense/ESPresense"
@@ -841,7 +828,7 @@ const F = class F extends w {
         message: a.head_commit?.message?.split(`
 `)[0] ?? "",
         tag: a.pull_requests.length > 0 ? `PR #${a.pull_requests[0].number}` : "Nightly",
-        subtitle: a.pull_requests.length > 0 && a.pull_requests[0].title || "",
+        subtitle: a.pull_requests.length > 0 && a.display_title || "",
         sourceKey: a.pull_requests.length > 0 ? `pr-${a.pull_requests[0].number}` : "nightly"
       });
       this.builds = [
@@ -862,7 +849,7 @@ const F = class F extends w {
         p.has(h.number) || p.set(h.number, {
           key: `pr-${h.number}`,
           label: `PR #${h.number}`,
-          title: r.get(h.number) || h.title || "",
+          title: a.display_title || "",
           count: 0,
           latestAge: B(a.created_at)
         }), p.get(h.number).count++;

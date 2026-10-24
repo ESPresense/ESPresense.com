@@ -146,8 +146,8 @@ export class EspresenseReleases extends LitElement {
   }
 
   async firstUpdated() {
-    const response = await fetch("https://api.github.com/repos/ESPresense/ESPresense/releases", { credentials: "same-origin" });
-    if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
+    const response = await fetch("/releases/list", { credentials: "same-origin" });
+    if (!response.ok) throw new Error(`Release listing error: ${response.status}`);
     const data = await response.json();
     this.response = data
       .filter((item: any) => item.assets.length > 5)
