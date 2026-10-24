@@ -1,0 +1,60 @@
+---
+title: "LILYGO T-Embed CC1101"
+description: "LILYGO T-Embed CC1101 (ESP32-S3, screen, rotary encoder, battery) — pins, settings template and notes for ESPresense."
+board:
+  name: "T-Embed CC1101"
+  chip: "ESP32-S3"
+  formFactor: "Handheld with 1.9 inch screen, rotary encoder and 1300 mAh battery"
+  flash: "16 MB + 8 MB PSRAM"
+  antenna: "Internal (ESP32-S3-WROOM-1)"
+  usb: "USB-C (native USB)"
+  install: "<a href=\"/firmware\">Browser installer</a>, <code>esp32s3-cdc</code> flavor"
+  rating: "caveats"
+  ratingNote: "Works as an S3 node, but you're paying for a screen, sub-GHz radio and NFC reader that ESPresense doesn't use. Buy it for those, not for presence detection."
+  gpio:
+    - { pin: 15, use: "Peripheral power enable (must be high for the LEDs, screen, CC1101 and PN532)", setting: outputs }
+    - { pin: 14, use: "8 × WS2812 RGB LEDs around the encoder", setting: leds }
+    - { pin: 0, use: "Encoder push button (active low, also BOOT)", setting: inputs }
+    - { pin: 6, use: "User key (active low)", setting: inputs }
+    - { pin: 4, use: "Encoder A" }
+    - { pin: 5, use: "Encoder B" }
+    - { pin: 8, use: "Internal I2C SDA (PN532, BQ27220, BQ25896)", setting: I2C_Bus_1_SDA }
+    - { pin: 18, use: "Internal I2C SCL", setting: I2C_Bus_1_SCL }
+    - { pin: 21, use: "Screen backlight" }
+    - { pin: 2, use: "IR emitter enable" }
+    - { pin: 1, use: "IR receiver" }
+  template:
+    I2C_Bus_1_SDA: 8
+    I2C_Bus_1_SCL: 18
+    leds:
+      - { type: "grb", pin: 14, count: 8, control: "status", max_brightness: 40 }
+    inputs:
+      - { name: "Encoder button", role: "button", pin: 0, type: "pullup_inverted" }
+      - { name: "User key", role: "button", pin: 6, type: "pullup_inverted" }
+    outputs:
+      - { name: "Peripheral power", pin: 15, type: "high" }
+  verified: "Pins are from LILYGO's README and haven't been checked with ESPresense on hardware."
+---
+
+import BoardPage from '../../../components/BoardPage.astro';
+
+:::caution[Unverified pins]
+Pin data comes from [LILYGO's repository](https://github.com/Xinyuan-LilyGO/T-Embed-CC1101) and hasn't been checked on hardware yet.
+:::
+
+<BoardPage part="summary" />
+
+## GPIO
+
+<BoardPage part="gpio" />
+
+## Template
+
+<BoardPage part="template" />
+
+## Notes
+
+- **GPIO 15 powers the peripherals.** The WS2812 LEDs share a switched supply that stays off until GPIO 15 is high. The template sets it with an **Always High** output, the same way the [NanoC6](/nodes/nanoc6) handles its LED power pin. Without it the LEDs stay dark.
+- **LED brightness is capped.** Eight LEDs at full white draw more than is comfortable on battery or a weak USB port, so the template sets `max_brightness` to 40, like the [Atom Matrix](/nodes/m5atom-matrix).
+- **Not used by ESPresense:** the screen, encoder rotation, CC1101 sub-GHz radio, PN532 NFC reader, IR, and the BQ27220 and BQ25896 battery chips. The battery works as USB power backup, but the fuel gauge isn't read, so there is no battery level.
+- The encoder button on GPIO 0 doubles as BOOT. Holding it during reset enters the bootloader, so don't hold it while powering on.
