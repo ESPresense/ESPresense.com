@@ -23,7 +23,7 @@ A generic board starts with one LED: PWM on GPIO 2, showing status. Boards witho
   * **PWM** / **PWM Inverted** - a single plain LED. Inverted is for an LED wired to light when the pin is low.
   * **Addressable GRB** / **GRBW** / **RGB** / **RGBW** - a WS2812 / SK6812 strip or matrix, by its colour order.
 * **Count** (addressable only) - how many LEDs are in the strip.
-* **Max brightness (1-255)** - a ceiling. The full brightness range from MQTT and Home Assistant is scaled down into it. Defaults to 255 for PWM and 100 for addressable LEDs, so dense matrices don't overheat. Some boards need lower, e.g. the [M5 Atom Matrix](/nodes/m5atom-matrix).
+* **Max brightness (1-255)** - a ceiling. The full brightness range from MQTT and Home Assistant is scaled down into it. Defaults to 64 for every LED type (up to v5.0.0b3: 255 for PWM, 100 for addressable). Some boards need lower, e.g. the [M5 Atom Matrix](/nodes/m5atom-matrix).
 * **LED Control** - what drives the LED:
   * **MQTT** - you do, from Home Assistant or MQTT. The only mode that creates a Home Assistant light. See [MQTT LED control](#mqtt-led-control).
   * **Status** - shows WiFi and MQTT connection, and update progress.
