@@ -336,7 +336,7 @@ export class EspresenseArtifacts extends LitElement {
         sha: r.head_sha.substring(0, 7),
         message: r.head_commit?.message?.split("\n")[0] ?? "",
         tag: r.pull_requests.length > 0 ? `PR #${r.pull_requests[0].number}` : "Nightly",
-        subtitle: r.pull_requests.length > 0 ? (r.pull_requests[0].title || "") : "",
+        subtitle: r.pull_requests.length > 0 ? (r.display_title || "") : "",
         sourceKey: r.pull_requests.length > 0 ? `pr-${r.pull_requests[0].number}` : "nightly",
       });
 
