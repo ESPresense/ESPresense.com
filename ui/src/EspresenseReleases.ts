@@ -178,7 +178,7 @@ export class EspresenseReleases extends LitElement {
               <optgroup label="${key}">
                 ${response[key].map((i) => html`
                   <option value=${i.tag_name} ?selected=${i.tag_name === this.version}>
-                    ${i.name} — ${timeAgo(i.created_at)}
+                    ${i.name} — ${timeAgo(i.published_at)}
                   </option>
                 `)}
               </optgroup>

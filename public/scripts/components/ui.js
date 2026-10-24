@@ -658,7 +658,7 @@ const W = class W extends w {
               <optgroup label="${t}">
                 ${e[t].map((s) => g`
                   <option value=${s.tag_name} ?selected=${s.tag_name === this.version}>
-                    ${s.name} — ${He(s.created_at)}
+                    ${s.name} — ${He(s.published_at)}
                   </option>
                 `)}
               </optgroup>
