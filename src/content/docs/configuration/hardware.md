@@ -80,7 +80,7 @@ The node publishes an output's state to `espresense/rooms/<room>/output_<n>` and
 
 For battery-powered nodes, such as the [LILYGO T-Energy-S3](/nodes/t-energy-s3) or a node in a car.
 
-* **Gauge I2C bus** and **Gauge chip** - for boards with a battery chip on I2C: **AXP192** (M5StickC and StickC Plus, bus 2 on SDA 21 / SCL 22) or **BQ27220** (the [LILYGO T-Embed](/nodes/lilygo-t-embed-cc1101), bus 1 on SDA 8 / SCL 18). The chip reports voltage, percentage and charging, so the pin settings below are hidden while a gauge bus is set. Either chip also works on the software bus 3.
+* **Gauge I2C bus** and **Gauge chip** - for boards with a battery chip on I2C: **AXP192** (M5StickC and StickC Plus, on the software bus 3 at SDA 21 / SCL 22, which leaves bus 2 for a HAT) or **BQ27220** (the [LILYGO T-Embed](/nodes/lilygo-t-embed-cc1101), bus 1 on SDA 8 / SCL 18). The chip reports voltage, percentage and charging, so the pin settings below are hidden while a gauge bus is set. Either chip also works on the software bus 3.
 * **Voltage pin** - the GPIO the battery's voltage divider feeds. Must be an ADC1 pin (GPIO 32–39 on the ESP32, GPIO 1–10 on the S3), because WiFi uses ADC2.
 * **Divider multiplier** - how much the divider scales the voltage down, e.g. 2 for two equal resistors.
 * **Type** - **Li-ion (1 cell)**, or **12V lead-acid**.

@@ -7,12 +7,12 @@ addon:
   connection: "M5StickC HAT header: I2C on GPIO 0 (SDA) and GPIO 26 (SCL); SHT30 at 0x44, BMP280 at 0x76"
   chip: esp32
   template:
-    I2C_Bus_1_SDA: 0
-    I2C_Bus_1_SCL: 26
-    SHT_I2c_Bus: 1
-    BMP280_I2c_Bus: 1
+    I2C_Bus_2_SDA: 0
+    I2C_Bus_2_SCL: 26
+    SHT_I2c_Bus: 2
+    BMP280_I2c_Bus: 2
     BMP280_I2c: "0x76"
-  verified: "Verified on an M5StickC Plus (October 2026): the SHT30 and BMP280 both report."
+  verified: "Verified on an M5StickC Plus (October 2026) with the HAT on I2C bus 1: the SHT30 and BMP280 both report. Bus 2 is the ESP32's other hardware I2C bus; not yet rechecked there."
 ---
 
 import AddonPage from '../../../components/AddonPage.astro';
@@ -25,7 +25,7 @@ import AddonPage from '../../../components/AddonPage.astro';
 
 ## Notes
 
-- Apply the [M5StickC Plus](/nodes/m5stickc-plus) board template first. The HAT plugs into the header on top of an M5StickC or M5StickC Plus, not the GROVE port. The template moves I2C bus 1 from the GROVE port (GPIO 32/33) to the HAT header, so the GROVE port has no I2C bus while it's applied. I2C bus 2 stays on GPIO 21/22 for the board's AXP192 power chip.
+- Apply the [M5StickC Plus](/nodes/m5stickc-plus) board template first (v5.0.0b5 or later). The HAT plugs into the header on top of an M5StickC or M5StickC Plus, not the GROVE port. This template puts I2C bus 2 on the HAT header, so the GROVE port keeps bus 1 for another add-on, and the AXP192 power chip stays on the software bus 3.
 - The template names `"chip": "esp32"` because it sets pins. Firmware before v5.0.0b3 requires a chip on every template anyway, so it works there too.
 - The SHT30 publishes `temperature` and `humidity`; the BMP280 publishes `bmp280_temperature` and `bmp280_pressure`. Use the SHT30's temperature: in testing the BMP280 read about 1.5 °C warmer.
 - The ENV III HAT pairs the SHT30 with a QMP6988, which has no driver. On that HAT, leave out the two `BMP280` settings and only the SHT30 reports (untested).
