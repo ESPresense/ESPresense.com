@@ -36,14 +36,10 @@ board:
     outputs:
       - { name: "Peripheral power", pin: 15, type: "high" }
   firmware: "5.0.0b5"
-  verified: "I2C bus 1 (GPIO 8/18), the BQ27220 gauge and the LEDs (with GPIO 15 power) checked on a T-Embed (October 2026). The button pins are from LILYGO's README."
+  verified: "Checked on a T-Embed CC1101 with v5.0.0b5 (October 2026): the LEDs (with GPIO 15 power), both buttons, and the BQ27220 gauge on I2C bus 1."
 ---
 
 import BoardPage from '../../../components/BoardPage.astro';
-
-:::caution[Partly verified pins]
-The I2C bus, battery gauge and LEDs (with the GPIO 15 power switch) have been checked on a T-Embed. The button pins come from [LILYGO's repository](https://github.com/Xinyuan-LilyGO/T-Embed-CC1101) and haven't been checked yet.
-:::
 
 <BoardPage part="summary" />
 

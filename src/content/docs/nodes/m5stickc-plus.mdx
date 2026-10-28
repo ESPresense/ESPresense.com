@@ -38,7 +38,7 @@ board:
       - { name: "Button B", role: "button", pin: 39, type: "floating_inverted" }
     outputs: []
   firmware: "5.0.0b5"
-  verified: "Checked on an M5StickC Plus (October 2026): the AXP192 on the software bus 3 (GPIO 21/22) and Button B."
+  verified: "Checked on an M5StickC Plus with v5.0.0b5 (October 2026): both buttons, the AXP192 on the software bus 3 (GPIO 21/22), and an ENV II HAT on bus 2."
 ---
 
 import BoardPage from '../../../components/BoardPage.astro';
@@ -60,5 +60,5 @@ import BoardPage from '../../../components/BoardPage.astro';
   - **Bus 2** is for the HAT header on GPIO 0/26. The board template leaves it off, because not every HAT uses those pins for I2C; a HAT's add-on template, e.g. the [ENV II HAT](/addons/m5stack-env-ii-hat), turns it on.
   - **Bus 3 (software)** is the internal bus on GPIO 21/22. The template puts the AXP192 power chip there (**Gauge I2C bus** Bus 3, **Gauge chip** AXP192) for battery level, voltage and charging. It also clears bus 2's pins, so a v4 default of bus 2 on 21/22 can't drive the same pins.
 - **`leds` is empty on purpose.** Without it, the generic `esp32` build's default status LED on GPIO 2 drives the buzzer. The red LED on GPIO 10 (active low) can be added as a `pwm_inverted` LED; that pin is from M5Stack's docs and hasn't been checked with ESPresense.
-- Both buttons have external pull-ups, so they use `floating_inverted`. Button B is checked on hardware; Button A's pin is from M5Stack's docs.
+- Both buttons have external pull-ups, so they use `floating_inverted`. Both are checked on hardware.
 - The screen, IMU, RTC and IR emitter aren't used by ESPresense.
