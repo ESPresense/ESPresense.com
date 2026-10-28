@@ -26,6 +26,8 @@ board:
   template:
     I2C_Bus_1_SDA: 8
     I2C_Bus_1_SCL: 18
+    batt_gauge: 1
+    batt_gauge_bus: 1
     leds:
       - { type: "grb", pin: 14, count: 8, control: "status", max_brightness: 40 }
     inputs:
@@ -33,13 +35,14 @@ board:
       - { name: "User key", role: "button", pin: 6, type: "pullup_inverted" }
     outputs:
       - { name: "Peripheral power", pin: 15, type: "high" }
-  verified: "Pins are from LILYGO's README and haven't been checked with ESPresense on hardware."
+  firmware: "5.0.0b5"
+  verified: "I2C bus 1 (GPIO 8/18) and the BQ27220 gauge checked on a T-Embed (October 2026). The other pins are from LILYGO's README."
 ---
 
 import BoardPage from '../../../components/BoardPage.astro';
 
-:::caution[Unverified pins]
-Pin data comes from [LILYGO's repository](https://github.com/Xinyuan-LilyGO/T-Embed-CC1101) and hasn't been checked on hardware yet.
+:::caution[Partly verified pins]
+The I2C bus and battery gauge have been checked on a T-Embed. The LED, button and power pins come from [LILYGO's repository](https://github.com/Xinyuan-LilyGO/T-Embed-CC1101) and haven't been checked yet.
 :::
 
 <BoardPage part="summary" />
@@ -56,5 +59,6 @@ Pin data comes from [LILYGO's repository](https://github.com/Xinyuan-LilyGO/T-Em
 
 - **GPIO 15 powers the peripherals.** The WS2812 LEDs share a switched supply that stays off until GPIO 15 is high. The template sets it with an **Always High** output, the same way the [NanoC6](/nodes/nanoc6) handles its LED power pin. Without it the LEDs stay dark.
 - **LED brightness is capped.** Eight LEDs at full white draw more than is comfortable on battery or a weak USB port, so the template sets `max_brightness` to 40, like the [Atom Matrix](/nodes/m5atom-matrix).
-- **Not used by ESPresense:** the screen, encoder rotation, CC1101 sub-GHz radio, PN532 NFC reader, IR, and the BQ27220 and BQ25896 battery chips. The battery works as USB power backup, but the fuel gauge isn't read, so there is no battery level.
+- **Battery level comes from the BQ27220 fuel gauge** on I2C bus 1 (the template sets **Battery gauge** to BQ27220). The node reports `batt` (%), `mV` and charging state, and Home Assistant gets Battery, Battery Voltage and Charging sensors. The gauge sits behind the GPIO 15 power switch, so it can take a few seconds after boot to show up. Needs firmware v5.0.0b5 or later.
+- **Not used by ESPresense:** the screen, encoder rotation, CC1101 sub-GHz radio, PN532 NFC reader, IR, and the BQ25896 charger.
 - The encoder button on GPIO 0 doubles as BOOT. Holding it during reset enters the bootloader, so don't hold it while powering on.
