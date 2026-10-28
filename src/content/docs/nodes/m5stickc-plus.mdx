@@ -24,7 +24,8 @@ board:
     - { pin: 2, use: Buzzer }
     - { pin: 9, use: IR emitter }
   template:
-    axp192: true
+    batt_gauge: 0
+    batt_gauge_bus: 2
     I2C_Bus_1_SDA: 32
     I2C_Bus_1_SCL: 33
     I2C_Bus_2_SDA: 21
@@ -34,6 +35,7 @@ board:
       - { name: "Button A", role: "button", pin: 37, type: "floating_inverted" }
       - { name: "Button B", role: "button", pin: 39, type: "floating_inverted" }
     outputs: []
+  firmware: "5.0.0b5"
   verified: "Settings from a working M5StickC Plus node (October 2026): AXP192 on I2C bus 2, Button B, and an ENV II HAT on bus 1."
 ---
 
@@ -51,7 +53,7 @@ import BoardPage from '../../../components/BoardPage.astro';
 
 ## Notes
 
-- **I2C buses.** The stick has three I2C connections but the firmware drives two. Bus 2 is the internal bus on GPIO 21/22, which the AXP192 power chip needs (the `axp192` setting reads it on bus 2). Bus 1 is the GROVE port on GPIO 32/33, ready for a GROVE add-on such as the [ENV IV](/addons/m5stack-env-iv). A HAT on the top header uses GPIO 0/26 instead: its add-on template, e.g. the [ENV II HAT](/addons/m5stack-env-ii-hat), moves bus 1 there, so you can use the GROVE port or a HAT, not both.
+- **I2C buses.** The stick has three I2C connections but the firmware drives two. Bus 2 is the internal bus on GPIO 21/22, which the AXP192 power chip needs (the template sets **Gauge I2C bus** to Bus 2 and **Gauge chip** to AXP192, for battery level, voltage and charging). Bus 1 is the GROVE port on GPIO 32/33, ready for a GROVE add-on such as the [ENV IV](/addons/m5stack-env-iv). A HAT on the top header uses GPIO 0/26 instead: its add-on template, e.g. the [ENV II HAT](/addons/m5stack-env-ii-hat), moves bus 1 there, so you can use the GROVE port or a HAT, not both.
 - **`leds` is empty on purpose.** Without it, the generic `esp32` build's default status LED on GPIO 2 drives the buzzer. The red LED on GPIO 10 (active low) can be added as a `pwm_inverted` LED; that pin is from M5Stack's docs and hasn't been checked with ESPresense.
 - Both buttons have external pull-ups, so they use `floating_inverted`. Button B is checked on hardware; Button A's pin is from M5Stack's docs.
 - The screen, IMU, RTC and IR emitter aren't used by ESPresense.
