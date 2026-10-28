@@ -79,6 +79,7 @@ export default defineConfig({
                 { label: 'Olimex ESP32-POE-ISO', link: '/nodes/olimex-esp32-poe' },
                 { label: 'QuinLED-ESP32 Ethernet', link: '/nodes/quinled-esp32' },
                 { label: 'SwitchBot Plug Mini', link: '/nodes/switchbot-plug-mini' },
+                { label: 'T-Embed CC1101', link: '/nodes/lilygo-t-embed-cc1101' },
                 { label: 'T-Energy-S3', link: '/nodes/t-energy-s3' },
                 { label: 'T-ETH-Lite ESP32', link: '/nodes/lilygo-t-eth-lite' },
                 { label: 'T-Internet-POE', link: '/nodes/lilygo-t-internet-poe' },

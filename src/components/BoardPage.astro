@@ -16,6 +16,8 @@ const ratings = {
 const rating = ratings[board.rating];
 const settingLabels: Record<string, string> = {
   I2C_Bus_1_SDA: 'I2C bus 1 SDA', I2C_Bus_1_SCL: 'I2C bus 1 SCL',
+  I2C_Bus_2_SDA: 'I2C bus 2 SDA', I2C_Bus_2_SCL: 'I2C bus 2 SCL',
+  I2C_Bus_3_SDA: 'I2C bus 3 SDA', I2C_Bus_3_SCL: 'I2C bus 3 SCL',
   eth: 'Ethernet Type', batt_pin: 'Battery voltage pin',
   leds: 'LEDs', inputs: 'Inputs', outputs: 'Outputs', power: 'Power monitor',
 };
@@ -66,7 +68,7 @@ const pretty = JSON.stringify({ name: board.name, chip: chipTarget, settings: bo
 <Fragment>
 <p>
   Paste this into the <strong>Board Template</strong> box on the node's <strong>Templates</strong> page,
-  then Preview and Apply (firmware v5.0.0b1 or later). It sets the board's pins (and Ethernet type, if it has one) in one go.
+  then Preview and Apply (firmware v{board.firmware} or later). It sets the board's pins (and Ethernet type, if it has one) in one go.
   Apply it before any <a href="/configuration/templates#add-on-templates">add-on template</a>.
   The LED, input and output lists replace what was configured before, so the result doesn't depend
   on the node's old setup.

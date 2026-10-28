@@ -23,6 +23,8 @@ const board = z.object({
   // v5 firmware (ESPresense#2530) has JSON settings (`leds`, `inputs`, `outputs`, `power`),
   // written here as YAML lists/objects and passed through as-is.
   template: z.record(z.string(), z.union([z.number(), z.string(), z.boolean(), z.array(z.record(z.string(), z.unknown())), z.record(z.string(), z.unknown())])),
+  // Oldest firmware that accepts every key in the template; older versions reject unknown keys.
+  firmware: z.string().default('5.0.0b1'),
   verified: z.string().optional(),
 });
 

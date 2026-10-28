@@ -80,12 +80,12 @@ The node publishes an output's state to `espresense/rooms/<room>/output_<n>` and
 
 For battery-powered nodes, such as the [LILYGO T-Energy-S3](/nodes/t-energy-s3) or a node in a car.
 
-* **AXP192 power chip** - for the M5StickC: reads the battery from its power chip instead of a pin. Needs I2C bus 2 on SDA 21 / SCL 22.
+* **Gauge I2C bus** and **Gauge chip** - for boards with a battery chip on I2C: **AXP192** (M5StickC and StickC Plus, on the software bus 3 at SDA 21 / SCL 22, which leaves bus 2 for a HAT) or **BQ27220** (the [LILYGO T-Embed](/nodes/lilygo-t-embed-cc1101), bus 1 on SDA 8 / SCL 18). The chip reports voltage, percentage and charging, so the pin settings below are hidden while a gauge bus is set. Either chip also works on the software bus 3.
 * **Voltage pin** - the GPIO the battery's voltage divider feeds. Must be an ADC1 pin (GPIO 32–39 on the ESP32, GPIO 1–10 on the S3), because WiFi uses ADC2.
 * **Divider multiplier** - how much the divider scales the voltage down, e.g. 2 for two equal resistors.
 * **Type** - **Li-ion (1 cell)**, or **12V lead-acid**.
 
-With a battery set up, the node adds `batt` (%) and `mV` to its telemetry and creates **Battery** and **Battery Voltage** sensors in Home Assistant. Lead-acid and AXP192 batteries also get a **Charging** binary sensor; lead-acid counts as charging above 13.2 V (engine running). The Li-ion percentage comes from a resting curve (4.2 V full, 3.3 V empty), so it reads high while charging.
+With a battery set up, the node adds `batt` (%) and `mV` to its telemetry and creates **Battery** and **Battery Voltage** sensors in Home Assistant. Lead-acid batteries and gauge chips also get a **Charging** binary sensor; lead-acid counts as charging above 13.2 V (engine running). The Li-ion percentage comes from a resting curve (4.2 V full, 3.3 V empty), so it reads high while charging.
 
 ### Energy meter
 
@@ -115,16 +115,17 @@ The node publishes `power` (W), `energy` (kWh, kept across restarts) and, when i
 
 ## I2C Settings
 
-Configure up to 2 I2C buses. v5 has no default I2C pins: a bus is off until its pins are set, by hand or by a board template.
+Configure up to 3 I2C buses. Buses 1 and 2 are the ESP32's hardware I2C. **Bus 3 (software)** is bit-banged at about 100 kHz on any two pins and is only for the battery gauge. v5 has no default I2C pins: a bus is off until its pins are set, by hand or by a board template.
 
 * **SDA pin** / **SCL pin** - the bus's two pins.
 * **Debug I2C addresses** - scans the buses and logs the addresses found to the serial console.
 
 ## I2C Sensors
 
-Each sensor has an **I2C Bus** (1 or 2) and usually an **I2C address**, with the chip's possible addresses shown next to it. The **Add-ons** pages have [templates](/configuration/templates) for common sensor boards, such as the [M5Stack ENV IV](/addons/m5stack-env-iv).
+Each sensor has an **I2C Bus** dropdown (None, Bus 1 or Bus 2); picking a bus turns the sensor on. Most also have an optional **I2C address**, with the chip's possible addresses shown in the box; leave it blank to auto-detect. The **Add-ons** pages have [templates](/configuration/templates) for common sensor boards, such as the [M5Stack ENV IV](/addons/m5stack-env-iv).
 
-* **AHTX0**, **BH1750**, **BME280**, **BMP085/BMP180**, **BMP280**, **SGP30**, **SCD4x** - bus and address.
+* **AHTX0**, **BH1750**, **BME280**, **BMP280** - bus and address.
+* **BMP085/BMP180**, **SGP30**, **SCD4x** - bus only; each has one address.
 * **TSL2561** - bus, address and **gain** (auto, 1x, 16x).
 * **SHT3x / SHT4x** (including SHT85) - bus only; the sensor is found at 0x44 or 0x45 automatically. The page also lists SHTC1/3, SHTW, SHT2x, HTU21D and Si7021, but v5 only detects SHT3x and SHT4x.
 
@@ -137,4 +138,6 @@ Each sensor has an **I2C Bus** (1 or 2) and usually an **I2C address**, with the
 
 ---
 
-*Last verified against firmware v5 (`main` @ d456b99, 2026-10-23).*
+Before v5.0.0b5 the AXP192 was a checkbox and a sensor turned on when its address was set. Nodes upgraded to v5.0.0b5 are converted once, and older templates still apply.
+
+*Last verified against firmware v5.0.0b5 (2026-10-28).*
