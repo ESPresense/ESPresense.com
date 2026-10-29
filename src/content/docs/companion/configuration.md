@@ -279,6 +279,7 @@ locators:
 
   nearest_node:            # Places the device at the closest node
     enabled: true
+    max_distance: 10       # Skip nodes more than this many meters from the device; leave out for no limit
 ```
 `weighting` sets how much each node's distance counts, closest nodes first. Leave it out to get `gaussian` with `sigma: 0.3`. `floors` lists floor ids; leave it out to use every floor.
 
@@ -294,6 +295,7 @@ device_retention: 30d # Forget devices not seen for this long, e.g. 30d, 720h (d
 history:
   enabled: false # Enable to log history to db (Beta)
   expire_after: 24h # Expire after 24 hours
+  path: history.db # SQLite file, relative to .storage in the config folder; absolute paths also work (restart to apply)
 ```
 
 ### Floor Configuration
