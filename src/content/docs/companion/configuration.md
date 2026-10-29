@@ -279,7 +279,7 @@ locators:
 
   nearest_node:            # Places the device at the closest node
     enabled: true
-    max_distance: 10       # Skip nodes more than this many meters from the device; leave out for no limit
+    max_distance: 10       # Skip nodes more than this many meters from the device; leave out or 0 for no limit
 ```
 `weighting` sets how much each node's distance counts, closest nodes first. Leave it out to get `gaussian` with `sigma: 0.3`. `floors` lists floor ids; leave it out to use every floor.
 
