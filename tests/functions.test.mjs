@@ -154,6 +154,36 @@ test('release manifest prefers flavored assets and falls back per chip', async (
   assert.equal(appPaths(m5)[0], 'ESP32 download/v4.0.6/m5atom.bin')
 })
 
+test('release manifest flashes the release\'s own factory image when it has one', async () => {
+  release('v5.0.0', 'esp32.bin', 'esp32.factory.bin', 'esp32c3.bin', 'esp32c3.factory.bin', 'esp32c3-cdc.bin', 'esp32s3.bin')
+
+  const manifest = await (await get(releases, '/releases/v5.0.0.json')).json()
+  assert.deepEqual(manifest.builds.map(b => b.parts), [
+    [{ path: 'download/v5.0.0/esp32.factory.bin', offset: 0 }],
+    [{ path: 'download/v5.0.0/esp32c3.factory.bin', offset: 0 }],
+    // No merged image for this one, so it keeps the static bootloader
+    [
+      { path: '/static/esp32c3/bootloader.bin', offset: 0 },
+      { path: '/static/esp32c3/partitions.bin', offset: 0x8000 },
+      { path: '/static/boot_app0.bin', offset: 0xe000 },
+      { path: 'download/v5.0.0/esp32c3-cdc.bin', offset: 0x10000 },
+    ],
+    [
+      { path: '/static/esp32s3/bootloader.bin', offset: 0 },
+      { path: '/static/esp32s3/partitions.bin', offset: 0x8000 },
+      { path: '/static/boot_app0.bin', offset: 0xe000 },
+      { path: 'download/v5.0.0/esp32s3.bin', offset: 0x10000 },
+    ],
+  ])
+})
+
+test('release manifest takes the factory image of the flavor it picked', async () => {
+  release('v5.0.0', 'esp32.bin', 'esp32.factory.bin', 'esp32-verbose.bin', 'esp32-verbose.factory.bin')
+
+  const manifest = await (await get(releases, '/releases/v5.0.0.json?flavor=verbose')).json()
+  assert.deepEqual(manifest.builds[0].parts, [{ path: 'download/v5.0.0/esp32-verbose.factory.bin', offset: 0 }])
+})
+
 test('release manifest omits chip families the release does not ship', async () => {
   release('v3.0.0', 'esp32.bin')
   assert.deepEqual(appPaths(await (await get(releases, '/releases/v3.0.0.json')).json()), ['ESP32 download/v3.0.0/esp32.bin'])
@@ -359,6 +389,14 @@ test('run manifest prefers flavored artifacts', async () => {
   const manifest = await (await get(artifacts, '/artifacts/123.json?flavor=verbose')).json()
   assert.equal(manifest.name, 'ESPresense main branch (verbose)')
   assert.deepEqual(appPaths(manifest), ['ESP32 download/runs/123/esp32-verbose.bin', 'ESP32-C3:uart download/runs/123/esp32c3.bin'])
+})
+
+test('run manifest flashes the run\'s own factory image when it has one', async () => {
+  upstream[`${API}/actions/runs/123/artifacts`] = () => json(artifactList('esp32c3.bin', 'esp32c3.factory.bin', 'esp32s3.bin'))
+
+  const manifest = await (await get(artifacts, '/artifacts/123.json')).json()
+  assert.deepEqual(manifest.builds[0].parts, [{ path: 'download/runs/123/esp32c3.factory.bin', offset: 0 }])
+  assert.equal(manifest.builds[1].parts[0].path, '/static/esp32s3/bootloader.bin')
 })
 
 test('run manifest returns 404 when the run has no artifacts', async () => {
