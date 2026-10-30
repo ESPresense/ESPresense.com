@@ -2,6 +2,7 @@
 // Renders one part of a per-board page's `board` frontmatter block, Tasmota-template style.
 // Headings stay in the .mdx so they land in Starlight's table of contents.
 import TemplateBox from './TemplateBox.astro';
+import { normalizeHtmlHrefs } from '../../lib/internal-links.mjs';
 
 interface Props { part: 'summary' | 'gpio' | 'template' }
 const { part } = Astro.props;
@@ -39,7 +40,7 @@ const pretty = JSON.stringify({ name: board.name, chip: chipTarget, settings: bo
       <tr><th>Flash</th><td>{board.flash}</td></tr>
       <tr><th>Antenna</th><td>{board.antenna}</td></tr>
       {board.usb && <tr><th>USB</th><td>{board.usb}</td></tr>}
-      <tr><th>Install</th><td set:html={board.install} /></tr>
+      <tr><th>Install</th><td set:html={normalizeHtmlHrefs(board.install)} /></tr>
       {board.price && <tr><th>Price</th><td>{board.price}</td></tr>}
       {board.stores.length > 0 && (
         <tr><th>Stores</th><td>{board.stores.map((s) => <a href={s.url} target="_blank" rel="noopener noreferrer">{s.label}</a>)}</td></tr>
@@ -69,10 +70,10 @@ const pretty = JSON.stringify({ name: board.name, chip: chipTarget, settings: bo
 <p>
   Paste this into the <strong>Board Template</strong> box on the node's <strong>Templates</strong> page,
   then Preview and Apply (firmware v{board.firmware} or later). It sets the board's pins (and Ethernet type, if it has one) in one go.
-  Apply it before any <a href="/configuration/templates#add-on-templates">add-on template</a>.
+  Apply it before any <a href="/configuration/templates/#add-on-templates">add-on template</a>.
   The LED, input and output lists replace what was configured before, so the result doesn't depend
   on the node's old setup.
-  See <a href="/configuration/templates">Templates</a>.
+  See <a href="/configuration/templates/">Templates</a>.
 </p>
 <TemplateBox template={template} />
 <details>
