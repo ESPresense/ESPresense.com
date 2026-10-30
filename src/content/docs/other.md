@@ -15,4 +15,4 @@ This app has unfortunately not been working while in the background so we can no
 
 ## Querying (Deprecated)
 
-If you can't install an app or Enroll (pair once) to a device you can instead Query it for name, model or manufacturer see (https://espresense.com/configuration/settings#scanning).  This is a last resort because when you're connecting to a device you'll lose all advertising packets from other devices.
+If you can't install an app or Enroll (pair once) to a device you can instead Query it for name, model or manufacturer see [Querying](/configuration/settings/#querying).  This is a last resort because when you're connecting to a device you'll lose all advertising packets from other devices.
