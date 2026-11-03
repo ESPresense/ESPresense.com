@@ -17,7 +17,7 @@ Pick a chip first, then a board within it.
 |:-----|:----------|:------|
 | ESP32-S3 | yes — recommended for new deployments | 8 MB flash typical, BT 5.0 LE coded PHY, USB-CDC |
 | ESP32-C3 | yes — recommended for cost-sensitive deployments | RISC-V, 4 MB flash typical |
-| ESP32-C6 | yes — bleeding edge | Newer RISC-V part with BT 5.3; firmware build available |
+| ESP32-C6 | yes — tier 1 | Newer RISC-V part with BT 5.3; same CI/HIL bar as S3/C3 |
 | Original ESP32 | yes, for now | Less CPU and RAM than the S3/C3/C6. Still supported, but expect it to age out; prefer a newer chip. |
 | ESP32-S2 | no | No Bluetooth radio |
 | ESP8266 | no | No Bluetooth radio |
@@ -53,7 +53,7 @@ Some store links on this page (Amazon, AliExpress, M5Stack) are affiliate links.
 
 ### ESP32-C6
 
-C6 support is bleeding edge — expect rougher edges than S3/C3.
+C6 is tier 1 in the firmware — same build and hardware-test bar as S3/C3. Boards and community mileage are newer, so there's less field history than S3/C3, but it's not a rough-edges firmware story any more.
 
 | Board | Stores | Notes |
 |:------|:-------|:------|
@@ -81,7 +81,7 @@ These boards run ESPresense, but antenna and module QC vary — RSSI from one of
 | LOLIN D32 ESP32 | Works; unbranded RF caveat | [#2334][p] |
 | [M5StickC Plus](/nodes/m5stickc-plus) | Built-in battery is a liability for a fixed-in-place node | [#2334][p] |
 | [Macchina A0](/nodes/macchina-a0) | Car OBD-II dongle. From v5 it runs the plain `esp32` build with a board template instead of its own flavor | [#2530](https://github.com/ESPresense/ESPresense/pull/2530) |
-| SEEEDSTUDIO XIAO ESP32-C3 ([amz/us](https://amzn.to/4e4zCRp), 3-pack) | Runs on the `esp32C3` flavour. One report of a board overheating ([#1364][1364]); use a known-good USB-C cable and a real power supply | [#2334][p] / [#1364][1364] |
+| SEEEDSTUDIO XIAO ESP32-C3 ([amz/us](https://amzn.to/4e4zCRp), 3-pack) | Runs on the `esp32c3` flavour. One report of a board overheating ([#1364][1364]); use a known-good USB-C cable and a real power supply | [#2334][p] / [#1364][1364] |
 
 ## Ethernet and PoE boards
 
