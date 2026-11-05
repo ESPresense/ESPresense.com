@@ -1,33 +1,22 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import rehypeExternalLinks from 'rehype-external-links';
+import { REDIRECTS, normalizeSidebar, rehypeNormalizeInternalLinks } from './lib/internal-links.mjs';
 export default defineConfig({
   site: 'https://espresense.com',
   markdown: {
     rehypePlugins: [
+      rehypeNormalizeInternalLinks,
       [rehypeExternalLinks, { target: '_blank', rel: ['noopener', 'noreferrer'] }],
     ],
   },
-  redirects: {
-    '/beacons': '/devices',
-    '/beacons/android': '/android',
-    '/beacons/apple': '/apple',
-    '/beacons/other': '/other',
-    '/base-stations': '/nodes',
-    '/hardware': '/nodes',
-    '/install': '/firmware',
-    '/data-flow': '/troubleshooting/data-flow',
-    '/ids': '/troubleshooting/ids',
-    '/terminal': '/troubleshooting/terminal',
-    '/troubleshooting': '/troubleshooting/data-flow',
-    '/troubleshooting/rebooting': '/troubleshooting/reboot-loops',
-    '/integrations/home_assistant': '/integrations/home-assistant',
-  },
+  redirects: REDIRECTS,
   integrations: [
     starlight({
       title: 'ESPresense',
       description: 'ESP32 based indoor positioning system',
       logo: {
+        alt: 'ESPresense',
         light: './src/assets/images/logo.svg',
         dark: './src/assets/images/logo-dark.svg',
       },
@@ -45,7 +34,7 @@ export default defineConfig({
         { tag: 'script', attrs: { src: 'https://www.googletagmanager.com/gtag/js?id=G-5RPPLMZ514', async: true } },
         { tag: 'script', content: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-5RPPLMZ514',{anonymize_ip:true});" },
       ],
-      sidebar: [
+      sidebar: normalizeSidebar([
         { label: 'Home', link: '/' },
         {
           label: 'Getting started',
@@ -171,7 +160,7 @@ export default defineConfig({
           ],
         },
         { slug: 'credits' },
-      ],
+      ]),
     }),
   ],
 });

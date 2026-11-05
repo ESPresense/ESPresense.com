@@ -221,7 +221,7 @@ The firmware subscribes to three topics on connect:
 |---|---|
 | `espresense/rooms/*/+/set` | Fleet-wide setting writes (the `*` wildcard). |
 | `espresense/rooms/<this-room>/+/set` | Per-node setting writes. |
-| `espresense/settings/+/config` | Device-level enrollment configs published by the Companion (or by `POST /json/configs`). The `+` is the device id; the payload is the same JSON used by [REST `/json/configs`](/configuration/rest-api/#postjson-configs). |
+| `espresense/settings/+/config` | Device-level enrollment configs published by the Companion (or by `POST /json/configs`). The `+` is the device id; the payload is the same JSON used by [REST `/json/configs`](/configuration/rest-api/#post-jsonconfigs). |
 
 ## Examples
 

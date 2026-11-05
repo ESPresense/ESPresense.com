@@ -16,7 +16,7 @@ Once the ESP32 is running, it is important to configure Home Assistant to use th
 
 #### connect to ESP32
 
-The easiest way to find the fingerprint is to connect the usb cable and monitor the serial port (115200 baud) while bringing a device close to the ESP32. To monitor the serial port you can use the [ESPresense terminal](https://espresense.com/terminal).
+The easiest way to find the fingerprint is to connect the usb cable and monitor the serial port (115200 baud) while bringing a device close to the ESP32. To monitor the serial port you can use the [ESPresense terminal](/troubleshooting/terminal/).
 Alternatives: e.g. Arduino monitor function, the `PlatformIO` VSCode [extension](https://diyprojects.io/install-ide-platformio-extension-visual-studio-code-vscode-windows-32-bit-linux/#.YTmXNNMzYZ8) or via platform io ``pio  run --target monitor``.
 
 You should see output similar to the following:

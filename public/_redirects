@@ -1,12 +1,34 @@
-/beacons /devices 301
-/beacons/android /android 301
-/beacons/apple /apple 301
-/beacons/other /other 301
-/base-stations /nodes 301
-/hardware /nodes 301
-/install /firmware 301
-/data-flow /troubleshooting/data-flow 301
-/ids /troubleshooting/ids 301
-/terminal /troubleshooting/terminal 301
-/troubleshooting/rebooting /troubleshooting/reboot-loops 301
-/integrations/home_assistant /integrations/home-assistant 301
+# One hop onto the canonical trailing-slash URL. Cloudflare Pages applies these
+# before the meta-refresh HTML Astro emits for the same paths, so a request for
+# /beacons/ does not stop on a 200 "Redirecting to" page and then bounce again.
+# Keep this list in sync with REDIRECTS in lib/internal-links.mjs.
+
+/beacons /devices/ 301
+/beacons/ /devices/ 301
+/beacons/android /android/ 301
+/beacons/android/ /android/ 301
+/beacons/apple /apple/ 301
+/beacons/apple/ /apple/ 301
+/beacons/other /other/ 301
+/beacons/other/ /other/ 301
+/base-stations /nodes/ 301
+/base-stations/ /nodes/ 301
+/hardware /nodes/ 301
+/hardware/ /nodes/ 301
+/install /firmware/ 301
+/install/ /firmware/ 301
+/data-flow /troubleshooting/data-flow/ 301
+/data-flow/ /troubleshooting/data-flow/ 301
+/ids /troubleshooting/ids/ 301
+/ids/ /troubleshooting/ids/ 301
+/terminal /troubleshooting/terminal/ 301
+/terminal/ /troubleshooting/terminal/ 301
+/troubleshooting /troubleshooting/data-flow/ 301
+/troubleshooting/ /troubleshooting/data-flow/ 301
+/troubleshooting/rebooting /troubleshooting/reboot-loops/ 301
+/troubleshooting/rebooting/ /troubleshooting/reboot-loops/ 301
+/integrations/home_assistant /integrations/home-assistant/ 301
+/integrations/home_assistant/ /integrations/home-assistant/ 301
+
+# Ahrefs requests /sitemap.xml. The build publishes sitemap-index.xml.
+/sitemap.xml /sitemap-index.xml 301
