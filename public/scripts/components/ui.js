@@ -775,9 +775,9 @@ function B(i) {
   const r = Math.floor(s / 24);
   return r < 14 ? `${r}d ago` : `${Math.floor(r / 7)}w ago`;
 }
-const F = class F extends w {
+const ARTIFACTS_POLL_MS = 3e4, ARTIFACTS_WAIT_LIMIT_MS = 9e5, F = class F extends w {
   constructor() {
-    super(), this._themeObserver = null, this.href = "", this.run_id = -1, this.flavor = "", this.loading = !0, this.buildVersion = "", this.querySha = "", this.queryPr = "", this.shaMatched = !0, this.builds = [], this.sources = [], this.selectedKey = "", this.showInstall = !1, this.selectedBuild = null;
+    super(), this._allRuns = [], this._waitStarted = 0, this._pollTimer = 0, this.waiting = "", this.lastChecked = 0, this._themeObserver = null, this.href = "", this.run_id = -1, this.flavor = "", this.loading = !0, this.buildVersion = "", this.querySha = "", this.queryPr = "", this.shaMatched = !0, this.builds = [], this.sources = [], this.selectedKey = "", this.showInstall = !1, this.selectedBuild = null;
   }
   static get properties() {
     return {
@@ -794,7 +794,9 @@ const F = class F extends w {
       sources: { type: Array },
       selectedKey: { type: String },
       showInstall: { type: Boolean },
-      selectedBuild: { type: Object }
+      selectedBuild: { type: Object },
+      waiting: { type: String },
+      lastChecked: { type: Number }
     };
   }
   get manifest() {
@@ -807,66 +809,102 @@ const F = class F extends w {
     });
   }
   disconnectedCallback() {
-    super.disconnectedCallback(), this._themeObserver?.disconnect(), this._themeObserver = null;
+    super.disconnectedCallback(), this._themeObserver?.disconnect(), this._themeObserver = null, window.clearTimeout(this._pollTimer);
   }
   _syncTheme() {
     const e = document.documentElement.dataset.theme || "light";
     this.setAttribute("theme", e);
   }
   async firstUpdated() {
+    const e = new URLSearchParams(window.location.search);
+    this.querySha = e.get("sha")?.trim().toLowerCase() || "", this.queryPr = e.get("pr")?.trim() || "";
     try {
-      const e = await fetch("/artifacts/runs", { credentials: "same-origin" });
-      if (!e.ok) throw new Error(`Run listing error: ${e.status}`);
-      const s = await e.json();
-      this.querySha = new URLSearchParams(window.location.search).get("sha")?.trim().toLowerCase() || "", this.queryPr = new URLSearchParams(window.location.search).get("pr")?.trim() || "";
-      const o = s.workflow_runs || [], n = o.filter(
-        (a) => a.pull_requests.length === 0 && a.head_repository?.full_name === "ESPresense/ESPresense"
-      ), c = o.filter((a) => a.pull_requests.length > 0), l = (a) => ({
-        id: a.id,
-        age: B(a.created_at),
-        sha: a.head_sha.substring(0, 7),
-        message: a.head_commit?.message?.split(`
-`)[0] ?? "",
-        tag: a.pull_requests.length > 0 ? `PR #${a.pull_requests[0].number}` : "Nightly",
-        subtitle: a.pull_requests.length > 0 && a.display_title || "",
-        sourceKey: a.pull_requests.length > 0 ? `pr-${a.pull_requests[0].number}` : "nightly"
-      });
-      this.builds = [
-        ...n.map(l),
-        ...c.map(l)
-      ];
-      const d = [];
-      n.length > 0 && d.push({
-        key: "nightly",
-        label: "Nightly",
-        title: "Main branch builds",
-        count: n.length,
-        latestAge: B(n[0].created_at)
-      });
-      const p = /* @__PURE__ */ new Map();
-      for (const a of c) {
-        const h = a.pull_requests[0];
-        p.has(h.number) || p.set(h.number, {
-          key: `pr-${h.number}`,
-          label: `PR #${h.number}`,
-          title: a.display_title || "",
-          count: 0,
-          latestAge: B(a.created_at)
-        }), p.get(h.number).count++;
-      }
-      if (this.sources = [...d, ...p.values()], this.selectedKey = "", this.querySha) {
-        const a = o.find((h) => h.head_sha?.toLowerCase().startsWith(this.querySha));
-        if (this.shaMatched = !!a, a) {
-          const h = this.builds.find((b) => b.id === a.id);
-          h && (this.selectedKey = h.sourceKey, this.selectedBuild = h, this.run_id = h.id, this.showInstall = !0);
-        }
-      } else if (this.queryPr) {
-        const a = `pr-${this.queryPr}`;
-        this.sources.find((h) => h.key === a) && (this.selectedKey = a);
-      }
+      await this._loadRuns(!1);
+    } catch (t) {
+      console.warn(t);
     } finally {
       this.loading = !1;
     }
+    this._applyQuery();
+  }
+  _waitForBuild() {
+    this._waitStarted || (this._waitStarted = Date.now()), Date.now() - this._waitStarted > ARTIFACTS_WAIT_LIMIT_MS ? this.waiting = "gave-up" : (this.waiting = "polling", this._pollTimer = window.setTimeout(async () => {
+      try {
+        await this._loadRuns(!0);
+      } catch (e) {
+        console.warn(e);
+      }
+      this._applyQuery();
+    }, ARTIFACTS_POLL_MS));
+  }
+  checkAgain() {
+    this._waitStarted = 0, window.clearTimeout(this._pollTimer), this._waitForBuild();
+  }
+  async _loadRuns(e) {
+    const t = await fetch("/artifacts/runs", {
+      credentials: "same-origin",
+      ...e && { cache: "no-store" }
+    });
+    if (!t.ok) throw new Error(`Run listing error: ${t.status}`);
+    const s = await t.json();
+    this.lastChecked = Date.now();
+    const o = s.workflow_runs || [];
+    this._allRuns = o;
+    const n = o.filter(
+      (a) => a.pull_requests.length === 0 && a.head_repository?.full_name === "ESPresense/ESPresense"
+    ), c = o.filter((a) => a.pull_requests.length > 0), l = (a) => ({
+      id: a.id,
+      age: B(a.created_at),
+      sha: a.head_sha.substring(0, 7),
+      message: a.head_commit?.message?.split(`
+`)[0] ?? "",
+      tag: a.pull_requests.length > 0 ? `PR #${a.pull_requests[0].number}` : "Nightly",
+      subtitle: a.pull_requests.length > 0 && a.display_title || "",
+      sourceKey: a.pull_requests.length > 0 ? `pr-${a.pull_requests[0].number}` : "nightly"
+    });
+    this.builds = [
+      ...n.map(l),
+      ...c.map(l)
+    ];
+    const d = [];
+    n.length > 0 && d.push({
+      key: "nightly",
+      label: "Nightly",
+      title: "Main branch builds",
+      count: n.length,
+      latestAge: B(n[0].created_at)
+    });
+    const p = /* @__PURE__ */ new Map();
+    for (const a of c) {
+      const h = a.pull_requests[0];
+      p.has(h.number) || p.set(h.number, {
+        key: `pr-${h.number}`,
+        label: `PR #${h.number}`,
+        title: a.display_title || "",
+        count: 0,
+        latestAge: B(a.created_at)
+      }), p.get(h.number).count++;
+    }
+    this.sources = [...d, ...p.values()];
+  }
+  _applyQuery() {
+    if (this.querySha) {
+      const e = this._allRuns.find((s) => s.head_sha?.toLowerCase().startsWith(this.querySha));
+      this.shaMatched = !!e;
+      const t = e && this.builds.find((s) => s.id === e.id);
+      if (t) {
+        this.waiting = "", (!this.selectedKey || this.selectedKey === `pr-${this.queryPr}`) && (this.selectedKey = t.sourceKey, this.selectedBuild = t, this.run_id = t.id, this.showInstall = !0);
+        return;
+      }
+    } else if (this.queryPr) {
+      const e = `pr-${this.queryPr}`;
+      if (this.sources.find((t) => t.key === e)) {
+        this.waiting = "", this.selectedKey || (this.selectedKey = e);
+        return;
+      }
+    } else
+      return;
+    this._waitForBuild();
   }
   flavorChanged(e) {
     this.flavor = e.target.value;
@@ -940,8 +978,25 @@ const F = class F extends w {
       </div>
     `;
   }
+  _renderWaiting() {
+    if (!this.waiting) return "";
+    const e = [
+      this.queryPr && `PR #${this.queryPr}`,
+      this.querySha && g`<code>${this.querySha.substring(0, 7)}</code>`
+    ].filter(Boolean), t = e.length === 2 ? g`${e[0]} (${e[1]})` : e[0], s = this.queryPr ? g` <a href="https://github.com/ESPresense/ESPresense/pull/${this.queryPr}" target="_blank" rel="noopener">View the PR on GitHub</a>.` : "";
+    return this.waiting === "polling" ? g`<div class="notice" role="status">
+          <strong>Waiting for the build for ${t}…</strong>
+          A build that just finished can take up to 10 minutes to show up here.
+          This page checks every 30 seconds and will open it as soon as it arrives.
+        </div>` : g`<div class="notice" role="status">
+          <strong>The build for ${t} hasn't shown up yet.</strong>
+          It may still be building, or the build may have failed.${s}
+          <button class="link-btn" @click=${this.checkAgain}>Keep checking</button>
+        </div>`;
+  }
   render() {
     return g`
+      ${this._renderWaiting()}
       ${this.loading ? g`<div style="padding:10px"><span>Loading builds...</span></div>` : this.selectedKey ? this._renderBuildPicker() : this._renderSourcePicker()}
 
     `;
@@ -1123,6 +1178,27 @@ F.styles = ne`
       margin-top: 6px;
     }
 
+    .notice {
+      margin: 0 10px 8px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      line-height: 1.5;
+      background: rgba(59, 130, 246, 0.1);
+      border-left: 3px solid rgb(59, 130, 246);
+    }
+    .notice strong { display: block; }
+    .notice a { color: rgb(59, 130, 246); }
+    .link-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      color: rgb(59, 130, 246);
+      cursor: pointer;
+      font: inherit;
+      text-decoration: underline;
+    }
+
     /* Dark theme */
     :host([theme="dark"]) {
       background-color: rgb(30, 30, 35);
@@ -1148,6 +1224,8 @@ F.styles = ne`
     :host([theme="dark"]) .summary-meta { color: rgb(150, 150, 160); }
     :host([theme="dark"]) .summary-desc { color: rgb(200, 200, 200); }
     :host([theme="dark"]) .back-btn { color: rgb(100, 160, 255); }
+    :host([theme="dark"]) .notice { background: rgba(59, 130, 246, 0.15); }
+    :host([theme="dark"]) .link-btn { color: rgb(100, 160, 255); }
   `;
 let L = F;
 window.customElements.define("espresense-releases", D);

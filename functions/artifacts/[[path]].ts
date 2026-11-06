@@ -135,7 +135,8 @@ function isStaleListing(stored: Response, fresh: Response) {
 app.get('/runs',
   staleIfError(300),
   async (c: Context) => {
-    const response = await github(c, 'actions/workflows/build.yml/runs?status=success&per_page=100', 300)
+    // A little under our own 5-minute cache, so the two don't stack quite as far
+    const response = await github(c, 'actions/workflows/build.yml/runs?status=success&per_page=100', 240)
     if (!response.ok) {
       return c.json({ error: "Failed to fetch workflow runs", upstream: { status: response.status } }, 502)
     }
