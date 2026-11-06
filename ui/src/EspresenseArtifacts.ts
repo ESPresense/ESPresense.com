@@ -12,6 +12,10 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(days / 7)}w ago`;
 }
 
+const POLL_INTERVAL_MS = 30_000;
+// The listing can lag a finished build by up to ~10 minutes; allow some slack
+const WAIT_LIMIT_MS = 15 * 60_000;
+
 interface Build {
   id: number;
   age: string;
@@ -44,6 +48,11 @@ export class EspresenseArtifacts extends LitElement {
   selectedKey: string;
   showInstall: boolean;
   selectedBuild: Build | null;
+  waiting: "" | "polling" | "gave-up";
+  lastChecked: number;
+  private _allRuns: any[] = [];
+  private _waitStarted = 0;
+  private _pollTimer = 0;
 
   static get properties() {
     return {
@@ -61,6 +70,8 @@ export class EspresenseArtifacts extends LitElement {
       selectedKey: { type: String },
       showInstall: { type: Boolean },
       selectedBuild: { type: Object },
+      waiting: { type: String },
+      lastChecked: { type: Number },
     };
   }
 
@@ -245,6 +256,27 @@ export class EspresenseArtifacts extends LitElement {
       margin-top: 6px;
     }
 
+    .notice {
+      margin: 0 10px 8px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      line-height: 1.5;
+      background: rgba(59, 130, 246, 0.1);
+      border-left: 3px solid rgb(59, 130, 246);
+    }
+    .notice strong { display: block; }
+    .notice a { color: rgb(59, 130, 246); }
+    .link-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      color: rgb(59, 130, 246);
+      cursor: pointer;
+      font: inherit;
+      text-decoration: underline;
+    }
+
     /* Dark theme */
     :host([theme="dark"]) {
       background-color: rgb(30, 30, 35);
@@ -270,6 +302,8 @@ export class EspresenseArtifacts extends LitElement {
     :host([theme="dark"]) .summary-meta { color: rgb(150, 150, 160); }
     :host([theme="dark"]) .summary-desc { color: rgb(200, 200, 200); }
     :host([theme="dark"]) .back-btn { color: rgb(100, 160, 255); }
+    :host([theme="dark"]) .notice { background: rgba(59, 130, 246, 0.15); }
+    :host([theme="dark"]) .link-btn { color: rgb(100, 160, 255); }
   `;
 
   private _themeObserver: MutationObserver | null = null;
@@ -289,6 +323,8 @@ export class EspresenseArtifacts extends LitElement {
     this.selectedKey = "";
     this.showInstall = false;
     this.selectedBuild = null;
+    this.waiting = "";
+    this.lastChecked = 0;
   }
 
   connectedCallback() {
@@ -305,6 +341,7 @@ export class EspresenseArtifacts extends LitElement {
     super.disconnectedCallback();
     this._themeObserver?.disconnect();
     this._themeObserver = null;
+    window.clearTimeout(this._pollTimer);
   }
 
   private _syncTheme() {
@@ -313,92 +350,137 @@ export class EspresenseArtifacts extends LitElement {
   }
 
   async firstUpdated() {
+    const params = new URLSearchParams(window.location.search);
+    this.querySha = params.get("sha")?.trim().toLowerCase() || "";
+    this.queryPr = params.get("pr")?.trim() || "";
     try {
-      // Cached proxy, not api.github.com: browsers share a 60/hour allowance there
-      const runsResponse = await fetch("/artifacts/runs", { credentials: "same-origin" });
-      if (!runsResponse.ok) throw new Error(`Run listing error: ${runsResponse.status}`);
-      const runsData = await runsResponse.json();
-
-      this.querySha = new URLSearchParams(window.location.search).get("sha")?.trim().toLowerCase() || "";
-      this.queryPr = new URLSearchParams(window.location.search).get("pr")?.trim() || "";
-
-      const allRuns: any[] = runsData.workflow_runs || [];
-
-      const nightlyRuns = allRuns.filter(
-        (r) => r.pull_requests.length === 0 &&
-          r.head_repository?.full_name === "ESPresense/ESPresense"
-      );
-      const prRuns = allRuns.filter((r) => r.pull_requests.length > 0);
-
-      const toEntry = (r: any): Build => ({
-        id: r.id,
-        age: timeAgo(r.created_at),
-        sha: r.head_sha.substring(0, 7),
-        message: r.head_commit?.message?.split("\n")[0] ?? "",
-        tag: r.pull_requests.length > 0 ? `PR #${r.pull_requests[0].number}` : "Nightly",
-        subtitle: r.pull_requests.length > 0 ? (r.display_title || "") : "",
-        sourceKey: r.pull_requests.length > 0 ? `pr-${r.pull_requests[0].number}` : "nightly",
-      });
-
-      this.builds = [
-        ...nightlyRuns.map(toEntry),
-        ...prRuns.map(toEntry),
-      ];
-
-      // Build source list (Nightly + unique PRs)
-      const srcs: Source[] = [];
-      if (nightlyRuns.length > 0) {
-        srcs.push({
-          key: "nightly",
-          label: "Nightly",
-          title: "Main branch builds",
-          count: nightlyRuns.length,
-          latestAge: timeAgo(nightlyRuns[0].created_at),
-        });
-      }
-
-      const seenPrs = new Map<number, Source>();
-      for (const r of prRuns) {
-        const pr = r.pull_requests[0];
-        if (!seenPrs.has(pr.number)) {
-          seenPrs.set(pr.number, {
-            key: `pr-${pr.number}`,
-            label: `PR #${pr.number}`,
-            title: r.display_title || "",
-            count: 0,
-            latestAge: timeAgo(r.created_at),
-          });
-        }
-        seenPrs.get(pr.number)!.count++;
-      }
-      this.sources = [...srcs, ...seenPrs.values()];
-
-      // Default: no source selected (user picks from Screen 1)
-      this.selectedKey = "";
-
-      // Handle ?sha=
-      if (this.querySha) {
-        const matched = allRuns.find((r) => r.head_sha?.toLowerCase().startsWith(this.querySha));
-        this.shaMatched = !!matched;
-        if (matched) {
-          const build = this.builds.find((b) => b.id === matched.id);
-          if (build) {
-            this.selectedKey = build.sourceKey;
-            this.selectedBuild = build;
-            this.run_id = build.id;
-            this.showInstall = true;
-          }
-        }
-        // Handle ?pr=
-      } else if (this.queryPr) {
-        const key = `pr-${this.queryPr}`;
-        if (this.sources.find((s) => s.key === key)) {
-          this.selectedKey = key;
-        }
-      }
+      await this._loadRuns(false);
+    } catch (e) {
+      console.warn(e);
     } finally {
       this.loading = false;
     }
+    this._applyQuery();
+  }
+
+  // The listing is cached for a few minutes, so a link handed out the moment a
+  // build finishes can arrive before the build does. Keep checking until it
+  // shows up rather than leaving the visitor on a list without it.
+  private _waitForBuild() {
+    if (!this._waitStarted) this._waitStarted = Date.now();
+    if (Date.now() - this._waitStarted > WAIT_LIMIT_MS) {
+      this.waiting = "gave-up";
+      return;
+    }
+    this.waiting = "polling";
+    this._pollTimer = window.setTimeout(async () => {
+      try {
+        await this._loadRuns(true);
+      } catch (e) {
+        console.warn(e);
+      }
+      this._applyQuery();
+    }, POLL_INTERVAL_MS);
+  }
+
+  checkAgain() {
+    this._waitStarted = 0;
+    window.clearTimeout(this._pollTimer);
+    this._waitForBuild();
+  }
+
+  private async _loadRuns(fresh: boolean) {
+    // Cached proxy, not api.github.com: browsers share a 60/hour allowance there.
+    // When polling, skip the browser's copy so each check reaches the edge.
+    const runsResponse = await fetch("/artifacts/runs", {
+      credentials: "same-origin",
+      ...(fresh && { cache: "no-store" as RequestCache }),
+    });
+    if (!runsResponse.ok) throw new Error(`Run listing error: ${runsResponse.status}`);
+    const runsData = await runsResponse.json();
+    this.lastChecked = Date.now();
+
+    const allRuns: any[] = runsData.workflow_runs || [];
+    this._allRuns = allRuns;
+
+    const nightlyRuns = allRuns.filter(
+      (r) => r.pull_requests.length === 0 &&
+        r.head_repository?.full_name === "ESPresense/ESPresense"
+    );
+    const prRuns = allRuns.filter((r) => r.pull_requests.length > 0);
+
+    const toEntry = (r: any): Build => ({
+      id: r.id,
+      age: timeAgo(r.created_at),
+      sha: r.head_sha.substring(0, 7),
+      message: r.head_commit?.message?.split("\n")[0] ?? "",
+      tag: r.pull_requests.length > 0 ? `PR #${r.pull_requests[0].number}` : "Nightly",
+      subtitle: r.pull_requests.length > 0 ? (r.display_title || "") : "",
+      sourceKey: r.pull_requests.length > 0 ? `pr-${r.pull_requests[0].number}` : "nightly",
+    });
+
+    this.builds = [
+      ...nightlyRuns.map(toEntry),
+      ...prRuns.map(toEntry),
+    ];
+
+    // Build source list (Nightly + unique PRs)
+    const srcs: Source[] = [];
+    if (nightlyRuns.length > 0) {
+      srcs.push({
+        key: "nightly",
+        label: "Nightly",
+        title: "Main branch builds",
+        count: nightlyRuns.length,
+        latestAge: timeAgo(nightlyRuns[0].created_at),
+      });
+    }
+
+    const seenPrs = new Map<number, Source>();
+    for (const r of prRuns) {
+      const pr = r.pull_requests[0];
+      if (!seenPrs.has(pr.number)) {
+        seenPrs.set(pr.number, {
+          key: `pr-${pr.number}`,
+          label: `PR #${pr.number}`,
+          title: r.display_title || "",
+          count: 0,
+          latestAge: timeAgo(r.created_at),
+        });
+      }
+      seenPrs.get(pr.number)!.count++;
+    }
+    this.sources = [...srcs, ...seenPrs.values()];
+  }
+
+  // Select what ?sha= or ?pr= asked for, or start waiting for it to arrive
+  private _applyQuery() {
+    if (this.querySha) {
+      const matched = this._allRuns.find((r) => r.head_sha?.toLowerCase().startsWith(this.querySha));
+      this.shaMatched = !!matched;
+      const build = matched && this.builds.find((b) => b.id === matched.id);
+      if (build) {
+        this.waiting = "";
+        // Only move the visitor if they haven't picked something else meanwhile
+        if (!this.selectedKey || this.selectedKey === `pr-${this.queryPr}`) {
+          this.selectedKey = build.sourceKey;
+          this.selectedBuild = build;
+          this.run_id = build.id;
+          this.showInstall = true;
+        }
+        return;
+      }
+    } else if (this.queryPr) {
+      const key = `pr-${this.queryPr}`;
+      if (this.sources.find((s) => s.key === key)) {
+        this.waiting = "";
+        if (!this.selectedKey) this.selectedKey = key;
+        return;
+      }
+    } else {
+      return;
+    }
+    this._waitForBuild();
   }
 
   flavorChanged(e: Event) {
@@ -491,8 +573,32 @@ export class EspresenseArtifacts extends LitElement {
     `;
   }
 
+  private _renderWaiting() {
+    if (!this.waiting) return "";
+    const what = [
+      this.queryPr && `PR #${this.queryPr}`,
+      this.querySha && html`<code>${this.querySha.substring(0, 7)}</code>`,
+    ].filter(Boolean);
+    const label = what.length === 2 ? html`${what[0]} (${what[1]})` : what[0];
+    const prLink = this.queryPr
+      ? html` <a href="https://github.com/ESPresense/ESPresense/pull/${this.queryPr}" target="_blank" rel="noopener">View the PR on GitHub</a>.`
+      : "";
+    return this.waiting === "polling"
+      ? html`<div class="notice" role="status">
+          <strong>Waiting for the build for ${label}…</strong>
+          A build that just finished can take up to 10 minutes to show up here.
+          This page checks every 30 seconds and will open it as soon as it arrives.
+        </div>`
+      : html`<div class="notice" role="status">
+          <strong>The build for ${label} hasn't shown up yet.</strong>
+          It may still be building, or the build may have failed.${prLink}
+          <button class="link-btn" @click=${this.checkAgain}>Keep checking</button>
+        </div>`;
+  }
+
   render() {
     return html`
+      ${this._renderWaiting()}
       ${this.loading
         ? html`<div style="padding:10px"><span>Loading builds...</span></div>`
         : this.selectedKey
