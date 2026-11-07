@@ -44,6 +44,8 @@ In the KBeacon Pro app, set every beacon the same way except its minor:
 
 SAVE in each settings screen only stores the change in the app. Go back to the beacon's General Info page and tap **UPLOAD** to write it to the beacon, then disconnect: a beacon still connected to your phone doesn't broadcast properly. Repeat for each beacon.
 
+With Connectable off, the app can't reach the beacon again until you open it and click the button inside once (or pull and reinsert the cell); it then accepts a connection for 30 seconds, long enough to fix a wrong minor.
+
 Two beacons with the same UUID, major and minor look like one device to ESPresense, and an anchor that is really two spots makes calibration worse, not better.
 
 ## 2. Place them
