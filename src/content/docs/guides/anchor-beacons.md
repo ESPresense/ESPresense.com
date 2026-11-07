@@ -5,7 +5,7 @@ sidebar:
   order: 2
 ---
 
-*How-to · Last checked against [Companion v2.6.6](https://github.com/ESPresense/ESPresense-companion/releases/tag/v2.6.6) on 2026-11-06. The Companion steps follow its source; the beacon settings follow Blue Charm's published spec.*
+*How-to · Last checked against [Companion v2.6.7](https://github.com/ESPresense/ESPresense-companion/releases/tag/v2.6.7) on 2026-11-07. The Companion steps follow its source; the beacon settings follow Blue Charm's published spec.*
 
 An anchor is a beacon that never moves, at a spot you have marked on Companion's map. Companion then knows the true distance from it to every node that hears it. One per room is the recommendation.
 
@@ -13,7 +13,6 @@ What that buys you:
 
 - **Calibration with a fixed reference.** Node-to-node links can't tell "every node hears 5 dB hot" from "every node transmits 5 dB loud". An anchor ranged with its own rssi@1m can, so Companion's optimizer holds anchors at their rssi@1m and uses them to pin node calibration ([#1863](https://github.com/ESPresense/ESPresense-companion/pull/1863)).
 - **A ruler.** You can see how far off Companion is for something whose position you know, room by room, instead of guessing from a phone in your pocket.
-- **A check on fingerprinting.** If you run the fingerprint locator from the BETA add-on, its accuracy check locates every anchor as if its position were unknown and reports the error ([#1753](https://github.com/ESPresense/ESPresense-companion/pull/1753)).
 
 :::note[Affiliate disclosure]
 The Amazon link on this page is an affiliate link. As an Amazon Associate, ESPresense earns from qualifying purchases, at no extra cost to you. Affiliate revenue helps fund the project — see [Credits](/credits) for other ways to support.
@@ -37,7 +36,7 @@ In the KBeacon Pro app, set every beacon the same way except its minor:
 | Setting | Value | Why |
 |---|---|---|
 | Format | iBeacon | ESPresense identifies it by UUID, major and minor |
-| UUID | the same on all of them | one config rule can match them all |
+| UUID | one of your own (`uuidgen` makes one), the same on all of them | the factory UUID is shared with every other beacon of that model, so a neighbour's could be mistaken for yours |
 | Major / Minor | major `1`, minor `1`, `2`, `3`, … | every anchor needs its own id |
 | Advertising interval | 1000 ms | about ten readings per node every 10 s, and the rated battery life |
 | TX power | 0 dBm | the rated battery life; enough for a room and the rooms next to it |
@@ -58,9 +57,9 @@ Add each beacon to `devices:` in Companion's `config.yaml`, with the UUID you se
 
 ```yaml
 devices:
-  - id: "iBeacon:e2c56db5-dffb-48d2-b060-d0f5a71096e0-1-1"
+  - id: "iBeacon:<your-uuid>-1-1"
     name: "Anchor Kitchen"
-  - id: "iBeacon:e2c56db5-dffb-48d2-b060-d0f5a71096e0-1-2"
+  - id: "iBeacon:<your-uuid>-1-2"
     name: "Anchor Living Room"
 ```
 
