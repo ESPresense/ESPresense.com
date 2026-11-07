@@ -42,6 +42,8 @@ In the KBeacon Pro app, set every beacon the same way except its minor:
 | TX power | 0 dBm | the rated battery life; enough for a room and the rooms next to it |
 | Connectable | off | the rated battery life |
 
+SAVE in each settings screen only stores the change in the app. Go back to the beacon's General Info page and tap **UPLOAD** to write it to the beacon, then disconnect: a beacon still connected to your phone doesn't broadcast properly. Repeat for each beacon.
+
 Two beacons with the same UUID, major and minor look like one device to ESPresense, and an anchor that is really two spots makes calibration worse, not better.
 
 ## 2. Place them
