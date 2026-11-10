@@ -17,8 +17,11 @@ The base URL is `http://<node-ip>` or `http://<node-hostname>.local` (mDNS, when
 |---|---|---|
 | `GET` | `/json` | Node info: room name, firmware version, board variant. |
 | `GET` | `/json/devices` | Currently-tracked devices with distance, RSSI, and id. |
-| `GET` | `/json/devices?showAll=1` | Same, plus invisible/filtered devices marked with `"vis": true`. |
+| `GET` | `/json/devices?showAll=1` | Include invisible devices; visible entries have `"vis": true`. |
 | `GET` | `/json/configs` | Enrolled device configs (`id`, `alias`, `name`, `rssi@1m`). |
+| `GET` | `/json/tele` | Heap and fingerprint telemetry. |
+| `GET` | `/json/template` | Export a board settings template. |
+| `POST` | `/json/template` | Validate or import a board settings template. |
 | `POST` | `/json/configs` | Add or update an enrolled device config. |
 | `DELETE` | `/json/configs?id=<id>` | Remove an enrolled device config by id. |
 | `POST` | `/restart` *(or `/reboot`)* | Restart the node. |
@@ -69,7 +72,19 @@ curl http://kitchen.local/json/devices
 
 Each entry is one currently-tracked BLE fingerprint. The full shape is what `BleFingerprint::fill()` emits — id, friendly name (if known), MAC, computed distance in meters, last-seen RSSI, calibrated RSSI@1m, and signal-source flags.
 
-Add `?showAll=1` to include fingerprints that are normally suppressed by `include` / `exclude` / `max_distance` filtering. Suppressed entries are tagged `"vis": true` so you can distinguish them.
+Add `?showAll=1` to include fingerprints that are normally invisible. With this parameter, entries that are normally visible have `"vis": true`; invisible entries do not have the `vis` field. The presence of `showAll` enables this behavior, regardless of its value.
+
+## `GET /json/tele`
+
+Returns `room`, `freeHeap`, `maxHeap`, and `fingerprints`. Heap values are in bytes; `maxHeap` is the largest allocatable block. This small response is designed to work when memory is too low for the streamed JSON endpoints. It returns HTTP 500 with an `error` if the response does not fit.
+
+## Board templates: `/json/template`
+
+`GET /json/template` exports `chip` and `settings`, with `name`, `firmware`, and `version` when available. `settings` contains the board's exportable settings. HTTP 429 indicates low memory; HTTP 500 indicates the template did not fit.
+
+`POST /json/template` accepts a JSON object with a nonempty `settings` object and optional `name` and `chip`. If the template sets pins, `chip` is required and must match the node. Settings, values, and pins are validated before applying changes. A template can include more than hardware settings; passwords and runtime state are not importable. See the [template validation source](https://github.com/ESPresense/ESPresense/blob/1106c1f45bd56abe0402ffb0de22b637015c06f4/main/SettingsTemplate.h) for the accepted shape and validation rules.
+
+Add `?dry` to validate and preview without writing. A successful response contains `restart` and a `changes` array with `key`, `from`, and `to` for each changed value. A non-dry import restarts the node when settings changed. Errors are JSON objects with an `error` field: 400 for invalid input, 413 when the body cannot be read or exceeds 6144 bytes, 429 for low memory, and 500 for a flash write failure. A flash write failure can occur after earlier settings have been written.
 
 ## `GET /json/configs`
 
@@ -111,9 +126,9 @@ curl -X POST http://kitchen.local/json/configs \
 | `id` | string | yes | The fingerprint id to bind to (`apple:...`, `irk:...`, `known:...`, etc.). |
 | `alias` | string | no | Stable id to publish under instead of `id`. Defaults to `id` when omitted. |
 | `name` | string | no | Friendly name (shown in the web UI). |
-| `rssi@1m` | integer | no | Calibrated 1-meter RSSI for this device. Omit (or send `-128`) for "uncalibrated". |
+| `rssi@1m` | integer | no | Calibrated 1-meter RSSI for this device. Omit when uncalibrated. |
 
-Response: `{"success": true}` (HTTP 200) on save; HTTP 400 / 500 with `{"error":"..."}` on bad input or storage failure.
+Response: `{"success": true}` (HTTP 200) when the MQTT config publication succeeds; HTTP 400 for invalid JSON or missing `id`, 413 if the body cannot be read or exceeds 2048 bytes, or 500 if publication fails. The JSON parser has a 1024-byte document, so even valid JSON below the body limit can return 400 `Invalid JSON` if it exceeds parser capacity. Errors have an `error` field. A successful response does not by itself confirm that every node has applied the config.
 
 Saved configs are propagated to the whole fleet via the retained MQTT topic `espresense/settings/<id>/config` ([MQTT subscribed topics](/configuration/mqtt/#subscribed-topics)).
 
@@ -123,7 +138,7 @@ Saved configs are propagated to the whole fleet via the retained MQTT topic `esp
 curl -X DELETE "http://kitchen.local/json/configs?id=apple:iphone15-3"
 ```
 
-Removes the enrollment locally and clears the retained MQTT settings entry (so other nodes drop it too). Response shape matches `POST` — `{"success":true}` or `{"error":"..."}`.
+Publishes an empty retained MQTT settings entry so nodes can remove the enrollment. Response shape matches `POST` — `{"success":true}` or `{"error":"..."}`. A missing `id` returns 400; a failed publication returns 500.
 
 ## `POST /restart`
 
@@ -143,6 +158,8 @@ The web UI opens a WebSocket to receive live state updates while you watch the d
 
 `enrolledId` is included when the most recent enroll succeeded. Clients can send `{"command":"enroll","payload":"name"}` or `{"command":"cancelEnroll"}` over the socket — both map to the same handler as the MQTT [enrollment commands](/configuration/mqtt/#commands).
 
+During a firmware update, new connections fail in the WebSocket handler and state broadcasts are suppressed. Existing clients can still send commands.
+
 ---
 
-*Last verified against firmware v4.0.6 (`main` @ d9a1765, 2026-05-10).*
+*Source checked against [firmware v5.0.0b8](https://github.com/ESPresense/ESPresense/tree/v5.0.0b8) on 2026-11-09. The GET endpoints were checked on an ESP32-S3 node; configuration writes, restart, and WebSocket commands were not tested on a device during this update.*
