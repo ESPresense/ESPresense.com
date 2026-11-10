@@ -146,6 +146,7 @@ export default defineConfig({
           items: [
             { slug: 'guides/calibration' },
             { slug: 'guides/enrolling-devices' },
+            { slug: 'guides/remote-updates' },
             { slug: 'guides/technical' },
           ],
         },

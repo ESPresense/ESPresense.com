@@ -126,12 +126,13 @@ Only `count_ids` is live-settable over MQTT. The three hysteresis knobs are read
 
 ### Network / MQTT
 
-These are configured at boot (over the captive portal / Network page) and **cannot** be set live over MQTT — restart-flashing only.
+These are configured at boot (over the captive portal / Network page) and **cannot** be changed live over MQTT except where noted — the node must be restarted for them to take effect.
 
 | Setting | Type | Default | Description |
 |---|---|---|---|
 | `wifi-ssid` | string | (empty) | Wi-Fi SSID. Can also be re-written via MQTT (`<room>/wifi-ssid/set`). |
 | `wifi-password` | string | (empty) | Wi-Fi password. Same MQTT setter as above. |
+| `ap-password` | string | (empty) | Password for the fallback configuration AP. 8–63 characters for WPA2; empty or shorter leaves the AP open. **UI only** — not settable over MQTT. |
 | `wifi_timeout` | integer seconds | `60` | Seconds to wait for Wi-Fi before falling back to the captive portal. `-1` = wait forever. |
 | `portal_timeout` | integer seconds | `300` | Seconds to keep the captive portal up before rebooting and retrying Wi-Fi. |
 | `mqtt_host` | string | (build default) | MQTT broker hostname or IP. SSL is not supported. |
@@ -147,14 +148,15 @@ These are configured at boot (over the captive portal / Network page) and **cann
 |---|---|---|---|
 | `auto_update` | ON / OFF | `OFF` | Check GitHub for new firmware on a 15-minute interval and auto-flash if available. |
 | `prerelease` | ON / OFF | `OFF` | Include pre-release builds when auto-checking. |
-| `arduino_ota` | ON / OFF | `OFF` | Enable the Arduino OTA protocol (espota / PlatformIO). Keep off for less RAM use and a smaller attack surface. |
-| `update` | string URL | `""` | If set, the node fetches firmware from this URL on next boot. Cleared after a successful update. |
+| `arduino_ota` | ON / OFF | `OFF` | Enable the Arduino OTA / espota protocol (`tools/espota.py`). Keep off for less RAM use and a smaller attack surface. There is no OTA password. |
+| `update` | string URL | `""` | If set, the node fetches firmware from this URL on next boot. A value that doesn't start with `http` means “use the built-in release URL”. Cleared after success **and** after failure; the reason for a failure is published to `update_error`. |
 
 ### Commands
 
 | Topic | Payload | Action |
 |---|---|---|
 | `<room>/restart/set` *(or `reboot/set`)* | (any) | Restart the node immediately. |
+| `<room>/update/set` | `http(s)://...` or any non-URL value | With a URL: fetch firmware from that URL and reboot. With any value that doesn't start with `http` (e.g. `PRESS`): reboot and update from the built-in release URL. |
 | `<room>/name/set` | string | Rename the room. Slugified to form the device id. Empty payload resets to the MAC. |
 | `<room>/enroll/set` | `id\|name` or `name` or `PRESS` | Enter BLE enrollment mode for 2 minutes. See [Apple devices → Enrollment](/apple/#enrollment-easiest). |
 | `<room>/cancelEnroll/set` | (any) | Leave enrollment mode immediately. |
@@ -175,7 +177,7 @@ All topics under `espresense/rooms/<room>/...` are retained unless noted.
 
 Republished retained when the node comes back online so a fresh subscriber sees the current values:
 
-`max_distance`, `absorption`, `tx_ref_rssi`, `rx_adj_rssi`, `query`, `include`, `exclude`, `known_macs`, `known_irks`, `count_ids`, plus updater state (`auto_update`, `prerelease`, `arduino_ota`).
+`max_distance`, `absorption`, `tx_ref_rssi`, `rx_adj_rssi`, `query`, `include`, `exclude`, `known_macs`, `known_irks`, `count_ids`, plus updater state (`auto_update`, `prerelease`, `arduino_ota`) and the last update failure (`update_error`).
 
 ### Inputs and outputs
 

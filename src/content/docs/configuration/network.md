@@ -9,6 +9,8 @@ sidebar:
 
 On first boot after flashing, the ESP32 launches a captive Wi-Fi portal under its own SSID. Join it, enter your network and MQTT credentials, and the device will reboot onto your network. These same fields stay editable from the **Network** page in the device web UI.
 
+The configuration AP is named `espresense-<room>` (for example `espresense-a1b2c3` when the room is the default chip MAC) and is open unless **Configuration AP Password** is set. To update firmware or recover Wi-Fi remotely, see [Remote updates and Wi-Fi recovery](/guides/remote-updates).
+
 ## Room Configuration
 
 * **Room name** — used as the node's identity in Home Assistant and as the `<room>` segment of every MQTT topic. Spaces and case are normalised to a slug for the topic; the original is preserved for display.
@@ -18,6 +20,7 @@ On first boot after flashing, the ESP32 launches a captive Wi-Fi portal under it
 * **Wi-Fi SSID** — the network to join.
 * **Available Networks** — live scan list.
 * **Wi-Fi Password** — WPA2 passphrase. Stored unencrypted on the device.
+* **Configuration AP Password** (`ap-password`, default empty) — WPA2 passphrase for the fallback configuration AP. Must be 8–63 characters; empty or shorter leaves the AP open.
 * **Seconds to wait for WiFi before captive portal** (`wifi_timeout`, default `60`s) — `-1` waits forever instead of falling back to the portal.
 * **Seconds to wait in captive portal before reboot** (`portal_timeout`, default `300`s).
 * **Ethernet Type** — select your Ethernet connection type if the board has an Ethernet PHY (Olimex POE, M5Stack PoE Atom, etc.). Leave blank for Wi-Fi-only nodes.
@@ -35,13 +38,15 @@ On first boot after flashing, the ESP32 launches a captive Wi-Fi portal under it
 
 ## Updating
 
-* **Automatically update** (`auto_update`) — check GitHub for new firmware on a 15-minute interval and flash if available.
-* **Include pre-release versions in auto-update** (`prerelease`) — also accept pre-release builds.
-* **Arduino OTA Update** (`arduino_ota`) — enable the Arduino OTA / espota protocol. Keep off for less RAM use and a smaller attack surface.
-* **Update URL** (`update`) — if set, the node fetches firmware from this URL on next boot. Cleared after a successful update.
+* **Automatically update** (`auto_update`, default off) — check GitHub for new firmware on a 15-minute interval and flash if available. The node keeps its current firmware flavor.
+* **Include pre-release versions in auto-update** (`prerelease`, default off) — also accept pre-release builds.
+* **Arduino OTA Update** (`arduino_ota`, default off) — listen for the Arduino OTA / espota protocol. Keep off for less RAM use and a smaller attack surface. There is no OTA password.
+* **Update URL** (`update`, default empty) — if set, the node fetches firmware from this `http(s)://` URL on next boot. A value that doesn't start with `http` means “use the built-in release URL”. Cleared after a successful update, and also after a failure (the reason is published to `update_error`).
+
+Commands and failure troubleshooting live in [Remote updates and Wi-Fi recovery](/guides/remote-updates).
 
 For scanning, counting, filtering, and calibration options, see [Settings](/configuration/settings). For LED and GPIO sensors, see [Hardware](/configuration/hardware). For the full MQTT topic list (including every setting in this page) see [MQTT](/configuration/mqtt).
 
 ---
 
-*Last verified against firmware v4.0.6 (`main` @ d9a1765, 2026-05-10).*
+*Last verified against firmware source [`main` @ `8f9306f`](https://github.com/ESPresense/ESPresense/commit/8f9306f) on 2026-11-10.*
