@@ -18,11 +18,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: docs
+          persist-credentials: false
       - uses: actions/checkout@v4
         with:
           repository: ESPresense/ESPresense
           ref: ${{ inputs.firmware_ref || 'main' }}
           path: firmware
+          persist-credentials: false
       - name: Test the checker
         run: python3 -m unittest discover -s docs/tests -p 'test_ha_discovery.py' -v
       - name: Compare firmware and documentation

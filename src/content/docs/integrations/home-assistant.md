@@ -44,8 +44,9 @@ This means a device + entities for each ESP32 sensor will automatically be creat
 
 The following inventory describes current firmware. Optional sensors, inputs, outputs,
 and lights only appear when the relevant hardware and configuration are present;
-names of configured inputs, outputs and lights are chosen by the user. A node does
-not have every entity in this table.
+names of configured inputs and outputs are chosen by the user. Lights use the
+name `LED <number>` and are discovered when configured for MQTT control. A node
+does not have every entity in this table.
 
 <!-- ha-discovery-inventory:start -->
 
@@ -69,7 +70,6 @@ not have every entity in this table.
 | Charging | binary sensor | When the relevant hardware or feature is configured |
 | Co2 | sensor | When the relevant hardware or feature is configured |
 | Configured input name | binary sensor | When the relevant hardware or feature is configured |
-| Configured LED name | light | When the relevant hardware or feature is configured |
 | Configured output name | switch | When the relevant hardware or feature is configured |
 | Connectivity | binary sensor | Standard node |
 | Count | sensor | When count filters are configured |
@@ -79,6 +79,7 @@ not have every entity in this table.
 | Enroll | button | Standard node |
 | Free Mem | sensor | Standard node |
 | Humidity | sensor | When the relevant hardware or feature is configured |
+| LED &lt;number&gt; | light | When an LED is configured for MQTT control |
 | Max Distance | number | Standard node |
 | Power | sensor | When the relevant hardware or feature is configured |
 | Prerelease | switch | Standard node |

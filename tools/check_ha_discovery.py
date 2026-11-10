@@ -19,10 +19,10 @@ TYPES = {
     'sendLightDiscovery': 'light',
 }
 DYNAMIC = {
-    ('Inputs.cpp', 'sendBinarySensorDiscovery', 'in.id()'): 'Configured input name',
-    ('Outputs.cpp', 'sendSwitchDiscovery', 'outputs[i].id()'): 'Configured output name',
-    ('LEDs.cpp', 'sendLightDiscovery', 'led->getName()'): 'Configured LED name',
-    ('DS18B20Sensor.cpp', 'sendSensorDiscovery', '"DS18B20 Temperature " + toStr(i + 1)'): 'DS18B20 Temperature <number>',
+    ('Inputs.cpp', 'sendBinarySensorDiscovery', 'in.id()'): ('Configured input name', 'in.name'),
+    ('Outputs.cpp', 'sendSwitchDiscovery', 'outputs[i].id()'): ('Configured output name', 'outputs[i].name'),
+    ('LEDs.cpp', 'sendLightDiscovery', 'led->getName()'): ('LED <number>', None),
+    ('DS18B20Sensor.cpp', 'sendSensorDiscovery', '"DS18B20 Temperature " + toStr(i + 1)'): ('DS18B20 Temperature <number>', None),
 }
 
 
@@ -32,7 +32,8 @@ def without_comments(text):
     return pattern.sub(lambda m: m.group() if m.group()[0] in '\"\'' else re.sub(r'[^\n]', ' ', m.group()), text)
 
 
-def first_argument(text, offset):
+def call_arguments(text, offset):
+    arguments = []
     start = offset
     depth = 0
     in_string = False
@@ -52,10 +53,14 @@ def first_argument(text, offset):
             depth += 1
         elif c in ')]}':
             if depth == 0:
-                return text[start:i].strip()
+                argument = text[start:i].strip()
+                if argument or arguments:
+                    arguments.append(argument)
+                return arguments
             depth -= 1
         elif c == ',' and depth == 0:
-            return text[start:i].strip()
+            arguments.append(text[start:i].strip())
+            start = i + 1
     raise ValueError('unterminated discovery call')
 
 
@@ -75,7 +80,8 @@ def inventory(firmware):
                 continue
             if fn not in TYPES:
                 raise ValueError(f'{path}: unrecognised discovery helper {fn}; extend the checker')
-            expr = first_argument(source, match.end())
+            arguments = call_arguments(source, match.end())
+            expr = arguments[0] if arguments else ''
             if fn == 'sendConnectivityDiscovery':
                 if expr:
                     raise ValueError(f'{path}: unexpected connectivity helper arguments')
@@ -85,7 +91,9 @@ def inventory(firmware):
                     raise ValueError('cannot find connectivity entity name in mqtt.cpp')
                 name = found.group(1)
             elif (path.name, fn, expr) in DYNAMIC:
-                name = DYNAMIC[(path.name, fn, expr)]
+                name, display_expression = DYNAMIC[(path.name, fn, expr)]
+                if display_expression is not None and (len(arguments) < 2 or arguments[1] != display_expression):
+                    raise ValueError(f'{path}: unsupported dynamic discovery display name; expected {display_expression!r}; extend the checker')
             elif re.fullmatch(r'"[^"\\]*"', expr):
                 # The overloads taking a slug and a separate display name must
                 # not be mistaken for the common (name, category, ...) form.
@@ -99,6 +107,8 @@ def inventory(firmware):
                 availability = 'When count filters are configured'
             elif path.name in ('main.cpp', 'Updater.cpp', 'Enrollment.cpp'):
                 availability = 'Standard node'
+            elif path.name == 'LEDs.cpp':
+                availability = 'When an LED is configured for MQTT control'
             else:
                 availability = 'When the relevant hardware or feature is configured'
             result.add((name, TYPES[fn], availability))
