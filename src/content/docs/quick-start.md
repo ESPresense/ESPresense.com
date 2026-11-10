@@ -87,7 +87,7 @@ If MQTT auto-discovery is enabled in Home Assistant (it is by default), the node
 
 1. In Home Assistant, go to **Settings → Devices & Services → MQTT**.
 2. Click **devices** at the bottom.
-3. You should see a new device named after the room you chose in Step 2 (`Office`, `Kitchen`, …). It comes with several entities — a connectivity sensor (online / offline), **Uptime** and **Free Mem** diagnostics, a **Restart** button, **Max Distance** and **Absorption** numbers, an **Enroll** button, plus auto-update controls when enabled in settings.
+3. You should see a new device named after the room you chose in Step 2 (`Office`, `Kitchen`, …). Its controls and diagnostics are listed in the [MQTT discovery inventory](/integrations/home-assistant/#mqtt-auto-discovery); the entities shown depend on your configuration and hardware.
 
 If the device doesn't appear after about a minute:
 
