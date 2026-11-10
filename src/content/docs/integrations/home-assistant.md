@@ -7,7 +7,7 @@ sidebar:
 
 
 The Home Assistant integration consists of two parts:
-1. **node sensors**: each ESP32 appears as a device automatically (because MQTT auto discovery), including entities to set max distance and disable/enable active scan or query
+1. **node sensors**: each ESP32 appears as a device automatically through MQTT discovery, with the entities listed below
 2. **beacons**: define each beacon in `configuration.yaml` (using [mqtt_room integration](https://www.home-assistant.io/integrations/mqtt_room/))
 
 ### beacons: MQTT device topics
@@ -41,6 +41,57 @@ This groups + shows the `rooms` and `devices`.
 
 ESPresense supports [MQTT auto discovery](https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery), which is enabled by default in Home Assistant.
 This means a device + entities for each ESP32 sensor will automatically be created.
+
+The following inventory describes current firmware. Optional sensors, inputs, outputs,
+and lights only appear when the relevant hardware and configuration are present;
+names of configured inputs, outputs and lights are chosen by the user. A node does
+not have every entity in this table.
+
+<!-- ha-discovery-inventory:start -->
+
+| Entity name | Home Assistant type | Availability |
+| --- | --- | --- |
+| Absorption | number | Standard node |
+| AHTX0 Humidity | sensor | When the relevant hardware or feature is configured |
+| AHTX0 Temperature | sensor | When the relevant hardware or feature is configured |
+| Arduino OTA | switch | Standard node |
+| Auto Update | switch | Standard node |
+| Battery | sensor | When the relevant hardware or feature is configured |
+| Battery Voltage | sensor | When the relevant hardware or feature is configured |
+| BH1750 Lux | sensor | When the relevant hardware or feature is configured |
+| BME280 Humidity | sensor | When the relevant hardware or feature is configured |
+| BME280 Pressure | sensor | When the relevant hardware or feature is configured |
+| BME280 Temperature | sensor | When the relevant hardware or feature is configured |
+| BMP180 Pressure | sensor | When the relevant hardware or feature is configured |
+| BMP180 Temperature | sensor | When the relevant hardware or feature is configured |
+| BMP280 Pressure | sensor | When the relevant hardware or feature is configured |
+| BMP280 Temperature | sensor | When the relevant hardware or feature is configured |
+| Charging | binary sensor | When the relevant hardware or feature is configured |
+| Co2 | sensor | When the relevant hardware or feature is configured |
+| Configured input name | binary sensor | When the relevant hardware or feature is configured |
+| Configured LED name | light | When the relevant hardware or feature is configured |
+| Configured output name | switch | When the relevant hardware or feature is configured |
+| Connectivity | binary sensor | Standard node |
+| Count | sensor | When count filters are configured |
+| Current | sensor | When the relevant hardware or feature is configured |
+| DS18B20 Temperature &lt;number&gt; | sensor | When the relevant hardware or feature is configured |
+| Energy | sensor | When the relevant hardware or feature is configured |
+| Enroll | button | Standard node |
+| Free Mem | sensor | Standard node |
+| Humidity | sensor | When the relevant hardware or feature is configured |
+| Max Distance | number | Standard node |
+| Power | sensor | When the relevant hardware or feature is configured |
+| Prerelease | switch | Standard node |
+| Raw Weight | sensor | When the relevant hardware or feature is configured |
+| Restart | button | Standard node |
+| Temperature | sensor | When the relevant hardware or feature is configured |
+| TSL2561 Lux | sensor | When the relevant hardware or feature is configured |
+| TVOC | sensor | When the relevant hardware or feature is configured |
+| Update | button | Standard node |
+| Uptime | sensor | Standard node |
+| Voltage | sensor | When the relevant hardware or feature is configured |
+
+<!-- ha-discovery-inventory:end -->
 
 They appear as device + entities in Mosquitto broker card on the **integrations** page.
 
@@ -89,7 +140,7 @@ If you have enrolled a device with a specific name that becomes the device_id to
 ### sensors: manual configuration
 
 Normally not needed, but in case [MQTT auto discovery](https://www.home-assistant.io/integrations/mqtt/#mqtt-discovery) is disabled, it is possible to manually add a `binary_sensor` for the ESP32 sensor.
-Note: this does not add the entities that are normally added automatically: set max distance, active scan, query.
+Note: this does not add the other controls and diagnostics listed under MQTT auto discovery above.
 
 ```yaml
 mqtt:
