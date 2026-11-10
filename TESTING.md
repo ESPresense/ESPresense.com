@@ -23,8 +23,10 @@ The check runs on every pull request and on pushes to main in each repository.
 A docs PR compares its checkout to firmware main; a firmware PR compares its
 checkout to docs main. For coordinated changes, run the documentation workflow
 manually on the docs branch with `firmware_ref` set to the firmware PR head SHA;
-this verifies the exact pair. The default PR checks can fail until both sides
-are merged, so coordinate the merge order and any required-check exception with
+this verifies the exact pair. GitHub only enables manual dispatch after the
+workflow exists on the default branch. Until then, run the local commands above
+with both PR checkouts. The default PR checks can fail until both sides are
+merged, so coordinate the merge order and any required-check exception with
 maintainers; do not point an ordinary PR check at an untrusted matching branch.
 
 The check inventories supported discovery helper calls, not arbitrary prose or
