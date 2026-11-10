@@ -128,7 +128,7 @@ curl -X POST http://kitchen.local/json/configs \
 | `name` | string | no | Friendly name (shown in the web UI). |
 | `rssi@1m` | integer | no | Calibrated 1-meter RSSI for this device. Omit when uncalibrated. |
 
-Response: `{"success": true}` (HTTP 200) when the MQTT config publication succeeds; HTTP 400 for invalid JSON or missing `id`, 413 if the body cannot be read or exceeds 2048 bytes, or 500 if publication fails. Errors have an `error` field. A successful response does not by itself confirm that every node has applied the config.
+Response: `{"success": true}` (HTTP 200) when the MQTT config publication succeeds; HTTP 400 for invalid JSON or missing `id`, 413 if the body cannot be read or exceeds 2048 bytes, or 500 if publication fails. The JSON parser has a 1024-byte document, so even valid JSON below the body limit can return 400 `Invalid JSON` if it exceeds parser capacity. Errors have an `error` field. A successful response does not by itself confirm that every node has applied the config.
 
 Saved configs are propagated to the whole fleet via the retained MQTT topic `espresense/settings/<id>/config` ([MQTT subscribed topics](/configuration/mqtt/#subscribed-topics)).
 
@@ -157,6 +157,8 @@ The web UI opens a WebSocket to receive live state updates while you watch the d
 ```
 
 `enrolledId` is included when the most recent enroll succeeded. Clients can send `{"command":"enroll","payload":"name"}` or `{"command":"cancelEnroll"}` over the socket — both map to the same handler as the MQTT [enrollment commands](/configuration/mqtt/#commands).
+
+During a firmware update, new connections fail in the WebSocket handler and state broadcasts are suppressed. Existing clients can still send commands.
 
 ---
 
