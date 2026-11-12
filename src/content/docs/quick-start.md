@@ -58,7 +58,7 @@ For more on flashing edge cases and nightly builds, see [Install Firmware](/firm
 
 Once the device reboots after flashing, it broadcasts its own Wi-Fi access point so you can configure it.
 
-1. On your phone or laptop, **disconnect from your normal Wi-Fi** and join the new network that starts with `ESPresense-`. There is no password.
+1. On your phone or laptop, **disconnect from your normal Wi-Fi** and join the new network that starts with `espresense-`. There is no password unless you set a Configuration AP Password.
 2. Your device should pop up a captive-portal browser window automatically. If it doesn't, open `http://192.168.4.1` in a browser.
 3. Fill in the form:
 
@@ -157,14 +157,14 @@ Walk back. The sensor flips back to the room name.
 * **Add more nodes.** Repeat steps 1–4 for a node in every room you want presence detection in. (Step 5 doesn't repeat — your phone's IRK is already known to the fleet.) Once you have 2+ nodes, the `mqtt_room` integration picks the **nearest** room as the device's location.
 * **Calibrate for accuracy.** With more than one node, distances need to be consistent between them. Walk through the [Calibration guide](/guides/calibration) once everything's deployed.
 * **Track more devices.** Re-run Step 5 for each Apple device. For Android, give each phone a unique iBeacon UUID and add another `mqtt_room` block.
-* **Enable auto-update.** In the node's web UI, **Settings → Updates**, turn on **Automatically update**. Each node checks for new firmware on a 15-minute interval and flashes itself when there's a release.
+* **Enable auto-update.** In the node's web UI, go to **Network**, turn on **Automatically update**. Each node checks for new firmware on a 15-minute interval and flashes itself when there's a release. It is off by default. See [Remote updates and Wi-Fi recovery](/guides/remote-updates) for the other update paths.
 * **Try precise positioning.** If room-level isn't enough — for example, you want to know which side of the kitchen you're standing on — install the [Companion](/companion) and follow its [installation guide](/companion/installation).
 * **Read the architecture.** [Data flow](/troubleshooting/data-flow) is a short diagram that shows you which piece is talking to which. Saves time the next time something doesn't work.
 
 ## When something doesn't work
 
 * **The web installer can't connect.** Wrong cable, wrong browser, or another app is holding the serial port. See Step 1.
-* **The captive portal never appeared.** Forget the `ESPresense-…` network on your laptop/phone, power-cycle the board, and rejoin. Or open `http://192.168.4.1` directly.
+* **The captive portal never appeared.** Forget the `espresense-…` network on your laptop/phone, power-cycle the board, and rejoin. Or open `http://192.168.4.1` directly. See [Remote updates and Wi-Fi recovery](/guides/remote-updates#fallback-configuration-ap) if the node is already deployed.
 * **The node doesn't show up in Home Assistant.** MQTT credentials, broker hostname, or auto-discovery setting. See Step 3 troubleshooting.
 * **Distances look completely wrong (e.g. "15 meters" for a phone next to the board).** This is normal *before* calibration. The defaults are reasonable for room-level presence; if you want better numbers, work through [Calibration](/guides/calibration).
 * **The room sensor flaps between rooms.** Your `away_timeout` may be too short. Bump it from 120 to 300 seconds in `configuration.yaml`.
