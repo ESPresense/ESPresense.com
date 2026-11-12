@@ -127,7 +127,7 @@ mosquitto_pub -h homeassistant.local -u <username> -P <password> \
   -t "espresense/rooms/*/wifi-ssid/set" -m "NewNetwork"
 ```
 
-Publish the password the same way, then restart the nodes. Do **not** add `-r` (retain) to these commands: the broker would store the Wi-Fi credentials and replay them to every node that reconnects later. If you already published them retained, clear both topics by publishing an empty retained message (`mosquitto_pub ... -r -n -t "espresense/rooms/*/wifi-ssid/set"`, and the same for `wifi-password`).
+Publish the password the same way, then restart the nodes. Do **not** add `-r` (retain) to these commands: the broker would store the Wi-Fi credentials and replay them to every node that reconnects later. If you already published credentials retained, disconnect all affected nodes from the broker first, clear both retained topics with an empty retained publish (`mosquitto_pub ... -r -n -t "espresense/rooms/*/wifi-ssid/set"`, and the same for `wifi-password`), then reconnect the nodes. Never send these empty payloads to connected nodes: they erase saved credentials. If you already did, re-send both intended credentials without retain before any restart.
 
 ## Fallback configuration AP
 
