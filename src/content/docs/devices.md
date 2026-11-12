@@ -20,6 +20,7 @@ Some store links on this page (Amazon, AliExpress) are affiliate links. As an Am
 | Blue Charm Beacons   | [amz/us](https://amzn.to/2YGdA3w)           | These work great [^beaconconfig] |
 | Blue Charm Beacons (BC021-MultiBeacon) | [amz/us](https://amzn.to/4ceo8Jb)           | Bluetooth BLE 5.0 with Movement Sensor [^beaconconfig] |
 | Blue Charm Beacons (BC05-MultiBeacon) | [amz/us](https://amzn.to/4iWu0Ja)           | Long Range Water-Resistant BLE iBeacon with Adjustable Movement - Ideal for mail detection [^beaconconfig] |
+| Blue Charm Beacons (BC04P-MultiBeacon) | [bluecharm](https://bluecharmbeacons.com/product/bluetooth-ble-ibeacon-bc04p-multibeacon-water-resistant-with-motion-sensor/) [amz/us 5-pack](https://link.amazon/B0fSv7mtD) | CR2477, about 4 years at 1 s / 0 dBm. The recommended [room anchor](/guides/anchor-beacons) [^beaconconfig] |
 | Generic BTLE Beacons |                                             | Anything that follows the iBeacon or Eddystone standards |
 | musegear finder 2    | [musegear](https://shop.musegear-finder.net/collections/finder-2) | Must be connected once with the associated app. Id format: iTrack:... |
 | musegear finder mini | [musegear](https://shop.musegear-finder.net/collections/finder-mini) | Must be connected once with the associated app. Id format: iTrack:... |
