@@ -149,14 +149,14 @@ These are configured at boot (over the captive portal / Network page) and **cann
 | `auto_update` | ON / OFF | `OFF` | Check GitHub for new firmware on a 15-minute interval and auto-flash if available. |
 | `prerelease` | ON / OFF | `OFF` | Include pre-release builds when auto-checking. |
 | `arduino_ota` | ON / OFF | `OFF` | Enable the Arduino OTA / espota protocol (`tools/espota.py`). Keep off for less RAM use and a smaller attack surface. There is no OTA password. |
-| `update` | string URL | `""` | If set, the node fetches firmware from this URL on next boot. A value that doesn't start with `http` means “use the built-in release URL”. Cleared after success **and** after failure; the reason for a failure is published to `update_error`. |
+| `update` | string URL | `""` | If set, the node fetches firmware from this URL on next boot. A non-empty value that doesn't start with `http` means “use the built-in release URL”. Cleared after success **and** after failure; the reason for a failure is published to `update_error`. |
 
 ### Commands
 
 | Topic | Payload | Action |
 |---|---|---|
 | `<room>/restart/set` *(or `reboot/set`)* | (any) | Restart the node immediately. |
-| `<room>/update/set` | `http(s)://...` or any non-URL value | With a URL: fetch firmware from that URL and reboot. With any value that doesn't start with `http` (e.g. `PRESS`): reboot and update from the built-in release URL. |
+| `<room>/update/set` | `http(s)://...` or any non-URL value | With a URL: fetch firmware from that URL and reboot. With any non-empty value that doesn't start with `http` (e.g. `PRESS`): reboot and update from the built-in release URL. |
 | `<room>/name/set` | string | Rename the room. Slugified to form the device id. Empty payload resets to the MAC. |
 | `<room>/enroll/set` | `id\|name` or `name` or `PRESS` | Enter BLE enrollment mode for 2 minutes. See [Apple devices → Enrollment](/apple/#enrollment-easiest). |
 | `<room>/cancelEnroll/set` | (any) | Leave enrollment mode immediately. |

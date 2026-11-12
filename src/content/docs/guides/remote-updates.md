@@ -57,7 +57,7 @@ mosquitto_pub -h homeassistant.local -u <username> -P <password> \
 
 The node reboots immediately and updates itself.
 
-The web UI works too: set **Network → Update URL** to `PRESS` (or any non-URL value) and reboot. The same field accepts a real URL, which is the next section.
+The web UI works too: set **Network → Update URL** to `PRESS` (or any non-empty, non-URL value) and reboot. The same field accepts a real URL, which is the next section.
 
 ## Custom firmware URL
 
@@ -78,14 +78,14 @@ https://github.com/ESPresense/ESPresense/releases
 
 Current flavors: `esp32`, `esp32c3`, `esp32c3-cdc`, `esp32c6`, `esp32c6-cdc`, `esp32s3`, `esp32s3-cdc`, plus `-verbose` variants. There is no separate "sensors" flavor in v5.
 
-Changing flavor (for example `esp32` to `esp32s3`) needs one manual flash, or a custom URL pointing at the new flavor. Auto-update will then keep that flavor.
+To switch to another flavor that suits the same chip (for example `esp32c3` to `esp32c3-cdc`), flash it manually or use a custom URL. Auto-update will then keep that flavor. Changing chip family (for example `esp32` to `esp32s3`) requires different hardware.
 
 ## espota
 
 espota is the Arduino OTA protocol, implemented natively in v5. It is **off by default**.
 
 1. Enable **Network → Arduino OTA Update** (`arduino_ota`) and reboot the node.
-2. Push an image from a checkout of this repo:
+2. Build the image by following the [firmware build instructions](https://github.com/ESPresense/ESPresense/blob/main/BUILDING.md) (`./build.sh esp32`). From the root of a checkout of the [firmware repository](https://github.com/ESPresense/ESPresense) (not this website repo), push it:
 
 ```bash
 python3 tools/espota.py -i 192.168.1.50 -f build/esp32/espresense.bin
@@ -95,7 +95,7 @@ There is no OTA password. Leave this off unless you're using it: it is an unauth
 
 ## Pre-release builds
 
-Enable **Include pre-release versions in auto-update** (`prerelease`). On a tagged release the node checks `espresense.com/releases/latest-any`; on a branch/alpha build it checks `espresense.com/artifacts/latest/download/<branch>/<flavor>.bin`. See [Alpha builds](/alpha).
+Enable **Include pre-release versions in auto-update** (`prerelease`). On a tagged release the node checks `espresense.com/releases/latest-any/download/<flavor>.bin`; on a branch/alpha build it checks `espresense.com/artifacts/latest/download/<branch>/<flavor>.bin`. See [Alpha builds](/alpha).
 
 ## When OTA doesn't work
 
@@ -123,11 +123,11 @@ The change takes effect on the **next boot**, not immediately. Send both the SSI
 To roll the change out to every node, publish to the literal `*` room. The firmware subscribes to `espresense/rooms/*/+/set`, so this reaches every node:
 
 ```bash
-mosquitto_pub -h homeassistant.local -u <username> -P <password> -r \
+mosquitto_pub -h homeassistant.local -u <username> -P <password> \
   -t "espresense/rooms/*/wifi-ssid/set" -m "NewNetwork"
 ```
 
-Publish the password the same way, then restart the nodes.
+Publish the password the same way, then restart the nodes. Do **not** add `-r` (retain) to these commands: the broker would store the Wi-Fi credentials and replay them to every node that reconnects later. If you already published them retained, clear both topics by publishing an empty retained message (`mosquitto_pub ... -r -n -t "espresense/rooms/*/wifi-ssid/set"`, and the same for `wifi-password`).
 
 ## Fallback configuration AP
 
