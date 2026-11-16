@@ -14,7 +14,7 @@
     "@astrojs/starlight": "^0.41.6",
     "astro": "^7.4.2",
     "fflate": "^0.7.5",
-    "hono": "^4.13.11",
+    "hono": "^4.13.16",
     "rehype-external-links": "^3.0.0",
     "sharp": "^0.35.5"
   },
