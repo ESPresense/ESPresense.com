@@ -7,10 +7,13 @@ import { staleIfError } from '../../lib/stale-if-error.ts'
 import { retryOnce } from '../../lib/retry-once.ts'
 import { github } from '../../lib/github.ts'
 
-function esp32(path: string) {
+// v5 releases also publish <name>.factory.bin: the build's own bootloader, partition table and OTA
+// data merged with the app, written at 0x0. Flashing that keeps the bootloader matched to the ESP-IDF
+// the app was built with. Releases without one (v4.x and older) get the static parts below.
+function esp32(path: string, factory?: string) {
   return {
     "chipFamily": "ESP32",
-    "parts": [{
+    "parts": factory ? [{ "path": factory, "offset": 0 }] : [{
       "path": "/static/esp32/bootloader.bin",
       "offset": 4096
     },
@@ -29,11 +32,11 @@ function esp32(path: string) {
   }
 }
 
-function esp32c3(path: string, serialType?: "cdc" | "uart") {
+function esp32c3(path: string, serialType?: "cdc" | "uart", factory?: string) {
   return {
     "chipFamily": "ESP32-C3",
     ...(serialType && { serialType }),
-    "parts": [{
+    "parts": factory ? [{ "path": factory, "offset": 0 }] : [{
       "path": "/static/esp32c3/bootloader.bin",
       "offset": 0x0000
     },
@@ -52,11 +55,11 @@ function esp32c3(path: string, serialType?: "cdc" | "uart") {
   }
 }
 
-function esp32s3(path: string, serialType?: "cdc" | "uart") {
+function esp32s3(path: string, serialType?: "cdc" | "uart", factory?: string) {
   return {
     "chipFamily": "ESP32-S3",
     ...(serialType && { serialType }),
-    "parts": [{
+    "parts": factory ? [{ "path": factory, "offset": 0 }] : [{
       "path": "/static/esp32s3/bootloader.bin",
       "offset": 0x0000
     },
@@ -75,11 +78,11 @@ function esp32s3(path: string, serialType?: "cdc" | "uart") {
   }
 }
 
-function esp32c6(path: string, serialType?: "cdc" | "uart") {
+function esp32c6(path: string, serialType?: "cdc" | "uart", factory?: string) {
   return {
     "chipFamily": "ESP32-C6",
     ...(serialType && { serialType }),
-    "parts": [{
+    "parts": factory ? [{ "path": factory, "offset": 0 }] : [{
       "path": "/static/esp32c6/bootloader.bin",
       "offset": 0x0000
     },
@@ -197,7 +200,9 @@ app.get('/:tag{[^/]+\\.json}',
       ...(flavor && chip === 'esp32' ? [`${flavor}.bin`] : []),
       `${chip}${suffix}.bin`
     ]
-    const names = [...new Set(['esp32', 'esp32c3', 'esp32s3', 'esp32c6'].flatMap(chip => [...candidates(chip), ...candidates(chip, '-cdc')]))]
+    const apps = ['esp32', 'esp32c3', 'esp32s3', 'esp32c6'].flatMap(chip => [...candidates(chip), ...candidates(chip, '-cdc')])
+    const factoryOf = (name: string) => name.replace(/\.bin$/, '.factory.bin')
+    const names = [...new Set(apps.flatMap(name => [name, factoryOf(name)]))]
     const found = new Set<string>()
     const lookups = await Promise.all(names.map(async name => {
       const url = `${GITHUB}/releases/download/${tag}/${name}`
@@ -213,6 +218,7 @@ app.get('/:tag{[^/]+\\.json}',
       return c.json({ error: "Release not found" }, 404)
     }
     const pick = (chip: string, suffix = '') => candidates(chip, suffix).find(name => found.has(name))
+    const factory = (name: string) => found.has(factoryOf(name)) ? `download/${tag}/${factoryOf(name)}` : undefined
 
     const manifest = {
       "name": "ESPresense " + tag + (flavor ? ` (${flavor})` : ""),
@@ -222,25 +228,25 @@ app.get('/:tag{[^/]+\\.json}',
     }
 
     const a32 = pick('esp32')
-    if (a32) manifest.builds.push(esp32(`download/${tag}/${a32}`))
+    if (a32) manifest.builds.push(esp32(`download/${tag}/${a32}`, factory(a32)))
 
     const c3 = pick('esp32c3')
-    if (c3) manifest.builds.push(esp32c3(`download/${tag}/${c3}`, "uart"))
+    if (c3) manifest.builds.push(esp32c3(`download/${tag}/${c3}`, "uart", factory(c3)))
 
     const c3_cdc = pick('esp32c3', '-cdc')
-    if (c3_cdc) manifest.builds.push(esp32c3(`download/${tag}/${c3_cdc}`, "cdc"))
+    if (c3_cdc) manifest.builds.push(esp32c3(`download/${tag}/${c3_cdc}`, "cdc", factory(c3_cdc)))
 
     const s3 = pick('esp32s3')
-    if (s3) manifest.builds.push(esp32s3(`download/${tag}/${s3}`, "uart"))
+    if (s3) manifest.builds.push(esp32s3(`download/${tag}/${s3}`, "uart", factory(s3)))
 
     const s3_cdc = pick('esp32s3', '-cdc')
-    if (s3_cdc) manifest.builds.push(esp32s3(`download/${tag}/${s3_cdc}`, "cdc"))
+    if (s3_cdc) manifest.builds.push(esp32s3(`download/${tag}/${s3_cdc}`, "cdc", factory(s3_cdc)))
 
     const c6 = pick('esp32c6')
-    if (c6) manifest.builds.push(esp32c6(`download/${tag}/${c6}`, "uart"))
+    if (c6) manifest.builds.push(esp32c6(`download/${tag}/${c6}`, "uart", factory(c6)))
 
     const c6_cdc = pick('esp32c6', '-cdc')
-    if (c6_cdc) manifest.builds.push(esp32c6(`download/${tag}/${c6_cdc}`, "cdc"))
+    if (c6_cdc) manifest.builds.push(esp32c6(`download/${tag}/${c6_cdc}`, "cdc", factory(c6_cdc)))
 
     c.header('Cache-Control', `public, max-age=${maxAge}`)
     return c.json(manifest)
