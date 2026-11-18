@@ -145,6 +145,7 @@ export default defineConfig({
           label: 'Guides',
           items: [
             { slug: 'guides/calibration' },
+            { slug: 'guides/anchor-beacons' },
             { slug: 'guides/enrolling-devices' },
             { slug: 'guides/remote-updates' },
             { slug: 'guides/technical' },
