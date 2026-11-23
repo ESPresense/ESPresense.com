@@ -6,6 +6,12 @@ sidebar:
 
 import ArtifactsInstaller from '../../components/ArtifactsInstaller.astro';
 
+This installer flashes **node firmware** that has not been released: builds of the `main` branch ("Nightly") and builds of open pull requests in the [ESPresense firmware repository](https://github.com/ESPresense/ESPresense). Pick a build, pick your board, and it writes the binary to the ESP32 over USB. A healthy run ends with the device rebooting onto your network — the same result as the [stable installer](/firmware).
+
+You must use Edge or Chrome(-based) browser; the installer needs WebSerial, which Firefox and Safari do not support.
+
+**This page does not cover the Companion.** It lists firmware builds only, so a Companion pull request number entered here matches nothing. To run an unreleased Companion build, see [Running an unreleased Companion build](/companion/unreleased-builds).
+
 ## Automatic installation via Browser
 
 <ArtifactsInstaller />

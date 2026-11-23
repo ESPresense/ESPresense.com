@@ -16,6 +16,8 @@ MQTT setup:
 - Recommended: Home Assistant [MQTT](#home-assistant-mqtt-app) App
 - Alternative: [External](#external-mqtt-broker) MQTT broker
 
+Testing an unmerged pull request instead of a release? See [Running an unreleased build](/companion/unreleased-builds).
+
 ## Home Assistant App
 
 ### Two-step Install (Recommended!)
