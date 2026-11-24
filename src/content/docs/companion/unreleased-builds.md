@@ -24,6 +24,8 @@ A `pr-` image is one contributor's unmerged branch, built by CI the moment it wa
 
 If what you want is "newer than stable" rather than "this exact pull request", install the beta app instead and skip this entire page. **ESPresense Companion - BETA** ships from the [same repository](https://github.com/ESPresense/hassio-addons) you already added, as a separate app with its own slug, currently 2.6.9-beta.5. It installs, updates and uninstalls like any other app — no hand-edited files.
 
+One thing carries over even on that shortcut: **stop the Companion you already run before you start the beta.** The two are identical where it matters — same ports 8267 and 8268 on the host network, same `/config/espresense` — so only one of them can run at a time. Both also show as "ESPresense" in the sidebar, so label-check before you click.
+
 Use a PR build when you need one specific unmerged change: a fix someone asked you to confirm, or your own branch.
 
 ## Step 1 — Check the pull request has an image
@@ -47,8 +49,8 @@ A `404` has three causes:
 | Reason | How to tell |
 |---|---|
 | **The PR comes from a fork.** Fork PRs get no Docker Hub credentials, so the build is skipped rather than run. | The PR header reads "wants to merge … from `someone-else:branch`". There is no image and nothing you can do from the outside — ask the author to open it from a branch on the main repository. |
-| **The PR predates 2026-11-05.** `pr-<number>` tags start with [companion#1855](https://github.com/ESPresense/ESPresense-companion/pull/1855); before it, PR builds were pushed under version-shaped tags. | Open the PR and look at its merge/close date. This is why companion#1504 — the March 2026 floor-containment fix — has no `pr-1504` image. |
-| **The build failed or is still running.** | The PR's **Checks** tab → **Deploy to Docker**. A successful run's summary lists every tag it pushed. |
+| **The PR's last push predates 2026-11-05.** `pr-<number>` tags start with [companion#1855](https://github.com/ESPresense/ESPresense-companion/pull/1855); before it, PR builds went out under version-shaped tags. | The PR's **Checks** tab shows no **Deploy to Docker** run at all. What decides is when the head was last built, not when the PR was opened or merged — an old PR that got a push last week does have an image. This is why companion#1504 — the March 2026 Z-containment fix — has no `pr-1504` image. |
+| **The build failed or is still running.** | The PR's **Checks** tab → **Deploy to Docker** is red or in progress. A successful run's summary lists every tag it pushed. |
 
 ### Two tag shapes, and which to use
 
@@ -69,7 +71,7 @@ The Supervisor runs an app from `image:version`, where `version` is a field in t
 
 1. **Get access to the `local_apps` folder.** Install either the **Samba share** or the **Terminal & SSH** app from the official store. In Samba it is the share called `local_apps`; in Terminal & SSH it is the directory `/local_apps`. (Older Home Assistant versions call both `addons` — the legacy name still points at the same folder.)
 
-2. **Create one file**: `local_apps/espresense-companion-pr/config.yaml`. This is the store app's own configuration with three fields changed — `name`, `slug` and `version`:
+2. **Create one file**: `local_apps/espresense-companion-pr/config.yaml`. This is the store app's own configuration with `name`, `slug` and `version` changed — plus `description`, `url` and `panel_title`, so the two are tellable apart in the UI:
 
    ```yaml title="local_apps/espresense-companion-pr/config.yaml" wrap
    name: ESPresense Companion (PR)
@@ -126,7 +128,9 @@ Three steps put the stable release back. They do not undo configuration the PR b
 
 **Your configuration is not part of the swap.** `config.yaml` and the history database live in `<home assistant config>/espresense/`, which the app mounts into the container — switching images cannot touch them, in either direction.
 
-What a PR build *can* still do, while it runs, is write to that folder like any other build: saving a page in the UI rewrites a section of `config.yaml`, and device history goes to `.storage/history.db`. A key a newer build adds is harmless on the way back (2.6.8 ignores configuration keys it does not know), but there is no undo for content, so:
+**The broker is the third place state lives, and it does come back with you.** The Companion advertises each device to Home Assistant as a *retained* MQTT discovery message, and it rebuilds its device list from those messages on every start — it keeps no device list of its own. So a device the PR build started tracking is still advertised after you go back: 2.6.8 reads the retained message on start and tracks it too, and the entity stays in Home Assistant. Uninstalling the local copy does not clear it, `scripts/alpha off` does not clear it, and **a Home Assistant backup does not undo it** — the backup covers the config share, not your broker. To get rid of one: delete the device in the Companion UI, which clears the retained message, or clear the topic on the broker yourself.
+
+What a PR build *can* still do, while it runs, is write to that folder like any other build: saving a page in the UI rewrites that section of `config.yaml`, and device history goes to `.storage/history.db`. Neither is a trap on the way back — 2.6.8 ignores configuration keys it does not know, a newer build only ever adds columns to the history database, and `history.enabled` is off by default, so most readers have no `history.db` at all. But there is no undo for content, so:
 
 :::tip[Take the backup before the entrance, not after]
 Settings → **System** → **Backups** → **Create backup**, or just copy the `espresense` folder out of your Home Assistant `config` share. That — not the image tag — is what protects a working floor plan.
@@ -134,7 +138,7 @@ Settings → **System** → **Backups** → **Create backup**, or just copy the 
 
 ## If you have SSH to the host: `scripts/alpha`
 
-This is the path the project uses on its own soak install, and it is a single command in each direction. It needs ssh into the Home Assistant machine with `docker` and `ha` available — in practice the community **Advanced SSH & Web Terminal** app with protection mode **off** — plus a clone of the repository and the `gh` CLI locally.
+This is the path the project uses on its own soak install, and it is a single command in each direction. It needs ssh into the Home Assistant machine with `docker` and `ha` available — in practice the community **Advanced SSH & Web Terminal** app with protection mode **off** — plus a clone of the repository. The `gh` CLI is only needed for the PR-number form, which uses it to resolve the head commit; `status` and `off` work without it.
 
 ```sh wrap
 git clone https://github.com/ESPresense/ESPresense-companion
@@ -146,16 +150,17 @@ ALPHA_HOST=homeassistant.local scripts/alpha off      # back to the released ima
 
 What it does, from [`scripts/alpha-remote`](https://github.com/ESPresense/ESPresense-companion/blob/main/scripts/alpha-remote): resolves the PR's head commit, waits for the image, pulls it, keeps the released image as `alpha-backup-<version>`, tags the PR image as the version your installed app expects, and restarts the app. `off` puts the backup back (or re-pulls the release) and restarts again.
 
-Two consequences worth knowing before you use it:
+Three consequences worth knowing before you use it:
 
 - **The Supervisor still believes it runs the release.** The app page shows 2.6.8 whichever image is actually running, so `scripts/alpha status` is the only honest answer to "what is running". The next app update replaces the PR image.
 - **It is a test rig, not a channel.** Nothing is published, and it only accepts an exact `pr-<number>-<sha7>` tag.
+- **It will not run if you have also done [step 2](#step-2--point-a-copy-of-the-app-at-that-tag).** With both the store app and the local copy installed it finds two Companion containers and stops with `More than one ESPresense Companion add-on here; set ALPHA_ADDON to pick one`. Set `ALPHA_ADDON` to the one you mean, or uninstall the copy first. Pick one path, not both.
 
 Labelling a PR `alpha` does the same thing from CI onto one specific install the maintainers own — that label is not a way to get a build onto yours.
 
 ## This is not the firmware PR installer
 
-[espresense.com/alpha](/alpha) flashes **node firmware** over USB. It lists successful `build.yml` runs and pull requests from the [`ESPresense/ESPresense`](https://github.com/ESPresense/ESPresense) repository, and it writes ESP32 binaries to a board. It has no Companion path at all, and a Companion PR number means nothing to it — `espresense.com/alpha/?pr=1504` with a *Companion* PR number matches no firmware build and silently lists nothing. That is the dead end behind [this request from March 2026](https://github.com/ESPresense/ESPresense/issues/2220#issuecomment-4048998887), which asked for exactly the two things this page is here to answer.
+[espresense.com/alpha](/alpha) flashes **node firmware** over USB. It lists successful `build.yml` runs and pull requests from the [`ESPresense/ESPresense`](https://github.com/ESPresense/ESPresense) repository, and it writes ESP32 binaries to a board. It has no Companion path at all, and a Companion PR number means nothing to it — but it does not say so. `/alpha/?pr=1504` with a *Companion* PR number sits on **"Waiting for the build for PR #1504…"**, re-checks every 30 seconds for fifteen minutes, and then offers a **View the PR on GitHub** link pointing at *firmware* PR #1504 — which exists, and is an unrelated dependency bump. A quarter of an hour on a spinner, then somebody else's pull request. That is the dead end behind [this request from March 2026](https://github.com/ESPresense/ESPresense/issues/2220#issuecomment-4048998887), which asked for exactly the two things this page is here to answer.
 
 Firmware and Companion version independently. Running a Companion PR build does not change anything on your nodes.
 
@@ -169,7 +174,10 @@ Read from source on 2026-11-24:
 - **The configuration lives outside the image.** The app maps Home Assistant's `config` share and the image sets `CONFIG_DIR=/config/espresense`.
 - **2.6.8 ignores unknown configuration keys**, so a key a newer build writes does not break the way back.
 - **The architectures.** The image is built for `amd64`, `arm64` and `armv7`; the Supervisor supports `aarch64` and `amd64`, and lists `armhf`, `armv7` and `i386` as deprecated.
-- **The `/alpha` installer is firmware-only**, from its own source in this repository.
+- **Retained discovery survives the rollback.** Discovery configs are published with the retain flag, and the device list is rebuilt from them on start — so the paragraph about the broker is a property of the code, not a guess.
+- **The `/alpha` installer is firmware-only**, and the fifteen-minute wait and the firmware-repo link are in its shipped source in this repository.
+
+Every claim above was re-derived a second time, independently, in a technical review on 2026-11-24.
 
 Not verified: **no one has run either path on a live Home Assistant install.** The app copy and the rollback are read off the Supervisor's own source and the project's own scripts, not rehearsed on a house. The `scripts/alpha` path is exercised regularly by the maintainers on one install; the local-copy path in [Step 2](#step-2--point-a-copy-of-the-app-at-that-tag) is a procedure assembled from verified mechanisms, and you may be the first to run it.
 
