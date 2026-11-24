@@ -6,11 +6,11 @@ sidebar:
   order: 6
 ---
 
-*How-to · Last verified against Companion [2.6.8](https://github.com/ESPresense/ESPresense-companion/releases/tag/v2.6.8) — the version the stable app pins today — on 2026-11-23. Every tag, field and command below was read from the published workflows, the app repository and the Home Assistant Supervisor source. **Nobody here has run either path end to end on a live install** — see [What is verified, and what is not](#what-is-verified-and-what-is-not).*
+*How-to · Last verified against Companion [2.6.8](https://github.com/ESPresense/ESPresense-companion/releases/tag/v2.6.8) — the version the stable app pins today — on 2026-11-24. Every tag, field and command below was read from the published workflows, the app repository and the Home Assistant Supervisor source. **Nobody here has run either path end to end on a live install** — see [What is verified, and what is not](#what-is-verified-and-what-is-not).*
 
 Every Companion pull request opened from the main repository publishes a Docker image:
 
-```text
+```text wrap
 espresense/espresense-companion:pr-1916
 ```
 
@@ -31,16 +31,18 @@ Use a PR build when you need one specific unmerged change: a fix someone asked y
 Ask the registry before you touch Home Assistant. Substitute the PR number for `1916`:
 
 ```sh wrap
-curl -s https://hub.docker.com/v2/repositories/espresense/espresense-companion/tags/pr-1916
+curl -s -o /dev/null -w '%{http_code}\n' https://hub.docker.com/v2/repositories/espresense/espresense-companion/tags/pr-1916
 ```
 
-A published build answers with JSON that starts like this:
+Read the status code, not the body:
 
-```json wrap
-{"id":1234567890,"name":"pr-1916","last_updated":"2026-11-23T14:01:06.951630Z", ...
-```
+- **`200`** — the image is published. Go to step 2.
+- **`404`** — there is no such tag.
+- **anything else** (`429`, a `5xx`, or a connection error) — the registry is having a bad day. That is not an answer about the pull request; try again in a minute.
 
-A PR with no image answers `{"message":"httperror 404: tag 'pr-1916' not found", ...}`. Three reasons that happens:
+Drop the `-o /dev/null -w '%{http_code}\n'` and you get the tag's JSON instead, where `last_updated` tells you when the build landed.
+
+A `404` has three causes:
 
 | Reason | How to tell |
 |---|---|
@@ -79,8 +81,6 @@ The Supervisor runs an app from `image:version`, where `version` is a field in t
    arch:
      - aarch64
      - amd64
-     - armhf
-     - armv7
    map:
      - config:rw
    host_network: true
@@ -100,7 +100,9 @@ The Supervisor runs an app from `image:version`, where `version` is a field in t
      8268/tcp: Firmware Updates
    ```
 
-   No `Dockerfile` and nothing else is needed: because `image` is set, the Supervisor pulls that image instead of building anything.
+   No `Dockerfile` and nothing else is needed: because `image` is set, the Supervisor pulls that image instead of building anything. Those are all the fields the store app has — compare it against [`espresense-companion/config.yaml`](https://github.com/ESPresense/hassio-addons/blob/main/espresense-companion/config.yaml) if you want to check.
+
+   One field is deliberately shorter than the store app's. The store lists `armhf` and `armv7` as well; the Supervisor now treats `armhf`, `armv7` and `i386` as deprecated and supports `aarch64` and `amd64`, and there is no 32-bit-ARMv6 image to pull in any case.
 
 3. **Stop the Companion you already run.** Settings → **Apps** → **ESPresense Companion** → **Stop**. Both apps bind ports 8267 and 8268 on the host network and both read and write the same `/config/espresense` folder, so exactly one of them can run at a time.
 
@@ -116,7 +118,7 @@ Edit `version:` in that same file to the new `pr-1916-<sha7>`, then **Check for 
 
 ## Going back to a stable release
 
-Three steps, and nothing in them is reversible-only-by-us:
+Three steps put the stable release back. They do not undo configuration the PR build wrote while it was running — that part is covered below.
 
 1. **Stop and uninstall the local copy.** Settings → **Apps** → **ESPresense Companion (PR)** → **Stop**, then **Uninstall**. Delete the `local_apps/espresense-companion-pr` folder if you want it gone from the store.
 2. **Start ESPresense Companion again.** It was never changed — it is still pinned to 2.6.8 and its image is still on the machine. If it was pruned, the Supervisor re-pulls it; every stable tag from `2.6.2` to `2.6.8` is still published, as is `latest`.
@@ -159,13 +161,14 @@ Firmware and Companion version independently. Running a Companion PR build does 
 
 ## What is verified, and what is not
 
-Read from source on 2026-11-23:
+Read from source on 2026-11-24:
 
 - **The tag scheme and the fork exclusion** — [`docker.yml`](https://github.com/ESPresense/ESPresense-companion/blob/main/.github/workflows/docker.yml); release channels come from [`docker-rel.yml`](https://github.com/ESPresense/ESPresense-companion/blob/main/.github/workflows/docker-rel.yml).
 - **The images exist.** `pr-1916`, `pr-1916-1657bd8` and every tag from `2.6.2` to `2.6.8` resolve to a multi-architecture manifest in the registry.
 - **`version:` is the image tag the Supervisor runs**, and any string is accepted there — it is passed through as the tag, and update detection is a string comparison, not a version comparison.
 - **The configuration lives outside the image.** The app maps Home Assistant's `config` share and the image sets `CONFIG_DIR=/config/espresense`.
 - **2.6.8 ignores unknown configuration keys**, so a key a newer build writes does not break the way back.
+- **The architectures.** The image is built for `amd64`, `arm64` and `armv7`; the Supervisor supports `aarch64` and `amd64`, and lists `armhf`, `armv7` and `i386` as deprecated.
 - **The `/alpha` installer is firmware-only**, from its own source in this repository.
 
 Not verified: **no one has run either path on a live Home Assistant install.** The app copy and the rollback are read off the Supervisor's own source and the project's own scripts, not rehearsed on a house. The `scripts/alpha` path is exercised regularly by the maintainers on one install; the local-copy path in [Step 2](#step-2--point-a-copy-of-the-app-at-that-tag) is a procedure assembled from verified mechanisms, and you may be the first to run it.
