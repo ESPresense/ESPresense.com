@@ -24,7 +24,7 @@ A `pr-` image is one contributor's unmerged branch, built by CI the moment it wa
 
 If what you want is "newer than stable" rather than "this exact pull request", install the beta app instead and skip this entire page. **ESPresense Companion - BETA** ships from the [same repository](https://github.com/ESPresense/hassio-addons) you already added, as a separate app with its own slug, currently 2.6.9-beta.5. It installs, updates and uninstalls like any other app — no hand-edited files.
 
-One thing carries over even on that shortcut: **stop the Companion you already run before you start the beta.** The two are identical where it matters — same ports 8267 and 8268 on the host network, same `/config/espresense` — so only one of them can run at a time. Both also show as "ESPresense" in the sidebar, so label-check before you click.
+One thing carries over even on that shortcut: **stop the Companion you already run before you start the beta, and turn off its Start on boot.** The two are identical where it matters — same ports 8267 and 8268 on the host network, same `/config/espresense` — so only one of them can run at a time, and stopping an app does not stop it coming back at the next boot. Turn the toggle on again when you go back to stable. Both also show as "ESPresense" in the sidebar, so label-check before you click.
 
 Use a PR build when you need one specific unmerged change: a fix someone asked you to confirm, or your own branch.
 
@@ -128,7 +128,9 @@ Three steps put the stable release back. They do not undo configuration the PR b
 
 **Your configuration is not part of the swap.** `config.yaml` and the history database live in `<home assistant config>/espresense/`, which the app mounts into the container — switching images cannot touch them, in either direction.
 
-**The broker is the third place state lives, and it does come back with you.** The Companion advertises each device to Home Assistant as a *retained* MQTT discovery message, and it rebuilds its device list from those messages on every start — it keeps no device list of its own. So a device the PR build started tracking is still advertised after you go back: 2.6.8 reads the retained message on start and tracks it too, and the entity stays in Home Assistant. Uninstalling the local copy does not clear it, `scripts/alpha off` does not clear it, and **a Home Assistant backup does not undo it** — the backup covers the config share, not your broker. To get rid of one: delete the device in the Companion UI, which clears the retained message, or clear the topic on the broker yourself.
+**The broker is the third place state lives, and it does come back with you.** The Companion advertises each device to Home Assistant as a *retained* MQTT discovery message, and it rebuilds its device list from those messages on every start — it keeps no device list of its own. So a device the PR build started tracking is still advertised after you go back: 2.6.8 reads the retained message on start and tracks it too, and the entity stays in Home Assistant. Uninstalling the local copy does not clear it, and `scripts/alpha off` does not clear it. **Do not count on a backup for this one either.** If you run the Mosquitto app, a full Home Assistant backup does include its `/data`, where the broker persists retained messages — so restoring that app would roll the retained message back, along with every other retained topic from every integration, to whenever the backup was taken. That is a sledgehammer, not a fix. If your broker runs anywhere else, the backup contains none of it.
+
+The targeted way to get rid of one: delete the device in the Companion UI, which clears the retained message, or clear the topic on the broker yourself.
 
 What a PR build *can* still do, while it runs, is write to that folder like any other build: saving a page in the UI rewrites that section of `config.yaml`, and device history goes to `.storage/history.db`. Neither is a trap on the way back — 2.6.8 ignores configuration keys it does not know, a newer build only ever adds columns to the history database, and `history.enabled` is off by default, so most readers have no `history.db` at all. But there is no undo for content, so:
 
@@ -154,7 +156,7 @@ Three consequences worth knowing before you use it:
 
 - **The Supervisor still believes it runs the release.** The app page shows 2.6.8 whichever image is actually running, so `scripts/alpha status` is the only honest answer to "what is running". The next app update replaces the PR image.
 - **It is a test rig, not a channel.** Nothing is published, and it only accepts an exact `pr-<number>-<sha7>` tag.
-- **It will not run if you have also done [step 2](#step-2--point-a-copy-of-the-app-at-that-tag).** With both the store app and the local copy installed it finds two Companion containers and stops with `More than one ESPresense Companion add-on here; set ALPHA_ADDON to pick one`. Set `ALPHA_ADDON` to the one you mean, or uninstall the copy first. Pick one path, not both.
+- **It will not run if you have also done [step 2](#step-2--point-a-copy-of-the-app-at-that-tag).** With both the store app and the local copy installed it finds two Companion containers and stops with `More than one ESPresense Companion add-on here; set ALPHA_ADDON to pick one`. Take that message at less than face value: the selector is matched *after* `espresense-companion` in the container name, so it can pick the `-pr` copy but never the store app, whose name ends there. Since this rig exists to swap the store app's image, **uninstall the local copy first**. Pick one path, not both.
 
 Labelling a PR `alpha` does the same thing from CI onto one specific install the maintainers own — that label is not a way to get a build onto yours.
 
@@ -175,7 +177,7 @@ Read from source on 2026-11-24:
 - **2.6.8 ignores unknown configuration keys**, so a key a newer build writes does not break the way back.
 - **The architectures.** The image is built for `amd64`, `arm64` and `armv7`; the Supervisor supports `aarch64` and `amd64`, and lists `armhf`, `armv7` and `i386` as deprecated.
 - **Start on boot is a separate setting from running.** An app's `boot` defaults to `auto`, stopping an app does not change it, and at every boot the Supervisor starts each installed app whose `boot` is `auto` — which is why step 3 turns the toggle off and the rollback turns it back on.
-- **Retained discovery survives the rollback.** Discovery configs are published with the retain flag, and the device list is rebuilt from them on start — so the paragraph about the broker is a property of the code, not a guess.
+- **Retained discovery survives the rollback.** Discovery configs are published with the retain flag, and the device list is rebuilt from them on start — so the paragraph about the broker is a property of the code, not a guess. The Mosquitto app runs with `persistence true` and `persistence_location /data/`, which is why a backup of that app is the one thing that *does* contain broker state.
 - **The `/alpha` installer is firmware-only**, and the fifteen-minute wait and the firmware-repo link are in its shipped source in this repository.
 
 Every claim above was re-derived a second time, independently, in a technical review on 2026-11-24.
