@@ -106,7 +106,7 @@ The Supervisor runs an app from `image:version`, where `version` is a field in t
 
    One field is deliberately shorter than the store app's. The store lists `armhf` and `armv7` as well; the Supervisor now treats `armhf`, `armv7` and `i386` as deprecated and supports `aarch64` and `amd64`, and there is no 32-bit-ARMv6 image to pull in any case.
 
-3. **Stop the Companion you already run.** Settings → **Apps** → **ESPresense Companion** → **Stop**. Both apps bind ports 8267 and 8268 on the host network and both read and write the same `/config/espresense` folder, so exactly one of them can run at a time.
+3. **Stop the Companion you already run, and turn off its Start on boot.** Settings → **Apps** → **ESPresense Companion** → **Stop**, then switch **Start on boot** off on the same page. Both apps bind ports 8267 and 8268 on the host network and both read and write the same `/config/espresense` folder, so exactly one of them can run at a time — and **stopping an app does not stop it starting at the next boot**. Leave the toggle on and a reboot or a Supervisor update brings the stable app back up underneath the PR build. Write down that you turned it off; step 2 of [going back](#going-back-to-a-stable-release) turns it on again.
 
 4. **Make Home Assistant notice the new folder.** Settings → **Apps** → **Apps Store** → ⋮ (top right) → **Check for updates**, then reload the page. "ESPresense Companion (PR)" appears under **Local apps**.
 
@@ -122,8 +122,8 @@ Edit `version:` in that same file to the new `pr-1916-<sha7>`, then **Check for 
 
 Three steps put the stable release back. They do not undo configuration the PR build wrote while it was running — that part is covered below.
 
-1. **Stop and uninstall the local copy.** Settings → **Apps** → **ESPresense Companion (PR)** → **Stop**, then **Uninstall**. Delete the `local_apps/espresense-companion-pr` folder if you want it gone from the store.
-2. **Start ESPresense Companion again.** It was never changed — it is still pinned to 2.6.8 and its image is still on the machine. If it was pruned, the Supervisor re-pulls it; every stable tag from `2.6.2` to `2.6.8` is still published, as is `latest`.
+1. **Stop and uninstall the local copy.** Settings → **Apps** → **ESPresense Companion (PR)** → **Stop**, then **Uninstall**. Delete the `local_apps/espresense-companion-pr` folder if you want it gone from the store. Uninstalling is what makes this stick: a local copy you merely stop has its own **Start on boot** on by default and will be back after a reboot.
+2. **Start ESPresense Companion again, and turn Start on boot back on.** The app itself was never changed — still pinned to 2.6.8, image still on the machine (if it was pruned the Supervisor re-pulls it; every stable tag from `2.6.2` to `2.6.8` is still published, as is `latest`). The one thing you did change is the toggle you switched off in [step 3](#step-2--point-a-copy-of-the-app-at-that-tag); switch it back, or the next reboot leaves you with no Companion at all.
 3. **Check the panel comes back.** Same ingress port, same sidebar entry as before.
 
 **Your configuration is not part of the swap.** `config.yaml` and the history database live in `<home assistant config>/espresense/`, which the app mounts into the container — switching images cannot touch them, in either direction.
@@ -174,6 +174,7 @@ Read from source on 2026-11-24:
 - **The configuration lives outside the image.** The app maps Home Assistant's `config` share and the image sets `CONFIG_DIR=/config/espresense`.
 - **2.6.8 ignores unknown configuration keys**, so a key a newer build writes does not break the way back.
 - **The architectures.** The image is built for `amd64`, `arm64` and `armv7`; the Supervisor supports `aarch64` and `amd64`, and lists `armhf`, `armv7` and `i386` as deprecated.
+- **Start on boot is a separate setting from running.** An app's `boot` defaults to `auto`, stopping an app does not change it, and at every boot the Supervisor starts each installed app whose `boot` is `auto` — which is why step 3 turns the toggle off and the rollback turns it back on.
 - **Retained discovery survives the rollback.** Discovery configs are published with the retain flag, and the device list is rebuilt from them on start — so the paragraph about the broker is a property of the code, not a guess.
 - **The `/alpha` installer is firmware-only**, and the fifteen-minute wait and the firmware-repo link are in its shipped source in this repository.
 
