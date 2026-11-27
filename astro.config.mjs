@@ -130,6 +130,7 @@ export default defineConfig({
             { slug: 'companion/configuration' },
             { slug: 'companion/optimization' },
             { slug: 'companion/troubleshooting' },
+            { slug: 'companion/unreleased-builds' },
             { slug: 'companion/faq' },
           ],
         },
